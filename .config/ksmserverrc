@@ -1,0 +1,10 @@
+[LegacySession: saved at previous logout]
+count=0
+
+[Session: saved at previous logout]
+clientId1=10145dbd1dd000176572598900000009290003
+count=1
+program1=/tmp/.mount_SnipastBOM1g/usr/bin/Snipaste
+restartCommand1=/tmp/.mount_SnipastBOM1g/usr/bin/Snipaste,-session,10145dbd1dd000176572598900000009290003_1765726033_947521
+restartStyleHint1=0
+userId1=chikee

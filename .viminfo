@@ -1,0 +1,326 @@
+# 这个 viminfo 文件是由 Vim 9.1 生成的。
+# 如果要自行修改请特别小心！
+
+# Viminfo version
+|1,4
+
+# 此文件建立时 'encoding' 的值
+*encoding=utf-8
+
+
+# hlsearch on (H) or off (h):
+~h
+# 命令行 历史记录 (从新到旧):
+:wq
+|2,0,1764489029,,"wq"
+:WQ
+|2,0,1764489024,,"WQ"
+:q
+|2,0,1763277989,,"q"
+
+# 查找字符串 历史记录 (从新到旧):
+?/archlinuxcn
+|2,1,1763277987,47,"archlinuxcn"
+
+# 表达式 历史记录 (从新到旧):
+
+# 输入行 历史记录 (从新到旧):
+
+# 输入行 历史记录 (从新到旧):
+
+# 寄存器:
+"0	LINE	0
+	export PATH="$HOME/.npm-global/bin:$PATH"
+|3,0,0,1,1,0,1763287988,"export PATH=\"$HOME/.npm-global/bin:$PATH\""
+""1	LINE	0
+	
+|3,1,1,1,1,0,1763287995,""
+"2	LINE	0
+	"
+|3,0,2,1,1,0,1763277408,"\""
+"-	CHAR	0
+	"
+|3,0,36,0,1,0,1763221073,"\""
+
+# 文件标记:
+'0  135  44  ~/.zshrc
+|4,48,135,44,1764489029,"~/.zshrc"
+'1  132  25  ~/.zshrc
+|4,49,132,25,1763288018,"~/.zshrc"
+'2  132  25  ~/.zshrc
+|4,50,132,25,1763288018,"~/.zshrc"
+'3  1  0  /etc/pacman.conf
+|4,51,1,0,1763277989,"/etc/pacman.conf"
+'4  1  0  /etc/pacman.d/mirrorlist
+|4,52,1,0,1763277969,"/etc/pacman.d/mirrorlist"
+'5  131  40  ~/.zshrc
+|4,53,131,40,1763277420,"~/.zshrc"
+'6  131  40  ~/.zshrc
+|4,54,131,40,1763277420,"~/.zshrc"
+'7  131  40  ~/.zshrc
+|4,55,131,40,1763277420,"~/.zshrc"
+'8  131  40  ~/.zshrc
+|4,56,131,40,1763277420,"~/.zshrc"
+'9  1  163  ~/.token
+|4,57,1,163,1763275733,"~/.token"
+
+# 跳转列表 (从新到旧):
+-'  135  44  ~/.zshrc
+|4,39,135,44,1764489029,"~/.zshrc"
+-'  132  25  ~/.zshrc
+|4,39,132,25,1764488924,"~/.zshrc"
+-'  132  25  ~/.zshrc
+|4,39,132,25,1763288018,"~/.zshrc"
+-'  131  40  ~/.zshrc
+|4,39,131,40,1763287981,"~/.zshrc"
+-'  131  40  ~/.zshrc
+|4,39,131,40,1763287981,"~/.zshrc"
+-'  1  0  /etc/pacman.conf
+|4,39,1,0,1763277989,"/etc/pacman.conf"
+-'  1  0  /etc/pacman.conf
+|4,39,1,0,1763277989,"/etc/pacman.conf"
+-'  1  0  /etc/pacman.conf
+|4,39,1,0,1763277989,"/etc/pacman.conf"
+-'  1  0  /etc/pacman.conf
+|4,39,1,0,1763277989,"/etc/pacman.conf"
+-'  1  0  /etc/pacman.d/mirrorlist
+|4,39,1,0,1763277969,"/etc/pacman.d/mirrorlist"
+-'  1  0  /etc/pacman.d/mirrorlist
+|4,39,1,0,1763277969,"/etc/pacman.d/mirrorlist"
+-'  1  0  /etc/pacman.d/mirrorlist
+|4,39,1,0,1763277969,"/etc/pacman.d/mirrorlist"
+-'  1  0  /etc/pacman.d/mirrorlist
+|4,39,1,0,1763277969,"/etc/pacman.d/mirrorlist"
+-'  1  0  /etc/pacman.d/mirrorlist
+|4,39,1,0,1763277969,"/etc/pacman.d/mirrorlist"
+-'  1  0  /etc/pacman.d/mirrorlist
+|4,39,1,0,1763277969,"/etc/pacman.d/mirrorlist"
+-'  1  0  /etc/pacman.d/mirrorlist
+|4,39,1,0,1763277969,"/etc/pacman.d/mirrorlist"
+-'  1  0  /etc/pacman.d/mirrorlist
+|4,39,1,0,1763277969,"/etc/pacman.d/mirrorlist"
+-'  131  40  ~/.zshrc
+|4,39,131,40,1763277420,"~/.zshrc"
+-'  131  40  ~/.zshrc
+|4,39,131,40,1763277420,"~/.zshrc"
+-'  131  40  ~/.zshrc
+|4,39,131,40,1763277420,"~/.zshrc"
+-'  131  40  ~/.zshrc
+|4,39,131,40,1763277420,"~/.zshrc"
+-'  1  0  ~/.zshrc
+|4,39,1,0,1763277382,"~/.zshrc"
+-'  1  0  ~/.zshrc
+|4,39,1,0,1763277382,"~/.zshrc"
+-'  1  0  ~/.zshrc
+|4,39,1,0,1763277382,"~/.zshrc"
+-'  1  0  ~/.zshrc
+|4,39,1,0,1763277382,"~/.zshrc"
+-'  1  0  ~/.zshrc
+|4,39,1,0,1763277382,"~/.zshrc"
+-'  1  0  ~/.zshrc
+|4,39,1,0,1763277382,"~/.zshrc"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  1  163  ~/.token
+|4,39,1,163,1763275733,"~/.token"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+-'  2  178  ~/.config/chatgpt/config.json
+|4,39,2,178,1763221099,"~/.config/chatgpt/config.json"
+
+# 文件内的标记历史记录 (从新到旧):
+
+> ~/.zshrc
+	*	1764489024	0
+	"	135	44
+	^	135	45
+	.	135	44
+	+	136	0
+	+	131	41
+	+	136	0
+	+	132	0
+	+	132	26
+	+	134	11
+	+	135	44
+
+> /etc/pacman.conf
+	*	1763277987	0
+	"	1	0
+
+> /etc/pacman.d/mirrorlist
+	*	1763277968	0
+	"	1	0
+
+> ~/.token
+	*	1763275731	0
+	"	1	163
+	^	1	164
+	.	1	163
+	+	1	163
+
+> ~/.config/chatgpt/config.json
+	*	1763221097	0
+	"	2	178
+	^	2	179
+	.	2	178
+	+	2	178
+	+	2	14
+	+	2	178
+
+> /boot/loader/random-seed
+	*	1762627971	0
+	"	1	0
+
+> ~/.config/environment.d/fcitx5.conf
+	*	1762283522	0
+	"	4	0
+	^	4	0
+	.	4	0
+	+	3	17
+	+	3	18
+	+	4	0
+
+> ~/.xprofile
+	*	1762278877	0
+	"	4	0
+	^	6	0
+	.	5	26
+	+	5	26

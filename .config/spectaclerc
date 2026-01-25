@@ -1,0 +1,9 @@
+[Annotations]
+annotationToolType=6
+rectangleStrokeColor=170,0,0
+
+[ImageSave]
+translatedScreenshotsFolder=屏幕截图
+
+[VideoSave]
+translatedScreencastsFolder=屏幕录像

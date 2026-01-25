@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Snipaste
+Icon=Snipaste
+Exec="/home/chikee/Software/Snipaste-2.10.8-x86_64.AppImage"
+Terminal=false
+Hidden=false
+X-GNOME-Autostart-enabled=true
+X-GNOME-Autostart-Delay=3
+X-KDE-autostart-after=panel
+X-KDE-StartupNotify=false
+X-KDE-UniqueApplet=true
