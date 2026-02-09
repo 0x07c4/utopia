@@ -1,10 +1,3 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 # Start configuration added by Zim Framework install {{{
 #
 # User configuration sourced by interactive shells
@@ -144,13 +137,42 @@ export PATH=$HOME/workspace/depot_tools:$PATH
 # cargo
 export PATH=$HOME/.cargo/bin:$PATH
 
-eval "$(zoxide init zsh)"
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+eval "$(zoxide init zsh --cmd cd)"
+eval "$(starship init zsh)"
 
 # gdb
 export DEBUGINFOD_URLS="https://debuginfod.archlinux.org"
 
 # nvim
 alias nvim-lazy='NVIM_APPNAME="nvim-lazyvim" nvim'
+
+export PATH=$HOME/.local/bin:$PATH
+
+alias ls='eza --icons'
+alias lsfg='LSFG_PROCESS="miyu"'
+alias fa='fastfetch'
+alias reboot='systemctl reboot'
+
+function y() {
+  local tmp cwd
+  tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+  yazi "$@" --cwd-file="$tmp"
+  if [[ -f "$tmp" ]]; then
+    cwd="$(<"$tmp")"
+    if [[ -n "$cwd" && "$cwd" != "$PWD" ]]; then
+      builtin cd -- "$cwd"
+    fi
+  fi
+  rm -f -- "$tmp"
+}
+
+function 滚() {
+  sysup
+}
+
+function raw() {
+  command ~/.config/scripts/random-anime-wallpaper.sh "$@"
+}
+
+# codex
+alias codex-animitta='codex resume 019c3338-cf95-7750-8fd2-539b314545b8'
