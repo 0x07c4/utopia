@@ -111,6 +111,12 @@ fi
 # Initialize modules.
 source ${ZIM_HOME}/init.zsh
 
+# If generated init is stale/broken, rebuild once so required widgets exist.
+if (( ! ${+widgets[history-substring-search-up]} )); then
+  source ${ZIM_HOME}/zimfw.zsh build >/dev/null 2>&1
+  source ${ZIM_HOME}/init.zsh
+fi
+
 # ------------------------------
 # Post-init module configuration
 # ------------------------------
@@ -120,11 +126,19 @@ source ${ZIM_HOME}/init.zsh
 #
 
 zmodload -F zsh/terminfo +p:terminfo
-# Bind ^[[A/^[[B manually so up/down works both before and after zle-line-init
-for key ('^[[A' '^P' ${terminfo[kcuu1]}) bindkey ${key} history-substring-search-up
-for key ('^[[B' '^N' ${terminfo[kcud1]}) bindkey ${key} history-substring-search-down
-for key ('k') bindkey -M vicmd ${key} history-substring-search-up
-for key ('j') bindkey -M vicmd ${key} history-substring-search-down
+# Always provide working Up/Down history navigation.
+up_history_widget=up-line-or-history
+down_history_widget=down-line-or-history
+if (( ${+widgets[history-substring-search-up]} && ${+widgets[history-substring-search-down]} )); then
+  up_history_widget=history-substring-search-up
+  down_history_widget=history-substring-search-down
+fi
+# Bind ^[[A/^[[B manually so up/down works both before and after zle-line-init.
+for key ('^[[A' '^P' ${terminfo[kcuu1]}) bindkey ${key} ${up_history_widget}
+for key ('^[[B' '^N' ${terminfo[kcud1]}) bindkey ${key} ${down_history_widget}
+for key ('k') bindkey -M vicmd ${key} ${up_history_widget}
+for key ('j') bindkey -M vicmd ${key} ${down_history_widget}
+unset up_history_widget down_history_widget
 unset key
 # }}} End configuration added by Zim Framework install
 
