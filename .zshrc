@@ -162,10 +162,15 @@ alias nvim-lazy='NVIM_APPNAME="nvim-lazyvim" nvim'
 
 export PATH=$HOME/.local/bin:$PATH
 
-alias ls='eza --icons'
 alias lsfg='LSFG_PROCESS="miyu"'
 alias fa='fastfetch'
 alias reboot='systemctl reboot'
+
+# Ensure wrapper function takes precedence over any inherited ls alias.
+unalias ls 2>/dev/null
+function ls() {
+  command eza --icons "$@"
+}
 
 function y() {
   local tmp cwd
@@ -187,6 +192,18 @@ function 滚() {
 function raw() {
   command ~/.config/scripts/random-anime-wallpaper.sh "$@"
 }
+
+# Align completion with wrapper commands.
+if (( ${+functions[compdef]} )); then
+  (( ${+functions[_eza]} )) && compdef _eza ls
+  if (( ${+functions[y]} )); then
+    if (( ${+functions[_yazi]} )); then
+      compdef _yazi y
+    else
+      compdef _files y
+    fi
+  fi
+fi
 
 # codex
 alias codex-animitta='codex resume 019c3338-cf95-7750-8fd2-539b314545b8'
