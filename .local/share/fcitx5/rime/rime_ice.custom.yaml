@@ -1,0 +1,14 @@
+patch:
+  ascii_composer:
+    good_old_caps_lock: false
+switches:
+  - name: ascii_punct
+    states: ["¥", "$"]
+  - name: emoji
+    reset: 1
+    states: ["💀", "😄"]
+  - name: full_shape
+    states: ["半角", "全角"]
+  - abbrev: ["词", "单"]
+    name: search_single_char
+    states: ["正常", "单字"]
