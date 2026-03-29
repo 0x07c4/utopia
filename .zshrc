@@ -152,7 +152,12 @@ export DEBUGINFOD_URLS="https://debuginfod.archlinux.org"
 
 export PATH=$HOME/.local/bin:$PATH
 
-alias ls='eza --icons'
+unalias ls 2>/dev/null
+function ls() {
+  eza --icons "$@"
+}
+compdef _eza ls
+
 alias lsfg='LSFG_PROCESS="miyu"'
 alias fa='fastfetch'
 alias reboot='systemctl reboot'
