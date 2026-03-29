@@ -103,6 +103,7 @@ sync_git_ref() {
 sync_paths=(
   .zshrc
   .gitconfig
+  .ssh/config
   .config/Thunar
   .config/bottom
   .config/btop
