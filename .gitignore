@@ -1,1 +1,5 @@
 .zim/
+
+# Local UI state
+.config/Thunar/accels.scm
+.config/gtk-3.0/bookmarks
