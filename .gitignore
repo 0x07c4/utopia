@@ -3,3 +3,12 @@
 # Local UI state
 .config/Thunar/accels.scm
 .config/gtk-3.0/bookmarks
+
+# Fcitx5 runtime state
+.config/fcitx5/conf/cached_layouts
+.config/fcitx5/conf/vinput.conf
+.local/share/fcitx5/rime/build/
+.local/share/fcitx5/rime/*.userdb/
+.local/share/fcitx5/rime/installation.yaml
+.local/share/fcitx5/rime/user.yaml
+.local/share/fcitx5/rime/sync/

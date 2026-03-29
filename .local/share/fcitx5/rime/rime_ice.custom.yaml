@@ -1,14 +1,29 @@
 patch:
-  ascii_composer:
-    good_old_caps_lock: false
-switches:
-  - name: ascii_punct
-    states: ["¥", "$"]
-  - name: emoji
-    reset: 1
-    states: ["💀", "😄"]
-  - name: full_shape
-    states: ["半角", "全角"]
-  - abbrev: ["词", "单"]
-    name: search_single_char
-    states: ["正常", "单字"]
+  ascii_composer/good_old_caps_lock: false
+  ascii_composer/switch_key/Shift_L: commit_code
+  ascii_composer/switch_key/Shift_R: commit_text
+  ascii_composer/switch_key/Control_L: noop
+  ascii_composer/switch_key/Control_R: noop
+  key_binder:
+    bindings:
+      __patch:
+        - key_bindings:/emacs_editing
+        - key_bindings:/paging_with_minus_equal
+        - key_bindings:/paging_with_comma_period
+        - key_bindings.custom:/rime_ice_safe_switches
+  switches:
+    - name: ascii_mode
+      reset: 0
+      states: ["中", "英"]
+    - name: ascii_punct
+      states: ["¥", "$"]
+    - name: traditionalization
+      states: ["简", "繁"]
+    - name: emoji
+      reset: 1
+      states: ["💀", "😄"]
+    - name: full_shape
+      states: ["半角", "全角"]
+    - abbrev: ["词", "单"]
+      name: search_single_char
+      states: ["正常", "单字"]
