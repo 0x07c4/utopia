@@ -1,3 +1,10 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # Start configuration added by Zim Framework install {{{
 #
 # User configuration sourced by interactive shells
@@ -111,12 +118,6 @@ fi
 # Initialize modules.
 source ${ZIM_HOME}/init.zsh
 
-# If generated init is stale/broken, rebuild once so required widgets exist.
-if (( ! ${+widgets[history-substring-search-up]} )); then
-  source ${ZIM_HOME}/zimfw.zsh build >/dev/null 2>&1
-  source ${ZIM_HOME}/init.zsh
-fi
-
 # ------------------------------
 # Post-init module configuration
 # ------------------------------
@@ -126,19 +127,11 @@ fi
 #
 
 zmodload -F zsh/terminfo +p:terminfo
-# Always provide working Up/Down history navigation.
-up_history_widget=up-line-or-history
-down_history_widget=down-line-or-history
-if (( ${+widgets[history-substring-search-up]} && ${+widgets[history-substring-search-down]} )); then
-  up_history_widget=history-substring-search-up
-  down_history_widget=history-substring-search-down
-fi
-# Bind ^[[A/^[[B manually so up/down works both before and after zle-line-init.
-for key ('^[[A' '^P' ${terminfo[kcuu1]}) bindkey ${key} ${up_history_widget}
-for key ('^[[B' '^N' ${terminfo[kcud1]}) bindkey ${key} ${down_history_widget}
-for key ('k') bindkey -M vicmd ${key} ${up_history_widget}
-for key ('j') bindkey -M vicmd ${key} ${down_history_widget}
-unset up_history_widget down_history_widget
+# Bind ^[[A/^[[B manually so up/down works both before and after zle-line-init
+for key ('^[[A' '^P' ${terminfo[kcuu1]}) bindkey ${key} history-substring-search-up
+for key ('^[[B' '^N' ${terminfo[kcud1]}) bindkey ${key} history-substring-search-down
+for key ('k') bindkey -M vicmd ${key} history-substring-search-up
+for key ('j') bindkey -M vicmd ${key} history-substring-search-down
 unset key
 # }}} End configuration added by Zim Framework install
 
@@ -157,20 +150,12 @@ eval "$(starship init zsh)"
 # gdb
 export DEBUGINFOD_URLS="https://debuginfod.archlinux.org"
 
-# nvim
-alias nvim-lazy='NVIM_APPNAME="nvim-lazyvim" nvim'
-
 export PATH=$HOME/.local/bin:$PATH
 
+alias ls='eza --icons'
 alias lsfg='LSFG_PROCESS="miyu"'
 alias fa='fastfetch'
 alias reboot='systemctl reboot'
-
-# Ensure wrapper function takes precedence over any inherited ls alias.
-unalias ls 2>/dev/null
-function ls() {
-  command eza --icons "$@"
-}
 
 function y() {
   local tmp cwd
@@ -185,6 +170,8 @@ function y() {
   rm -f -- "$tmp"
 }
 
+export EDITOR=nvim
+
 function 滚() {
   sysup
 }
@@ -193,17 +180,6 @@ function raw() {
   command ~/.config/scripts/random-anime-wallpaper.sh "$@"
 }
 
-# Align completion with wrapper commands.
-if (( ${+functions[compdef]} )); then
-  (( ${+functions[_eza]} )) && compdef _eza ls
-  if (( ${+functions[y]} )); then
-    if (( ${+functions[_yazi]} )); then
-      compdef _yazi y
-    else
-      compdef _files y
-    fi
-  fi
-fi
-
-# codex
-alias codex-animitta='codex resume 019c3338-cf95-7750-8fd2-539b314545b8'
+# export https_proxy=http://127.0.0.1:7897 
+# export http_proxy=http://127.0.0.1:7897 
+# export all_proxy=socks5://127.0.0.1:7897

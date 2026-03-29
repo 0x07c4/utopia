@@ -8,7 +8,7 @@ local config = {
 	line_height = 1.1,
 
 	-- color
-	color_scheme = "Gruvbox dark, soft (base16)",
+	-- color_scheme = "Gruvbox dark, soft (base16)",
 	bold_brightens_ansi_colors = true,
 
 	-- Tab Bar

@@ -5,3 +5,5 @@
 [user]
 	email = sunzhijie2@gmail.com
 	name = chikee
+[safe]
+	directory = /home/chikee/.local/share/shorin-niri
