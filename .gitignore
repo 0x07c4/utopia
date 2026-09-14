@@ -12,3 +12,10 @@
 .local/share/fcitx5/rime/installation.yaml
 .local/share/fcitx5/rime/user.yaml
 .local/share/fcitx5/rime/sync/
+
+# Generated runtime state and caches
+.config/Mesen2/*.lock
+.config/mozilla/firefox/Crash Reports/*.log
+.config/session/
+.debuginfod.sqlite*
+.zcompdump*
