@@ -85,6 +85,7 @@ sync_git_ref() {
 
 sync_paths=(
   .zshrc
+  .zimrc
   .gitconfig
   .ssh/config
   .config/Thunar
