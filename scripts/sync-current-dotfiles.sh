@@ -109,13 +109,15 @@ sync_paths=(
   .config/xdg-desktop-portal
   .config/xfce4
   .config/yazi
-  .local/bin
   .local/share/icons/breeze_cursors
 )
 
 for rel in "${sync_paths[@]}"; do
     sync_path "$rel"
 done
+
+# Codex is installed by npm; keep its generated launcher out of the snapshot.
+sync_dir_contents_excluding ".local/bin" "codex"
 
 sync_git_ref ".config/nvim"
 sync_git_ref ".config/nvim-lazyvim"
