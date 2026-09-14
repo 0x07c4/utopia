@@ -64,23 +64,6 @@ sync_dir_contents_excluding_many() {
     rsync "${RSYNC_OPTS[@]}" "${args[@]}" "$src" "$dst"
 }
 
-insert_after_anchor() {
-    local file="$1"
-    local anchor="$2"
-    local marker="$3"
-    local block="$4"
-
-    if grep -Fq "$marker" "$file"; then
-        return 0
-    fi
-
-    ANCHOR="$anchor" BLOCK="$block" perl -0pi -e '
-        my $anchor = $ENV{"ANCHOR"};
-        my $block = $ENV{"BLOCK"};
-        s/\Q$anchor\E/$anchor . "\n" . $block/s;
-    ' "$file"
-}
-
 sync_git_ref() {
     local rel="$1"
     local src="$SOURCE_HOME/$rel"
@@ -111,23 +94,16 @@ sync_paths=(
   .config/fastfetch
   .config/fish
   .config/fontconfig
-  .config/fuzzel
   .config/gtk-3.0
   .config/kitty
   .config/lazygit
   .config/lsfg-vk
-  .config/mako
-  .config/matugen
   .config/mimeapps.list
   .config/mpv
   .config/noctalia
   .config/satty
-  .config/scripts
   .config/starship.toml
   .config/swayosd
-  .config/waybar
-  .config/waybar-niri-Win11Like
-  .config/waypaper
   .config/wezterm
   .config/xsettingsd
   .config/xdg-desktop-portal
@@ -159,52 +135,6 @@ if [[ ! -f "$niri_config" ]]; then
     exit 1
 fi
 
-startup_anchor='// This line starts waybar, a commonly used bar for Wayland compositors.
-// spawn-at-startup "waybar"'
-startup_block='// utopia-sync: wallpaper startup begin
-spawn-at-startup "awww-daemon"
-spawn-at-startup "awww-daemon" "-n" "overview"
-spawn-sh-at-startup "sleep 1 && waypaper --random"
-// utopia-sync: wallpaper startup end'
-insert_after_anchor "$niri_config" "$startup_anchor" "// utopia-sync: wallpaper startup begin" "$startup_block"
-
-rules_anchor='// Window rules let you adjust behavior for individual windows.
-// Find more information on the wiki:
-// https://yalter.github.io/niri/Configuration:-Window-Rules'
-rules_block='// utopia-sync: wallpaper layer rules begin
-layer-rule {
-    match namespace="awww-daemonoverview"
-    match namespace="swww-daemonoverview"
-    place-within-backdrop true
-}
-// utopia-sync: wallpaper layer rules end'
-insert_after_anchor "$niri_config" "$rules_anchor" "// utopia-sync: wallpaper layer rules begin" "$rules_block"
-
-floating_anchor='window-rule {
-    // This app-id regular expression will work for both:
-    // - host Firefox (app-id is "firefox")
-    // - Flatpak Firefox (app-id is "org.mozilla.firefox")
-    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
-    open-floating true
-}'
-floating_block='
-// utopia-sync: waypaper floating begin
-window-rule {
-    match app-id="waypaper"
-    open-floating true
-}
-// utopia-sync: waypaper floating end'
-insert_after_anchor "$niri_config" "$floating_anchor" "// utopia-sync: waypaper floating begin" "$floating_block"
-
-binds_anchor='    Mod+T hotkey-overlay-title="Open a Terminal: kitty" { spawn "kitty"; }
-    Mod+D hotkey-overlay-title="Run an Application: fuzzel" { spawn "fuzzel"; }'
-binds_block='    // utopia-sync: wallpaper binds begin
-    Mod+Alt+W hotkey-overlay-title="Change wallpaper: waypaper" { spawn "waypaper"; }
-    Mod+F10 hotkey-overlay-title="Random wallpaper: waypaper" { spawn "waypaper" "--random"; }
-    Mod+Shift+F10 hotkey-overlay-title="Random anime wallpaper" { spawn "~/.config/scripts/random-anime-wallpaper.sh"; }
-    // utopia-sync: wallpaper binds end'
-insert_after_anchor "$niri_config" "$binds_anchor" "// utopia-sync: wallpaper binds begin" "$binds_block"
-
 echo "Sync complete."
 echo "Kept utopia's fcitx5 untouched."
-echo "Preserved utopia's niri config body and re-applied wallpaper patches idempotently."
+echo "Preserved utopia's niri config body."
