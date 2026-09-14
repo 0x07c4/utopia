@@ -22,3 +22,7 @@
 
 # Generated npm launcher
 .local/bin/codex
+
+# Local application data and generated telemetry
+.config/Mesen2/
+.config/go/telemetry/
