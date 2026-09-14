@@ -123,18 +123,8 @@ sync_git_ref ".config/nvim-lazyvim"
 # Source gtk-4.0 currently contains broken links for these theme files.
 sync_dir_contents_excluding_many ".config/gtk-4.0" "gtk.css" "gtk-dark.css"
 
-# Keep utopia's fcitx5 as requested.
-:
-
-# Sync current niri auxiliary files, but preserve utopia's merged config.kdl.
-sync_dir_contents_excluding ".config/niri" "config.kdl"
-
-niri_config="$REPO_ROOT/.config/niri/config.kdl"
-if [[ ! -f "$niri_config" ]]; then
-    echo "Error: missing $niri_config" >&2
-    exit 1
-fi
+# Sync the complete current niri configuration.
+sync_dir_contents ".config/niri"
 
 echo "Sync complete."
-echo "Kept utopia's fcitx5 untouched."
-echo "Preserved utopia's niri config body."
+echo "Synced the current niri configuration."
