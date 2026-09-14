@@ -1,0 +1,18 @@
+# Declarative visual baseline for Noctalia v5.
+# Runtime overrides remain in ~/.local/state/noctalia/settings.toml.
+
+[theme]
+mode = "dark"
+source = "builtin"
+builtin = "Tokyo-Night"
+wallpaper_scheme = "m3-content"
+
+[wallpaper]
+directory = "/home/chikee/Pictures/Wallpapers"
+
+    [wallpaper.default]
+    path = "/home/chikee/Pictures/Wallpapers/wallhaven-6oxgp6.jpg"
+
+[bar.default]
+font_family = "Maple Mono NF CN"
+margin_ends = 0
