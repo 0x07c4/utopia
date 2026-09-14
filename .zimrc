@@ -1,4 +1,3 @@
-# Start configuration added by Zim Framework install {{{
 #
 # This is not sourced during shell startup and is only used to configure zimfw.
 #
@@ -11,12 +10,17 @@
 zmodule environment
 # Provides handy git aliases and functions.
 zmodule git
-# Applies correct bindkeys for input events.
+# Applies correct bindkeys for input events. Add one of the following to the
+# beginning of your ~/.zshrc to set your preferred editor keymap to emacs or vi
+# respectively: bindkey -e or bindkey -v
 zmodule input
 # Sets a custom terminal title.
 zmodule termtitle
 # Utility aliases and functions. Adds colour to ls, grep and less.
 zmodule utility
+
+# <-- Normally new modules should be added here. Check each module documentation
+# for any caveats.
 
 #
 # Prompt
@@ -26,6 +30,8 @@ zmodule utility
 zmodule duration-info
 # Exposes git repository status information to prompts.
 zmodule git-info
+# Formats the current working directory for prompts.
+zmodule prompt-pwd
 # A heavily reduced, ASCII-only version of the Spaceship and Starship prompts.
 zmodule asciiship
 
@@ -45,8 +51,9 @@ zmodule completion
 
 # Fish-like syntax highlighting for Zsh, must be sourced after completion.
 zmodule zsh-users/zsh-syntax-highlighting
-# Fish-like history search for Zsh, must be sourced after zsh-users/zsh-syntax-highlighting.
+# Fish-like history search for Zsh, must be sourced after
+# zsh-users/zsh-syntax-highlighting.
 zmodule zsh-users/zsh-history-substring-search
-# Fish-like autosuggestions for Zsh.
+# Fish-like autosuggestions for Zsh. Add the following to your ~/.zshrc to boost
+# performance: ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 zmodule zsh-users/zsh-autosuggestions
-# }}} End configuration added by Zim Framework install
