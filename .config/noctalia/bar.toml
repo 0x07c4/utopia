@@ -1,0 +1,23 @@
+# Explicit bar layout; widget defaults remain owned by Noctalia.
+
+[bar]
+order = ["default"]
+
+[bar.default]
+enabled = true
+position = "top"
+start = ["launcher", "wallpaper", "workspaces"]
+center = ["clock"]
+end = [
+    "media",
+    "tray",
+    "notifications",
+    "clipboard",
+    "network",
+    "bluetooth",
+    "volume",
+    "brightness",
+    "battery",
+    "control-center",
+    "session"
+]
