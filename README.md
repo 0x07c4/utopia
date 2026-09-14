@@ -20,6 +20,20 @@ Run the sync script from the repository root:
 
 The script copies selected files from `$HOME`, updates the AstroNvim gitlink when its commit changes, and leaves the final review and commit to Git. Use `DRY_RUN=1` to preview changes.
 
+## Target packages
+
+The package manifests under `packages/` describe the intended rebuilt system and are split by source so a future bootstrap script can install them in the correct order:
+
+- `arch.txt`: base system, desktop, and development packages from the official Arch repositories
+- `hardware-intel-laptop.txt`: hardware support for this Intel laptop
+- `features/disk-encryption.txt`: packages installed only when LUKS disk encryption is selected
+- `archlinuxcn.txt`: packages from the configured archlinuxcn repository
+- `aur.txt`: packages built through an AUR helper
+
+These are curated target manifests rather than raw `pacman -Qqe` output. The general-purpose additions are selected from Omarchy's package manifest when they have a concrete role in this system. Legacy overlapping desktop components such as Alacritty, Fuzzel, Mako, and Waybar are intentionally omitted.
+
+Btrfs is the base storage layout. LUKS disk encryption is an installer option rather than a requirement; selecting it adds the feature manifest and the matching `sd-encrypt` boot configuration.
+
 ## Deliberately excluded
 
 Runtime state, caches, credentials, generated launchers, emulator data, wallpaper binaries, and Noctalia's GUI state are not versioned. Noctalia's declarative files live under `.config/noctalia/`; runtime overrides remain in `~/.local/state/noctalia/`.
