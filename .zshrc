@@ -128,15 +128,6 @@ for key ('j') bindkey -M vicmd ${key} history-substring-search-down
 unset key
 # }}} End configuration added by Zim Framework install
 
-export PATH="$HOME/.npm-global/bin:$PATH"
-export PATH="$HOME/.dotnet:$PATH"
-
-# dep_tools
-export PATH=$HOME/workspace/depot_tools:$PATH
-
-# cargo
-export PATH=$HOME/.cargo/bin:$PATH
-
 eval "$(zoxide init zsh --cmd cd)"
 eval "$(starship init zsh)"
 
