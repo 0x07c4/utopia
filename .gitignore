@@ -19,3 +19,6 @@
 .config/session/
 .debuginfod.sqlite*
 .zcompdump*
+
+# Generated npm launcher
+.local/bin/codex
