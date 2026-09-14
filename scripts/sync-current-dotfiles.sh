@@ -70,10 +70,18 @@ sync_git_ref() {
     local dst="$REPO_ROOT/$rel"
 
     [[ -e "$src/.git" || -f "$src/.git" ]] || return 0
-    [[ -e "$dst/.git" || -f "$dst/.git" ]] || return 0
-
     local src_head
     src_head="$(git -C "$src" rev-parse HEAD)"
+
+    if [[ ! -e "$dst/.git" && ! -f "$dst/.git" ]]; then
+        if [[ "$DRY_RUN" == "1" ]]; then
+            echo "[DRY RUN] git -C $REPO_ROOT update-index --add --cacheinfo 160000 $src_head $rel"
+            return 0
+        fi
+
+        git -C "$REPO_ROOT" update-index --add --cacheinfo 160000 "$src_head" "$rel"
+        return 0
+    fi
 
     if [[ "$DRY_RUN" == "1" ]]; then
         echo "[DRY RUN] git -C $dst checkout $src_head"
