@@ -129,7 +129,6 @@ done
 sync_dir_contents_excluding ".local/bin" "codex"
 
 sync_git_ref ".config/nvim"
-sync_git_ref ".config/nvim-lazyvim"
 
 # Source gtk-4.0 currently contains broken links for these theme files.
 sync_dir_contents_excluding_many ".config/gtk-4.0" "gtk.css" "gtk-dark.css"
