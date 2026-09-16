@@ -11,6 +11,36 @@ Disk encryption is optional and defaults to off. Both storage modes keep the sam
 
 Passwords, password hashes, recovery keys, and LUKS passphrases do not belong in this file or in Git. Interactive installs will request them separately. Unattended credentials will require a short-lived, root-only input mechanism before that mode is implemented.
 
+## Complete installation pipeline
+
+The staged modules can be run through one reviewed entry point. With the example
+profile, select the disk explicitly and inspect the complete plan first:
+
+```sh
+python -m install --device /dev/nvme0n1
+```
+
+The default is unencrypted. Preview the optional encrypted path with:
+
+```sh
+python -m install --device /dev/nvme0n1 --encryption on
+```
+
+After reviewing the plan, the apply command requires the same exact disk path as
+the destructive confirmation:
+
+```sh
+python -m install \
+  --device /dev/nvme0n1 \
+  --apply \
+  --confirm-wipe /dev/nvme0n1
+```
+
+The pipeline prepares and mounts storage, bootstraps official packages, writes
+the target configuration, and then installs Arch Linux CN and finishes Noctalia
+Greeter. It stops on any stage failure and leaves a successfully configured target
+mounted at `/mnt` for inspection. AUR packages remain a separate later stage.
+
 The installer must validate the schema, require a non-empty whole-disk device, show the resolved partition plan, and obtain a final destructive confirmation before writing a partition table.
 
 ## Read-only plan

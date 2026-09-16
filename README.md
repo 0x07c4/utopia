@@ -34,7 +34,9 @@ These are curated target manifests rather than raw `pacman -Qqe` output. The gen
 
 Btrfs is the base storage layout. LUKS disk encryption is an installer option rather than a requirement; selecting it adds the feature manifest and the matching `sd-encrypt` boot configuration.
 
-The non-secret installer input model lives at `install/config.example.toml`. Its target disk is intentionally blank and must be selected explicitly by the future installer UI.
+The non-secret installer input model lives at `install/config.example.toml`. Its target disk is intentionally blank and must be selected explicitly by the installer CLI or a future UI.
+
+The complete staged pipeline can be previewed with `python -m install --device /dev/nvme0n1` and applied only after review with `--apply --confirm-wipe /dev/nvme0n1`. Encryption remains optional; use `--encryption on` consistently for an encrypted target. Detailed stage behavior is documented in [`install/README.md`](install/README.md).
 
 ### Arch Linux CN and Noctalia Greeter stage
 
