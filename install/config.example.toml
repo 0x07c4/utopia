@@ -1,0 +1,60 @@
+schema_version = 1
+
+[system]
+hostname = "arch-laptop"
+timezone = "Asia/Shanghai"
+locale = "en_US.UTF-8"
+extra_locales = ["zh_CN.UTF-8"]
+keymap = "us"
+
+[user]
+name = "chikee"
+shell = "/bin/zsh"
+
+[storage]
+# Required. The installer must refuse to continue while this is empty.
+device = ""
+wipe = true
+filesystem = "btrfs"
+esp_size_mib = 2048
+swap = "none"
+encryption = false
+luks_mapper_name = "cryptroot"
+
+[storage.btrfs]
+label = "arch"
+mount_options = ["noatime", "compress=zstd:3", "ssd", "space_cache=v2"]
+subvolumes = [
+  { name = "@", mountpoint = "/" },
+  { name = "@home", mountpoint = "/home" },
+  { name = "@log", mountpoint = "/var/log" },
+  { name = "@pkg", mountpoint = "/var/cache/pacman/pkg" },
+]
+
+[boot]
+loader = "limine"
+kernel = "linux"
+fallback_initramfs = false
+mkinitcpio_hooks = [
+  "base",
+  "systemd",
+  "autodetect",
+  "microcode",
+  "modconf",
+  "kms",
+  "keyboard",
+  "sd-vconsole",
+  "block",
+  "filesystems",
+  "fsck",
+]
+encryption_hook = "sd-encrypt"
+
+[packages]
+manifests = [
+  "packages/arch.txt",
+  "packages/hardware-intel-laptop.txt",
+  "packages/archlinuxcn.txt",
+  "packages/aur.txt",
+]
+encrypted_install_manifest = "packages/features/disk-encryption.txt"

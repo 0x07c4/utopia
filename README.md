@@ -34,6 +34,8 @@ These are curated target manifests rather than raw `pacman -Qqe` output. The gen
 
 Btrfs is the base storage layout. LUKS disk encryption is an installer option rather than a requirement; selecting it adds the feature manifest and the matching `sd-encrypt` boot configuration.
 
+The non-secret installer input model lives at `install/config.example.toml`. Its target disk is intentionally blank and must be selected explicitly by the future installer UI.
+
 ## Deliberately excluded
 
 Runtime state, caches, credentials, generated launchers, emulator data, wallpaper binaries, and Noctalia's GUI state are not versioned. Noctalia's declarative files live under `.config/noctalia/`; runtime overrides remain in `~/.local/state/noctalia/`.
