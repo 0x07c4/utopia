@@ -36,6 +36,32 @@ Btrfs is the base storage layout. LUKS disk encryption is an installer option ra
 
 The non-secret installer input model lives at `install/config.example.toml`. Its target disk is intentionally blank and must be selected explicitly by the future installer UI.
 
+### Arch Linux CN and Noctalia Greeter stage
+
+After the official package bootstrap and target configuration stages, preview the
+Arch Linux CN transaction against the mounted target:
+
+```sh
+python -m install.archlinuxcn --target-root /mnt
+```
+
+Apply the reviewed plan as root from the Arch installation environment:
+
+```sh
+python -m install.archlinuxcn --target-root /mnt --apply
+```
+
+For an encrypted target, add `--encryption on` to both commands. The selection
+must match the storage layout already mounted at `/mnt`.
+
+This stage adds a managed `[archlinuxcn]` repository block without overriding
+pacman's signature policy. It bootstraps `archlinuxcn-keyring`, verifies package
+origins, performs a full system upgrade with the remaining repository packages,
+runs Noctalia Greeter's upstream setup explicitly as the configured greeter user,
+and enables greetd only after its PAM integration, executables, configuration, and
+state-directory ownership pass validation. AUR packages remain a separate later
+stage.
+
 ## Deliberately excluded
 
 Runtime state, caches, credentials, generated launchers, emulator data, wallpaper binaries, and Noctalia's GUI state are not versioned. Noctalia's declarative files live under `.config/noctalia/`; runtime overrides remain in `~/.local/state/noctalia/`.
