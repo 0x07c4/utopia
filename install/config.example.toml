@@ -10,6 +10,20 @@ keymap = "us"
 [user]
 name = "chikee"
 shell = "/bin/zsh"
+groups = ["wheel"]
+
+[services]
+enable = [
+  "NetworkManager.service",
+  "bluetooth.service",
+  "greetd.service",
+]
+
+[greetd]
+vt = 1
+command = "/usr/bin/noctalia-greeter-session"
+user = "greeter"
+setup_command = "/usr/share/noctalia-greeter/setup_greeter_system.sh"
 
 [storage]
 # Required. The installer must refuse to continue while this is empty.

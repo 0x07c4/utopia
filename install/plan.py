@@ -23,6 +23,10 @@ HOSTNAME_PATTERN = re.compile(
     r"^(?=.{1,253}$)[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?$"
 )
 MAPPER_PATTERN = re.compile(r"^[A-Za-z0-9._+-]+$")
+GROUP_PATTERN = re.compile(r"^[a-z_][a-z0-9_-]{0,31}$")
+SYSTEMD_UNIT_PATTERN = re.compile(
+    r"^[A-Za-z0-9:_.@-]+\.(?:service|socket|timer|path|target)$"
+)
 
 
 class PlanError(ValueError):
@@ -88,6 +92,32 @@ def validate_config(config: dict[str, Any], *, allow_empty_device: bool = False)
     shell = require_string(user, "shell", "user")
     if not shell.startswith("/"):
         raise PlanError("user.shell must be an absolute path")
+    groups = require_string_list(user, "groups", "user")
+    if len(groups) != len(set(groups)):
+        raise PlanError("user.groups contains duplicates")
+    if not all(GROUP_PATTERN.fullmatch(group) for group in groups):
+        raise PlanError("user.groups contains an unsupported Linux group name")
+
+    services = require_table(config, "services")
+    enabled_units = require_string_list(services, "enable", "services")
+    if len(enabled_units) != len(set(enabled_units)):
+        raise PlanError("services.enable contains duplicates")
+    if not all(SYSTEMD_UNIT_PATTERN.fullmatch(unit) for unit in enabled_units):
+        raise PlanError("services.enable contains an invalid systemd unit name")
+
+    greetd = require_table(config, "greetd")
+    vt = greetd.get("vt")
+    if type(vt) is not int or not 1 <= vt <= 63:
+        raise PlanError("greetd.vt must be an integer between 1 and 63")
+    greetd_command = require_string(greetd, "command", "greetd")
+    if not greetd_command.startswith("/") or "\n" in greetd_command:
+        raise PlanError("greetd.command must start with an absolute executable path")
+    greetd_user = require_string(greetd, "user", "greetd")
+    if not USERNAME_PATTERN.fullmatch(greetd_user):
+        raise PlanError("greetd.user is not a supported Linux username")
+    greetd_setup = require_string(greetd, "setup_command", "greetd")
+    if not greetd_setup.startswith("/") or "\n" in greetd_setup:
+        raise PlanError("greetd.setup_command must be an absolute executable path")
 
     storage = require_table(config, "storage")
     device = storage.get("device")
@@ -328,6 +358,8 @@ def build_plan(
 
     system = require_table(resolved, "system")
     user = require_table(resolved, "user")
+    services = require_table(resolved, "services")
+    greetd = require_table(resolved, "greetd")
     btrfs = require_table(storage, "btrfs")
     return {
         "read_only": True,
@@ -339,6 +371,14 @@ def build_plan(
             "keymap": system["keymap"],
             "user": user["name"],
             "shell": user["shell"],
+            "groups": user["groups"],
+        },
+        "services": {"enable": services["enable"]},
+        "greetd": {
+            "vt": greetd["vt"],
+            "command": greetd["command"],
+            "user": greetd["user"],
+            "setup_command": greetd["setup_command"],
         },
         "storage": {
             "device": device_info,
@@ -383,13 +423,18 @@ def format_plan(plan: dict[str, Any]) -> str:
     device = storage["device"]
     boot = plan["boot"]
     packages = plan["packages"]
+    services = plan["services"]
+    greetd = plan["greetd"]
     encryption = "enabled (LUKS2)" if storage["encryption"] else "disabled"
     model = f" — {device['model']}" if device["model"] else ""
     lines = [
         "UTOPIA INSTALL PLAN — READ ONLY",
         "",
         f"System: {system['hostname']} / {system['timezone']} / {system['locale']}",
-        f"User: {system['user']} ({system['shell']})",
+        f"User: {system['user']} ({system['shell']}; groups: {','.join(system['groups'])})",
+        f"Login: greetd on VT {greetd['vt']} -> {greetd['command']}",
+        f"Greeter setup: {greetd['setup_command']}",
+        f"Enable services: {', '.join(services['enable'])}",
         f"Target disk: {device['path']} ({human_size(device['size_bytes'])}){model}",
         "Disk action: wipe the complete target disk",
         f"Partition 1: {storage['esp_size_mib']} MiB FAT32 EFI system partition at /boot",

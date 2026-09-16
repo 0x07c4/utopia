@@ -1,3 +1,4 @@
+import copy
 from pathlib import Path
 import unittest
 
@@ -36,6 +37,47 @@ class InstallPlanTest(unittest.TestCase):
             "packages/features/disk-encryption.txt",
             [item["path"] for item in result["packages"]["manifests"]],
         )
+
+    def test_plan_captures_current_identity_and_login_services(self) -> None:
+        result = plan.build_plan(
+            self.config,
+            plan.REPO_ROOT,
+            device_override="/dev/example-disk",
+            probe_device=False,
+        )
+
+        self.assertEqual(result["system"]["groups"], ["wheel"])
+        self.assertEqual(
+            result["services"]["enable"],
+            ["NetworkManager.service", "bluetooth.service", "greetd.service"],
+        )
+        self.assertEqual(
+            result["greetd"]["command"], "/usr/bin/noctalia-greeter-session"
+        )
+        self.assertEqual(result["greetd"]["user"], "greeter")
+        self.assertEqual(
+            result["greetd"]["setup_command"],
+            "/usr/share/noctalia-greeter/setup_greeter_system.sh",
+        )
+
+    def test_rejects_unsafe_identity_and_service_values(self) -> None:
+        cases = (
+            ("user", "groups", ["wheel", "bad group"], "user.groups"),
+            (
+                "services",
+                "enable",
+                ["NetworkManager.service", "not/a/unit"],
+                "services.enable",
+            ),
+            ("greetd", "command", "noctalia-greeter-session", "greetd.command"),
+            ("greetd", "setup_command", "setup-greeter", "greetd.setup_command"),
+        )
+        for section, key, value, message in cases:
+            with self.subTest(section=section, key=key):
+                invalid = copy.deepcopy(self.config)
+                invalid[section][key] = value
+                with self.assertRaisesRegex(plan.PlanError, message):
+                    plan.validate_config(invalid, allow_empty_device=True)
 
     def test_encrypted_plan_inserts_only_sd_encrypt(self) -> None:
         result = plan.build_plan(

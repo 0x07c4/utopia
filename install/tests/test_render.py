@@ -50,13 +50,39 @@ class RenderTest(unittest.TestCase):
         self.assertEqual(fstab.count(f"UUID={render.PLACEHOLDER_ROOT_UUID}"), 4)
         self.assertIn(f"UUID={render.PLACEHOLDER_ESP_UUID}\t/boot\tvfat", fstab)
 
+    def test_identity_and_noctalia_greeter_files_are_staged(self) -> None:
+        artifacts, metadata = self.build(encrypted=False)
+
+        self.assertEqual(artifacts["etc/hostname"], "arch-laptop\n")
+        self.assertEqual(artifacts["etc/locale.conf"], "LANG=en_US.UTF-8\n")
+        self.assertEqual(
+            artifacts["etc/locale.gen"],
+            "en_US.UTF-8 UTF-8\nzh_CN.UTF-8 UTF-8\n",
+        )
+        self.assertEqual(artifacts["etc/vconsole.conf"], "KEYMAP=us\n")
+        self.assertIn(
+            'command = "/usr/bin/noctalia-greeter-session"',
+            artifacts["etc/greetd/config.toml"],
+        )
+        self.assertEqual(
+            metadata["symlinks"]["etc/localtime"],
+            "/usr/share/zoneinfo/Asia/Shanghai",
+        )
+
     def test_render_is_atomic_and_refuses_existing_destination(self) -> None:
-        artifacts, _ = self.build(encrypted=False)
+        artifacts, metadata = self.build(encrypted=False)
         with tempfile.TemporaryDirectory() as temporary:
             destination = Path(temporary) / "root"
-            files = render.write_artifacts(destination, artifacts)
-            self.assertEqual(len(files), 4)
+            files = render.write_artifacts(
+                destination, artifacts, metadata["symlinks"]
+            )
+            self.assertEqual(len(files), 10)
             self.assertTrue((destination / "boot/limine.conf").is_file())
+            self.assertTrue((destination / "etc/localtime").is_symlink())
+            self.assertEqual(
+                (destination / "etc/localtime").readlink(),
+                Path("/usr/share/zoneinfo/Asia/Shanghai"),
+            )
             with self.assertRaisesRegex(render.RenderError, "already exists"):
                 render.write_artifacts(destination, artifacts)
 
