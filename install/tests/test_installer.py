@@ -37,6 +37,36 @@ class InstallerTest(unittest.TestCase):
         self.assertTrue(result["archlinuxcn"]["encryption"])
         self.assertIn("LUKS2", installer.format_install_plan(result, dry_run=True))
         self.assertIn("AUR packages are deferred", installer.format_install_plan(result, dry_run=True))
+        self.assertIsNone(result["aur"])
+
+    def test_pipeline_can_include_audited_aur_stage(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            with mock.patch(
+                "install.installer.aur.build_aur_plan",
+                return_value={
+                    "target_root": "/tmp/target",
+                    "encryption": False,
+                    "manifests": [],
+                    "packages": ["google-chrome"],
+                    "user": "chikee",
+                    "skip_review": False,
+                    "command": ("arch-chroot",),
+                },
+            ) as build_aur:
+                with mock.patch("install.plan.probe_whole_disk", return_value=self.device):
+                    result = installer.build_install_plan(
+                        self.config,
+                        target_root=Path(temporary),
+                        device_override=self.device["path"],
+                        encryption_override=False,
+                        with_aur=True,
+                    )
+
+        build_aur.assert_called_once()
+        self.assertIsNotNone(result["aur"])
+        formatted = installer.format_install_plan(result, dry_run=True)
+        self.assertIn("UTOPIA AUR STAGE", formatted)
+        self.assertNotIn("AUR packages are deferred", formatted)
 
     def test_pipeline_requires_an_explicit_device_for_example_profile(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -51,6 +81,12 @@ class InstallerTest(unittest.TestCase):
     def test_apply_runs_stages_in_reviewed_order(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             result = self.build(Path(temporary))
+            result["aur"] = {
+                "target_root": str(temporary),
+                "encryption": False,
+                "packages": ["google-chrome"],
+                "user": "chikee",
+            }
             events: list[str] = []
             identifiers = {
                 "root_uuid": "00000000-0000-4000-8000-000000000001",
@@ -108,6 +144,14 @@ class InstallerTest(unittest.TestCase):
                     "install.installer.archlinuxcn.execute_archlinuxcn",
                     side_effect=lambda _: events.append("archlinuxcn"),
                 ),
+                mock.patch(
+                    "install.installer.aur.preflight_apply",
+                    side_effect=lambda *args, **kwargs: events.append("aur-preflight"),
+                ),
+                mock.patch(
+                    "install.installer.aur.execute_aur",
+                    side_effect=lambda _: events.append("aur"),
+                ),
             ):
                 installer.execute_install(result, confirmation="/dev/vda")
 
@@ -124,6 +168,8 @@ class InstallerTest(unittest.TestCase):
                 "configure",
                 "archlinuxcn-preflight",
                 "archlinuxcn",
+                "aur-preflight",
+                "aur",
             ],
         )
 

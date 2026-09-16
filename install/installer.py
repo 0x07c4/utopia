@@ -9,7 +9,7 @@ from pathlib import Path
 import sys
 from typing import Any
 
-from install import archlinuxcn, bootstrap, configure, plan, storage
+from install import archlinuxcn, aur, bootstrap, configure, plan, storage
 
 
 class InstallerError(RuntimeError):
@@ -32,6 +32,8 @@ def build_install_plan(
     target_root: Path,
     device_override: str | None,
     encryption_override: bool | None,
+    with_aur: bool = False,
+    skip_aur_review: bool = False,
 ) -> dict[str, Any]:
     storage_plan = plan.build_plan(
         config,
@@ -59,6 +61,14 @@ def build_install_plan(
         target_root=target,
         encryption_override=None,
     )
+    aur_plan = None
+    if with_aur:
+        aur_plan = aur.build_aur_plan(
+            resolved,
+            target_root=target,
+            encryption_override=None,
+            skip_review=skip_aur_review,
+        )
     return {
         "config": resolved,
         "target_root": target,
@@ -67,6 +77,7 @@ def build_install_plan(
         "bootstrap": bootstrap_plan,
         "configuration_preview": configuration_preview,
         "archlinuxcn": archlinuxcn_plan,
+        "aur": aur_plan,
     }
 
 
@@ -83,9 +94,11 @@ def format_install_plan(install_plan: dict[str, Any], *, dry_run: bool) -> str:
     sections.append(
         archlinuxcn.format_archlinuxcn_plan(install_plan["archlinuxcn"], dry_run=dry_run)
     )
-    sections.append(
-        "AUR packages are deferred. The target remains mounted after a successful run for review."
-    )
+    if install_plan["aur"] is None:
+        sections.append("AUR packages are deferred; add --with-aur to include them.")
+    else:
+        sections.append(aur.format_aur_plan(install_plan["aur"], dry_run=dry_run))
+    sections.append("The target remains mounted after a successful run for review.")
     return "\n\n".join(sections)
 
 
@@ -152,6 +165,11 @@ def execute_install(install_plan: dict[str, Any], *, confirmation: str | None) -
     archlinuxcn.preflight_apply(install_plan["config"], archlinuxcn_plan)
     archlinuxcn.execute_archlinuxcn(archlinuxcn_plan)
 
+    aur_plan = install_plan["aur"]
+    if aur_plan is not None:
+        aur.preflight_apply(install_plan["config"], aur_plan)
+        aur.execute_aur(aur_plan)
+
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
@@ -172,6 +190,16 @@ def main(argv: list[str] | None = None) -> int:
         help="override storage.encryption for every stage",
     )
     parser.add_argument(
+        "--with-aur",
+        action="store_true",
+        help="include the reviewed AUR stage after Arch Linux CN",
+    )
+    parser.add_argument(
+        "--skip-aur-review",
+        action="store_true",
+        help="skip paru PKGBUILD review (requires --with-aur)",
+    )
+    parser.add_argument(
         "--confirm-wipe",
         metavar="DEVICE",
         help="with --apply, must exactly match the reviewed target disk",
@@ -182,12 +210,16 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.confirm_wipe and not args.apply:
             raise InstallerError("--confirm-wipe is only valid together with --apply")
+        if args.skip_aur_review and not args.with_aur:
+            raise InstallerError("--skip-aur-review requires --with-aur")
         config = plan.load_config(args.config)
         install_plan = build_install_plan(
             config,
             target_root=args.target_root,
             device_override=args.device,
             encryption_override=plan.parse_encryption_override(args.encryption),
+            with_aur=args.with_aur,
+            skip_aur_review=args.skip_aur_review,
         )
         print(format_install_plan(install_plan, dry_run=not args.apply))
         if not args.apply:
@@ -198,6 +230,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     except (
         archlinuxcn.ArchLinuxCNError,
+        aur.AURError,
         bootstrap.BootstrapError,
         configure.ConfigureError,
         InstallerError,

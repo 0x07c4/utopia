@@ -36,15 +36,22 @@ python -m install \
   --confirm-wipe /dev/nvme0n1
 ```
 
+To include the curated AUR packages in that same reviewed run, add
+`--with-aur`. The AUR stage remains opt-in because it executes third-party
+PKGBUILDs; paru keeps PKGBUILD review enabled unless `--skip-aur-review` is
+also supplied explicitly.
+
 The pipeline prepares and mounts storage, bootstraps official packages, writes
 the target configuration, and then installs Arch Linux CN and finishes Noctalia
 Greeter. It stops on any stage failure and leaves a successfully configured target
-mounted at `/mnt` for inspection. AUR packages remain a separate later stage.
+mounted at `/mnt` for inspection. With `--with-aur`, it then builds and verifies
+the packages in `packages/aur.txt` as the configured non-root user.
 
-## AUR stage
+## Separate AUR stage
 
-Build the explicitly listed AUR packages after the complete pipeline has created
-the normal user and installed `paru`:
+The complete pipeline can include this stage with `--with-aur`. If it was
+deliberately deferred, build the explicitly listed packages after the pipeline
+has created the normal user and installed `paru`:
 
 ```sh
 python -m install.aur --target-root /mnt
