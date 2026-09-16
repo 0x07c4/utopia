@@ -126,6 +126,32 @@ class InstallPlanTest(unittest.TestCase):
             "packages/features/disk-encryption.txt",
             [item["path"] for item in result["packages"]["manifests"]],
         )
+        encryption_manifest = next(
+            item
+            for item in result["packages"]["manifests"]
+            if item["path"] == "packages/features/disk-encryption.txt"
+        )
+        self.assertEqual(encryption_manifest["source"], "official")
+
+    def test_package_sources_are_kept_separate(self) -> None:
+        official_manifests, official = plan.resolve_package_source(
+            self.config, plan.REPO_ROOT, source="official", encrypted=False
+        )
+        _, archlinuxcn = plan.resolve_package_source(
+            self.config, plan.REPO_ROOT, source="archlinuxcn", encrypted=False
+        )
+        _, aur = plan.resolve_package_source(
+            self.config, plan.REPO_ROOT, source="aur", encrypted=False
+        )
+
+        self.assertEqual(
+            [item["path"] for item in official_manifests],
+            ["packages/arch.txt", "packages/hardware-intel-laptop.txt"],
+        )
+        self.assertIn("noctalia", official)
+        self.assertNotIn("noctalia-greeter-git", official)
+        self.assertIn("noctalia-greeter-git", archlinuxcn)
+        self.assertEqual(aur, ["clash-verge-rev-bin", "google-chrome", "qqmusic-bin"])
 
     def test_manifest_paths_cannot_escape_repository(self) -> None:
         with self.assertRaisesRegex(plan.PlanError, "escapes the repository"):

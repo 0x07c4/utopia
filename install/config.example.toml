@@ -65,10 +65,14 @@ mkinitcpio_hooks = [
 encryption_hook = "sd-encrypt"
 
 [packages]
-manifests = [
+official_manifests = [
   "packages/arch.txt",
   "packages/hardware-intel-laptop.txt",
+]
+archlinuxcn_manifests = [
   "packages/archlinuxcn.txt",
+]
+aur_manifests = [
   "packages/aur.txt",
 ]
 encrypted_install_manifest = "packages/features/disk-encryption.txt"

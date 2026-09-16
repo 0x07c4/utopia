@@ -69,3 +69,22 @@ python -m install.storage \
 ```
 
 The default remains unencrypted. Add `--encryption on` to both preview and apply commands when LUKS2 is wanted. After a successful run, the new target remains mounted for the package installation phase. If an operation fails, mounts created by this phase are removed and a mapper opened by this phase is closed.
+
+## Official package bootstrap
+
+Preview the official repository package transaction:
+
+```sh
+python -m install.bootstrap --target-root /mnt
+python -m install.bootstrap --target-root /mnt --encryption on
+```
+
+This stage passes only `packages/arch.txt`, `packages/hardware-intel-laptop.txt`, and the conditional encryption manifest to `pacstrap -K`. It uses `install/pacman.official.conf`, which exposes only Arch's `core` and `extra` repositories, and preflights pacman's machine-readable resolution before writing the target. Arch Linux CN and AUR targets are displayed as deferred work and cannot enter this transaction.
+
+After the storage stage has mounted every configured Btrfs subvolume and the ESP, run:
+
+```sh
+python -m install.bootstrap --target-root /mnt --apply
+```
+
+The apply preflight requires root, `pacstrap`, writable Btrfs mounts with the expected subvolume names and options, and a writable vfat ESP at `/mnt/boot`. The `--encryption` choice must match whether `/mnt` comes from `/dev/mapper/cryptroot`. A failed `pacstrap` leaves the mounted target available for inspection and a safe retry.

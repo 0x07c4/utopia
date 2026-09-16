@@ -27,6 +27,11 @@ GROUP_PATTERN = re.compile(r"^[a-z_][a-z0-9_-]{0,31}$")
 SYSTEMD_UNIT_PATTERN = re.compile(
     r"^[A-Za-z0-9:_.@-]+\.(?:service|socket|timer|path|target)$"
 )
+PACKAGE_SOURCE_KEYS = {
+    "official": "official_manifests",
+    "archlinuxcn": "archlinuxcn_manifests",
+    "aur": "aur_manifests",
+}
 SUBVOLUME_PATTERN = re.compile(r"^@[A-Za-z0-9._+-]*$")
 MOUNT_OPTION_PATTERN = re.compile(r"^[A-Za-z0-9._=:+-]+$")
 RESERVED_SUBVOLUME_MOUNTPOINTS = tuple(
@@ -212,7 +217,8 @@ def validate_config(config: dict[str, Any], *, allow_empty_device: bool = False)
         raise PlanError("boot.encryption_hook must be sd-encrypt")
 
     packages = require_table(config, "packages")
-    require_string_list(packages, "manifests", "packages")
+    for key in PACKAGE_SOURCE_KEYS.values():
+        require_string_list(packages, key, "packages")
     require_string(packages, "encrypted_install_manifest", "packages")
 
 
@@ -241,20 +247,37 @@ def read_manifest(path: Path) -> list[str]:
     return packages
 
 
+def active_manifest_specs(
+    config: dict[str, Any], *, encrypted: bool
+) -> list[tuple[str, str]]:
+    package_config = require_table(config, "packages")
+    specs = [
+        (source, relative_path)
+        for source, key in PACKAGE_SOURCE_KEYS.items()
+        for relative_path in package_config[key]
+    ]
+    if encrypted:
+        specs.append(("official", package_config["encrypted_install_manifest"]))
+    return specs
+
+
 def resolve_manifests(
     config: dict[str, Any], repo_root: Path, *, encrypted: bool
 ) -> tuple[list[dict[str, Any]], list[str]]:
-    package_config = require_table(config, "packages")
-    relative_paths = list(package_config["manifests"])
-    if encrypted:
-        relative_paths.append(package_config["encrypted_install_manifest"])
+    specs = active_manifest_specs(config, encrypted=encrypted)
 
     manifests: list[dict[str, Any]] = []
     all_packages: list[str] = []
-    for relative_path in relative_paths:
+    for source, relative_path in specs:
         path = manifest_path(repo_root, relative_path)
         manifest_packages = read_manifest(path)
-        manifests.append({"path": relative_path, "count": len(manifest_packages)})
+        manifests.append(
+            {
+                "source": source,
+                "path": relative_path,
+                "count": len(manifest_packages),
+            }
+        )
         all_packages.extend(manifest_packages)
 
     duplicates = sorted(
@@ -263,6 +286,30 @@ def resolve_manifests(
     if duplicates:
         raise PlanError("packages occur in multiple active manifests: " + ", ".join(duplicates))
     return manifests, all_packages
+
+
+def resolve_package_source(
+    config: dict[str, Any], repo_root: Path, *, source: str, encrypted: bool
+) -> tuple[list[dict[str, Any]], list[str]]:
+    if source not in PACKAGE_SOURCE_KEYS:
+        raise PlanError(f"unknown package source: {source}")
+    manifests: list[dict[str, Any]] = []
+    packages: list[str] = []
+    for manifest_source, relative_path in active_manifest_specs(
+        config, encrypted=encrypted
+    ):
+        if manifest_source != source:
+            continue
+        manifest_packages = read_manifest(manifest_path(repo_root, relative_path))
+        manifests.append(
+            {
+                "source": source,
+                "path": relative_path,
+                "count": len(manifest_packages),
+            }
+        )
+        packages.extend(manifest_packages)
+    return manifests, packages
 
 
 def validate_all_manifests(config: dict[str, Any], repo_root: Path) -> None:
@@ -475,7 +522,9 @@ def format_plan(plan: dict[str, Any]) -> str:
         ]
     )
     for manifest in packages["manifests"]:
-        lines.append(f"  {manifest['path']} ({manifest['count']})")
+        lines.append(
+            f"  [{manifest['source']}] {manifest['path']} ({manifest['count']})"
+        )
     if device["active_mounts"]:
         lines.append("WARNING: the selected disk currently has mounted filesystems:")
         for mount in device["active_mounts"]:
