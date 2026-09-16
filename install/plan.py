@@ -27,6 +27,11 @@ GROUP_PATTERN = re.compile(r"^[a-z_][a-z0-9_-]{0,31}$")
 SYSTEMD_UNIT_PATTERN = re.compile(
     r"^[A-Za-z0-9:_.@-]+\.(?:service|socket|timer|path|target)$"
 )
+SUBVOLUME_PATTERN = re.compile(r"^@[A-Za-z0-9._+-]*$")
+MOUNT_OPTION_PATTERN = re.compile(r"^[A-Za-z0-9._=:+-]+$")
+RESERVED_SUBVOLUME_MOUNTPOINTS = tuple(
+    Path(path) for path in ("/boot", "/dev", "/proc", "/run", "/sys")
+)
 
 
 class PlanError(ValueError):
@@ -144,7 +149,11 @@ def validate_config(config: dict[str, Any], *, allow_empty_device: bool = False)
 
     btrfs = require_table(storage, "btrfs")
     require_string(btrfs, "label", "storage.btrfs")
-    require_string_list(btrfs, "mount_options", "storage.btrfs")
+    mount_options = require_string_list(btrfs, "mount_options", "storage.btrfs")
+    if len(mount_options) != len(set(mount_options)):
+        raise PlanError("storage.btrfs.mount_options contains duplicates")
+    if not all(MOUNT_OPTION_PATTERN.fullmatch(option) for option in mount_options):
+        raise PlanError("storage.btrfs.mount_options contains an invalid option")
     subvolumes = btrfs.get("subvolumes")
     if not isinstance(subvolumes, list) or not subvolumes:
         raise PlanError("storage.btrfs.subvolumes must be a non-empty list")
@@ -157,15 +166,27 @@ def validate_config(config: dict[str, Any], *, allow_empty_device: bool = False)
         mountpoint = require_string(
             subvolume, "mountpoint", f"storage.btrfs.subvolumes[{index}]"
         )
-        if not name.startswith("@"):
-            raise PlanError(f"Btrfs subvolume {name!r} must start with @")
+        if not SUBVOLUME_PATTERN.fullmatch(name):
+            raise PlanError(f"Btrfs subvolume {name!r} is not a safe single path component")
         if not mountpoint.startswith("/"):
             raise PlanError(f"mountpoint {mountpoint!r} must be absolute")
+        normalized_mountpoint = Path(mountpoint)
+        if os.path.normpath(mountpoint) != mountpoint:
+            raise PlanError(f"mountpoint {mountpoint!r} must be normalized")
+        if any(
+            normalized_mountpoint == reserved
+            or reserved in normalized_mountpoint.parents
+            for reserved in RESERVED_SUBVOLUME_MOUNTPOINTS
+        ):
+            raise PlanError(f"mountpoint {mountpoint!r} conflicts with system mounts")
         if name in names or mountpoint in mountpoints:
             raise PlanError("Btrfs subvolume names and mountpoints must be unique")
         names.add(name)
         mountpoints.add(mountpoint)
-    if "@" not in names or "/" not in mountpoints:
+    if not any(
+        subvolume["name"] == "@" and subvolume["mountpoint"] == "/"
+        for subvolume in subvolumes
+    ):
         raise PlanError("the Btrfs layout must define @ mounted at /")
 
     boot = require_table(config, "boot")

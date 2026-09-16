@@ -79,6 +79,32 @@ class InstallPlanTest(unittest.TestCase):
                 with self.assertRaisesRegex(plan.PlanError, message):
                     plan.validate_config(invalid, allow_empty_device=True)
 
+    def test_rejects_unsafe_btrfs_paths_and_options(self) -> None:
+        cases = (
+            ("name", "@home/../../escape", "safe single path component"),
+            ("mountpoint", "/boot", "conflicts with system mounts"),
+            ("mountpoint", "/home/../escape", "normalized"),
+        )
+        for key, value, message in cases:
+            with self.subTest(key=key, value=value):
+                invalid = copy.deepcopy(self.config)
+                invalid["storage"]["btrfs"]["subvolumes"][1][key] = value
+                with self.assertRaisesRegex(plan.PlanError, message):
+                    plan.validate_config(invalid, allow_empty_device=True)
+
+        invalid_options = copy.deepcopy(self.config)
+        invalid_options["storage"]["btrfs"]["mount_options"] = ["noatime,ro"]
+        with self.assertRaisesRegex(plan.PlanError, "invalid option"):
+            plan.validate_config(invalid_options, allow_empty_device=True)
+
+        mismatched_root = copy.deepcopy(self.config)
+        mismatched_root["storage"]["btrfs"]["subvolumes"][0] = {
+            "name": "@root",
+            "mountpoint": "/",
+        }
+        with self.assertRaisesRegex(plan.PlanError, "define @ mounted at /"):
+            plan.validate_config(mismatched_root, allow_empty_device=True)
+
     def test_encrypted_plan_inserts_only_sd_encrypt(self) -> None:
         result = plan.build_plan(
             self.config,

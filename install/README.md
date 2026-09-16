@@ -47,3 +47,25 @@ python -m install.render --output /tmp/utopia-luks --placeholders --encryption o
 The renderer creates `etc/fstab`, an mkinitcpio `HOOKS` drop-in, the selected kernel preset, `boot/limine.conf`, hostname/locale/console files, the timezone symlink, and the greetd configuration that launches Noctalia Greeter. It refuses `/`, live `/etc` and `/boot` paths, as well as an output directory that already exists. Real installs must pass the filesystem UUIDs returned after formatting instead of using `--placeholders`.
 
 The plan also lists the systemd units to enable after packages are installed. The staged renderer deliberately does not create enablement links: the execution phase will call `systemctl --root enable` so systemd applies each package's own `[Install]` rules. It also records Noctalia Greeter's packaged setup command; that upstream script prepares the greeter state directory and PAM session integration after package installation.
+
+## Storage preparation
+
+Preview the exact destructive operations without executing them:
+
+```sh
+python -m install.storage --device /dev/nvme0n1
+python -m install.storage --device /dev/nvme0n1 --encryption on
+```
+
+The storage phase creates a GPT with a 2 GiB ESP and a remaining-space root partition, formats the optional LUKS2 container and Btrfs filesystem, creates the configured subvolumes, and mounts the result below `/mnt`. LUKS passphrases are read directly by `cryptsetup` from the terminal and are never handled by Utopia.
+
+Execution is intentionally awkward to trigger. It must run as root from the Arch installation environment, the disk must have no mounted filesystems, `/mnt` must be empty and unmounted, and the confirmation value must exactly match the canonical disk reported by `lsblk`:
+
+```sh
+python -m install.storage \
+  --device /dev/nvme0n1 \
+  --apply \
+  --confirm-wipe /dev/nvme0n1
+```
+
+The default remains unencrypted. Add `--encryption on` to both preview and apply commands when LUKS2 is wanted. After a successful run, the new target remains mounted for the package installation phase. If an operation fails, mounts created by this phase are removed and a mapper opened by this phase is closed.
