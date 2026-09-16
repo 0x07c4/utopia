@@ -20,6 +20,10 @@
 .debuginfod.sqlite*
 .zcompdump*
 
+# Python installer tooling
+__pycache__/
+*.py[cod]
+
 # Generated npm launcher
 .local/bin/codex
 
