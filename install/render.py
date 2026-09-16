@@ -209,6 +209,7 @@ def build_artifacts(
 
     boot = plan.require_table(config, "boot")
     system = plan.require_table(config, "system")
+    user = plan.require_table(config, "user")
     greetd = plan.require_table(config, "greetd")
     kernel = boot["kernel"]
     hooks = install_plan["boot"]["mkinitcpio_hooks"]
@@ -228,6 +229,9 @@ def build_artifacts(
         "etc/greetd/config.toml": render_greetd(
             greetd["vt"], greetd["command"], greetd["user"]
         ),
+        "etc/sudoers.d/10-utopia-admin": (
+            f"%{user['sudo_group']} ALL=(ALL:ALL) ALL\n"
+        ),
     }
     symlinks = {
         "etc/localtime": f"/usr/share/zoneinfo/{system['timezone']}",
@@ -237,6 +241,7 @@ def build_artifacts(
         "identifiers": identifiers,
         "files": sorted([*artifacts, *symlinks]),
         "symlinks": symlinks,
+        "modes": {"etc/sudoers.d/10-utopia-admin": 0o440},
     }
     return artifacts, metadata
 
@@ -259,6 +264,7 @@ def write_artifacts(
     output: Path,
     artifacts: dict[str, str],
     symlinks: dict[str, str] | None = None,
+    modes: dict[str, int] | None = None,
 ) -> list[Path]:
     destination = validate_output_directory(output)
     staging = Path(
@@ -269,7 +275,7 @@ def write_artifacts(
             target = staging / relative_path
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(content)
-            target.chmod(0o644)
+            target.chmod((modes or {}).get(relative_path, 0o644))
         for relative_path, link_target in (symlinks or {}).items():
             target = staging / relative_path
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -322,7 +328,9 @@ def main(argv: list[str] | None = None) -> int:
             encryption_override=plan.parse_encryption_override(args.encryption),
             placeholders=args.placeholders,
         )
-        files = write_artifacts(args.output, artifacts, metadata["symlinks"])
+        files = write_artifacts(
+            args.output, artifacts, metadata["symlinks"], metadata["modes"]
+        )
         output = args.output.expanduser().resolve()
         if args.json:
             print(

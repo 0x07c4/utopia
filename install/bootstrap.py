@@ -187,26 +187,14 @@ def verify_official_resolution(
         )
 
 
-def preflight_apply(
+def validate_target_mounts(
     config: dict[str, Any],
-    bootstrap_plan: dict[str, Any],
     *,
+    target_root: Path,
+    encrypted: bool,
     mount_probe: MountProbe = probe_mount,
-    repository_check: Callable[[dict[str, Any]], None] = verify_official_resolution,
-) -> None:
-    if os.geteuid() != 0:
-        raise BootstrapError("--apply must run as root from the Arch installation environment")
-    missing_programs = [
-        program for program in ("pacman", "pacstrap") if shutil.which(program) is None
-    ]
-    if missing_programs:
-        raise BootstrapError(
-            "required bootstrap programs are missing: " + ", ".join(missing_programs)
-        )
-    if not OFFICIAL_PACMAN_CONFIG.is_file():
-        raise BootstrapError(f"official pacman configuration is missing: {OFFICIAL_PACMAN_CONFIG}")
-
-    target = storage.canonical_target_root(Path(bootstrap_plan["target_root"]))
+) -> dict[str, str]:
+    target = storage.canonical_target_root(target_root)
     if not target.is_dir():
         raise BootstrapError(f"target root does not exist: {target}")
 
@@ -240,7 +228,6 @@ def preflight_apply(
     if len(btrfs_sources) != 1:
         raise BootstrapError("Btrfs target subvolumes do not share one filesystem")
 
-    encrypted = bootstrap_plan["encryption"]
     mapper = storage_config["luks_mapper_name"]
     mapper_path = f"/dev/mapper/{mapper}"
     mounted_mapper = os.path.realpath(root_source) == os.path.realpath(mapper_path)
@@ -256,6 +243,37 @@ def preflight_apply(
         raise BootstrapError(f"EFI system partition is not mounted as vfat at {boot}")
     if "rw" not in boot_options:
         raise BootstrapError(f"EFI system partition is not writable: {boot}")
+    return {
+        "root_source": root_source,
+        "esp_source": base_mount_source(boot_mount["source"]),
+    }
+
+
+def preflight_apply(
+    config: dict[str, Any],
+    bootstrap_plan: dict[str, Any],
+    *,
+    mount_probe: MountProbe = probe_mount,
+    repository_check: Callable[[dict[str, Any]], None] = verify_official_resolution,
+) -> None:
+    if os.geteuid() != 0:
+        raise BootstrapError("--apply must run as root from the Arch installation environment")
+    missing_programs = [
+        program for program in ("pacman", "pacstrap") if shutil.which(program) is None
+    ]
+    if missing_programs:
+        raise BootstrapError(
+            "required bootstrap programs are missing: " + ", ".join(missing_programs)
+        )
+    if not OFFICIAL_PACMAN_CONFIG.is_file():
+        raise BootstrapError(f"official pacman configuration is missing: {OFFICIAL_PACMAN_CONFIG}")
+
+    validate_target_mounts(
+        config,
+        target_root=Path(bootstrap_plan["target_root"]),
+        encrypted=bootstrap_plan["encryption"],
+        mount_probe=mount_probe,
+    )
     repository_check(bootstrap_plan)
 
 

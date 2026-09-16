@@ -11,11 +11,14 @@ keymap = "us"
 name = "chikee"
 shell = "/bin/zsh"
 groups = ["wheel"]
+sudo_group = "wheel"
 
 [services]
-enable = [
+enable_after_official = [
   "NetworkManager.service",
   "bluetooth.service",
+]
+enable_after_archlinuxcn = [
   "greetd.service",
 ]
 

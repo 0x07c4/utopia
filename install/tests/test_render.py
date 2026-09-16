@@ -68,20 +68,33 @@ class RenderTest(unittest.TestCase):
             metadata["symlinks"]["etc/localtime"],
             "/usr/share/zoneinfo/Asia/Shanghai",
         )
+        self.assertEqual(
+            artifacts["etc/sudoers.d/10-utopia-admin"],
+            "%wheel ALL=(ALL:ALL) ALL\n",
+        )
+        self.assertEqual(metadata["modes"]["etc/sudoers.d/10-utopia-admin"], 0o440)
 
     def test_render_is_atomic_and_refuses_existing_destination(self) -> None:
         artifacts, metadata = self.build(encrypted=False)
         with tempfile.TemporaryDirectory() as temporary:
             destination = Path(temporary) / "root"
             files = render.write_artifacts(
-                destination, artifacts, metadata["symlinks"]
+                destination,
+                artifacts,
+                metadata["symlinks"],
+                metadata["modes"],
             )
-            self.assertEqual(len(files), 10)
+            self.assertEqual(len(files), 11)
             self.assertTrue((destination / "boot/limine.conf").is_file())
             self.assertTrue((destination / "etc/localtime").is_symlink())
             self.assertEqual(
                 (destination / "etc/localtime").readlink(),
                 Path("/usr/share/zoneinfo/Asia/Shanghai"),
+            )
+            self.assertEqual(
+                (destination / "etc/sudoers.d/10-utopia-admin").stat().st_mode
+                & 0o777,
+                0o440,
             )
             with self.assertRaisesRegex(render.RenderError, "already exists"):
                 render.write_artifacts(destination, artifacts)

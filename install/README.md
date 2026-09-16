@@ -88,3 +88,21 @@ python -m install.bootstrap --target-root /mnt --apply
 ```
 
 The apply preflight requires root, `pacstrap`, writable Btrfs mounts with the expected subvolume names and options, and a writable vfat ESP at `/mnt/boot`. The `--encryption` choice must match whether `/mnt` comes from `/dev/mapper/cryptroot`. A failed `pacstrap` leaves the mounted target available for inspection and a safe retry.
+
+## Target system configuration
+
+Preview configuration with deterministic identifiers without requiring a mounted target:
+
+```sh
+python -m install.configure --target-root /mnt --placeholders
+python -m install.configure --target-root /mnt --placeholders --encryption on
+```
+
+On a bootstrapped and mounted target, omit `--placeholders` to discover the real Btrfs, ESP, and optional outer LUKS UUIDs. Apply writes the reviewed configuration atomically, installs the package-provided Limine EFI executable at the standard fallback path, generates locale and initramfs data, creates or reconciles the user, checks sudoers, and enables the services whose packages are already present:
+
+```sh
+python -m install.configure --target-root /mnt
+python -m install.configure --target-root /mnt --apply
+```
+
+Use `--encryption on` for both commands when the mounted target uses LUKS2. The user password is requested by `passwd` running inside the target chroot; Utopia does not read, pass, log, or persist it. The root password is locked only after the user password succeeds. `greetd.service` remains disabled until the later Arch Linux CN stage installs and configures Noctalia Greeter.

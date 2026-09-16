@@ -107,9 +107,18 @@ def validate_config(config: dict[str, Any], *, allow_empty_device: bool = False)
         raise PlanError("user.groups contains duplicates")
     if not all(GROUP_PATTERN.fullmatch(group) for group in groups):
         raise PlanError("user.groups contains an unsupported Linux group name")
+    sudo_group = require_string(user, "sudo_group", "user")
+    if not GROUP_PATTERN.fullmatch(sudo_group) or sudo_group not in groups:
+        raise PlanError("user.sudo_group must be one of user.groups")
 
     services = require_table(config, "services")
-    enabled_units = require_string_list(services, "enable", "services")
+    official_units = require_string_list(
+        services, "enable_after_official", "services"
+    )
+    archlinuxcn_units = require_string_list(
+        services, "enable_after_archlinuxcn", "services"
+    )
+    enabled_units = [*official_units, *archlinuxcn_units]
     if len(enabled_units) != len(set(enabled_units)):
         raise PlanError("services.enable contains duplicates")
     if not all(SYSTEMD_UNIT_PATTERN.fullmatch(unit) for unit in enabled_units):
@@ -440,8 +449,12 @@ def build_plan(
             "user": user["name"],
             "shell": user["shell"],
             "groups": user["groups"],
+            "sudo_group": user["sudo_group"],
         },
-        "services": {"enable": services["enable"]},
+        "services": {
+            "enable_after_official": services["enable_after_official"],
+            "enable_after_archlinuxcn": services["enable_after_archlinuxcn"],
+        },
         "greetd": {
             "vt": greetd["vt"],
             "command": greetd["command"],
@@ -502,7 +515,10 @@ def format_plan(plan: dict[str, Any]) -> str:
         f"User: {system['user']} ({system['shell']}; groups: {','.join(system['groups'])})",
         f"Login: greetd on VT {greetd['vt']} -> {greetd['command']}",
         f"Greeter setup: {greetd['setup_command']}",
-        f"Enable services: {', '.join(services['enable'])}",
+        "Enable after official packages: "
+        + ", ".join(services["enable_after_official"]),
+        "Enable after Arch Linux CN packages: "
+        + ", ".join(services["enable_after_archlinuxcn"]),
         f"Target disk: {device['path']} ({human_size(device['size_bytes'])}){model}",
         "Disk action: wipe the complete target disk",
         f"Partition 1: {storage['esp_size_mib']} MiB FAT32 EFI system partition at /boot",

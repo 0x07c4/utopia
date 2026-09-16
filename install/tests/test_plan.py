@@ -47,9 +47,13 @@ class InstallPlanTest(unittest.TestCase):
         )
 
         self.assertEqual(result["system"]["groups"], ["wheel"])
+        self.assertEqual(result["system"]["sudo_group"], "wheel")
         self.assertEqual(
-            result["services"]["enable"],
-            ["NetworkManager.service", "bluetooth.service", "greetd.service"],
+            result["services"]["enable_after_official"],
+            ["NetworkManager.service", "bluetooth.service"],
+        )
+        self.assertEqual(
+            result["services"]["enable_after_archlinuxcn"], ["greetd.service"]
         )
         self.assertEqual(
             result["greetd"]["command"], "/usr/bin/noctalia-greeter-session"
@@ -65,7 +69,7 @@ class InstallPlanTest(unittest.TestCase):
             ("user", "groups", ["wheel", "bad group"], "user.groups"),
             (
                 "services",
-                "enable",
+                "enable_after_official",
                 ["NetworkManager.service", "not/a/unit"],
                 "services.enable",
             ),
@@ -78,6 +82,11 @@ class InstallPlanTest(unittest.TestCase):
                 invalid[section][key] = value
                 with self.assertRaisesRegex(plan.PlanError, message):
                     plan.validate_config(invalid, allow_empty_device=True)
+
+        invalid_sudo_group = copy.deepcopy(self.config)
+        invalid_sudo_group["user"]["sudo_group"] = "admin"
+        with self.assertRaisesRegex(plan.PlanError, "one of user.groups"):
+            plan.validate_config(invalid_sudo_group, allow_empty_device=True)
 
     def test_rejects_unsafe_btrfs_paths_and_options(self) -> None:
         cases = (
