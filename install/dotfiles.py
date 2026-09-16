@@ -173,7 +173,7 @@ def preflight_apply(
         home_stat = home_path.stat()
     except OSError as error:
         raise DotfilesError(f"configured user home is missing: {home}") from error
-    if not home_path.is_dir() or (home_stat.st_uid, home_stat.st_gid) != (uid, gid):
+    if home_path.is_symlink() or not home_path.is_dir() or (home_stat.st_uid, home_stat.st_gid) != (uid, gid):
         raise DotfilesError(f"configured user home is not owned by {user['name']}")
     return uid, gid, home_path
 
@@ -181,6 +181,8 @@ def preflight_apply(
 def _copy_entry(source: Path, destination: Path) -> None:
     if source.is_symlink():
         raise DotfilesError(f"dotfiles source path must not be a symlink: {source}")
+    if destination.is_symlink():
+        raise DotfilesError(f"dotfiles target path must not be a symlink: {destination}")
     if source.is_dir():
         destination.mkdir(parents=True, exist_ok=True)
         for child in source.iterdir():
