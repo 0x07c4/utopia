@@ -153,7 +153,7 @@ def preflight_apply(
             "required dotfiles are missing; initialize the repository submodule and retry: "
             + ", ".join(missing)
         )
-    if not any((source / ".config/nvim").iterdir()):
+    if not _iter_files(source / ".config/nvim"):
         raise DotfilesError(
             "the AstroNvim submodule is empty; run git submodule update --init before applying"
         )
@@ -238,7 +238,7 @@ def audit_deployed(dotfiles_plan: dict[str, Any]) -> list[str]:
     if missing:
         return ["required source configuration is missing: " + ", ".join(missing)]
     nvim = source / ".config/nvim"
-    if not any(nvim.iterdir()):
+    if not _iter_files(nvim):
         return ["AstroNvim submodule is empty in the source repository"]
     user_record = _user_record(target, dotfiles_plan["user"])
     if user_record is None:
