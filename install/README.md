@@ -57,6 +57,24 @@ performed through another controlled process. Add `--encryption on` when the
 mounted target uses LUKS2. The three packages in `packages/aur.txt` are verified
 with a final target-side pacman query after the build.
 
+## Recovery rehearsal
+
+From an Arch ISO, unlock the LUKS mapper when applicable and mount the target's
+Btrfs subvolumes plus the ESP at `/mnt` using the same layout as the profile. Then
+run the read-only recovery audit:
+
+```sh
+python -m install.recovery --target-root /mnt
+python -m install.recovery --target-root /mnt --encryption on
+```
+
+The audit re-discovers the Btrfs, ESP, and optional outer LUKS UUIDs; regenerates
+the expected fstab, mkinitcpio, Limine, locale, identity, sudoers, and greetd
+artifacts; compares their contents, modes, and links; checks the Limine fallback
+EFI copy; and verifies Noctalia Greeter's PAM, executables, and state ownership.
+It makes no target changes. Treat a failed audit as a reason to inspect the
+mounted target before rebooting.
+
 The installer must validate the schema, require a non-empty whole-disk device, show the resolved partition plan, and obtain a final destructive confirmation before writing a partition table.
 
 ## Read-only plan
