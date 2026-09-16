@@ -1,4 +1,5 @@
 .zim/
+.viminfo
 
 # Local UI state
 .config/Thunar/accels.scm
