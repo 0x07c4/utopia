@@ -34,3 +34,14 @@ python -m install.plan --device /dev/nvme0n1 --encryption on
 ```
 
 Add `--json` to either mode for structured output intended for the future installer UI. A normal plan refuses an empty target disk, partitions, and mapped devices; `--schema-only` is the only mode that accepts the intentionally incomplete example.
+
+## Staged boot configuration
+
+Render both boot paths with deterministic placeholder UUIDs into new temporary directories:
+
+```sh
+python -m install.render --output /tmp/utopia-plain --placeholders
+python -m install.render --output /tmp/utopia-luks --placeholders --encryption on
+```
+
+The renderer creates `etc/fstab`, an mkinitcpio `HOOKS` drop-in, the selected kernel preset, and `boot/limine.conf`. It refuses `/`, live `/etc` and `/boot` paths, as well as an output directory that already exists. Real installs must pass the filesystem UUIDs returned after formatting instead of using `--placeholders`.
