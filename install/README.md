@@ -41,6 +41,22 @@ the target configuration, and then installs Arch Linux CN and finishes Noctalia
 Greeter. It stops on any stage failure and leaves a successfully configured target
 mounted at `/mnt` for inspection. AUR packages remain a separate later stage.
 
+## AUR stage
+
+Build the explicitly listed AUR packages after the complete pipeline has created
+the normal user and installed `paru`:
+
+```sh
+python -m install.aur --target-root /mnt
+python -m install.aur --target-root /mnt --apply
+```
+
+The apply stage runs `paru` as `chikee`, never as root, and keeps paru's PKGBUILD
+review enabled by default. Use `--skip-review` only when that review has been
+performed through another controlled process. Add `--encryption on` when the
+mounted target uses LUKS2. The three packages in `packages/aur.txt` are verified
+with a final target-side pacman query after the build.
+
 The installer must validate the schema, require a non-empty whole-disk device, show the resolved partition plan, and obtain a final destructive confirmation before writing a partition table.
 
 ## Read-only plan
