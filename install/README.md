@@ -42,10 +42,23 @@ PKGBUILDs; paru keeps PKGBUILD review enabled unless `--skip-aur-review` is
 also supplied explicitly.
 
 The pipeline prepares and mounts storage, bootstraps official packages, writes
-the target configuration, and then installs Arch Linux CN and finishes Noctalia
-Greeter. It stops on any stage failure and leaves a successfully configured target
-mounted at `/mnt` for inspection. With `--with-aur`, it then builds and verifies
-the packages in `packages/aur.txt` as the configured non-root user.
+the target configuration, installs Arch Linux CN, and finishes Noctalia Greeter.
+It then deploys the reviewed shell, niri, Noctalia, input, terminal, and
+AstroNvim configuration from this repository into the configured user's home.
+With `--with-aur`, it builds and verifies the packages in `packages/aur.txt` as
+the configured non-root user before that final dotfiles deployment. It stops on
+any stage failure and leaves a successfully configured target mounted at `/mnt`
+for inspection.
+
+The complete entry point expects the AstroNvim submodule to be initialized:
+
+```sh
+git submodule update --init --recursive
+```
+
+The dotfiles stage never copies shell history, caches, credentials, Noctalia
+runtime state, generated Codex launchers, or the broken GTK 4 generated CSS.
+It sets the target user's ownership and protects `~/.ssh/config` with mode 600.
 
 ## Separate AUR stage
 

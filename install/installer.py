@@ -9,7 +9,7 @@ from pathlib import Path
 import sys
 from typing import Any
 
-from install import archlinuxcn, aur, bootstrap, configure, plan, storage
+from install import archlinuxcn, aur, bootstrap, configure, dotfiles, plan, storage
 
 
 class InstallerError(RuntimeError):
@@ -69,6 +69,11 @@ def build_install_plan(
             encryption_override=None,
             skip_review=skip_aur_review,
         )
+    dotfiles_plan = dotfiles.build_dotfiles_plan(
+        resolved,
+        target_root=target,
+        source_root=plan.REPO_ROOT,
+    )
     return {
         "config": resolved,
         "target_root": target,
@@ -78,6 +83,7 @@ def build_install_plan(
         "configuration_preview": configuration_preview,
         "archlinuxcn": archlinuxcn_plan,
         "aur": aur_plan,
+        "dotfiles": dotfiles_plan,
     }
 
 
@@ -98,6 +104,7 @@ def format_install_plan(install_plan: dict[str, Any], *, dry_run: bool) -> str:
         sections.append("AUR packages are deferred; add --with-aur to include them.")
     else:
         sections.append(aur.format_aur_plan(install_plan["aur"], dry_run=dry_run))
+    sections.append(dotfiles.format_dotfiles_plan(install_plan["dotfiles"], dry_run=dry_run))
     sections.append("The target remains mounted after a successful run for review.")
     return "\n\n".join(sections)
 
@@ -170,6 +177,10 @@ def execute_install(install_plan: dict[str, Any], *, confirmation: str | None) -
         aur.preflight_apply(install_plan["config"], aur_plan)
         aur.execute_aur(aur_plan)
 
+    dotfiles_plan = install_plan["dotfiles"]
+    uid, gid, home = dotfiles.preflight_apply(install_plan["config"], dotfiles_plan)
+    dotfiles.execute_dotfiles(dotfiles_plan, uid=uid, gid=gid, home=home)
+
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
@@ -233,6 +244,7 @@ def main(argv: list[str] | None = None) -> int:
         aur.AURError,
         bootstrap.BootstrapError,
         configure.ConfigureError,
+        dotfiles.DotfilesError,
         InstallerError,
         plan.PlanError,
         storage.StorageError,

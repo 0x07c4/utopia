@@ -152,6 +152,15 @@ class InstallerTest(unittest.TestCase):
                     "install.installer.aur.execute_aur",
                     side_effect=lambda _: events.append("aur"),
                 ),
+                mock.patch(
+                    "install.installer.dotfiles.preflight_apply",
+                    side_effect=lambda *args, **kwargs: events.append("dotfiles-preflight")
+                    or (1000, 1000, Path(temporary) / "home"),
+                ),
+                mock.patch(
+                    "install.installer.dotfiles.execute_dotfiles",
+                    side_effect=lambda *args, **kwargs: events.append("dotfiles"),
+                ),
             ):
                 installer.execute_install(result, confirmation="/dev/vda")
 
@@ -170,6 +179,8 @@ class InstallerTest(unittest.TestCase):
                 "archlinuxcn",
                 "aur-preflight",
                 "aur",
+                "dotfiles-preflight",
+                "dotfiles",
             ],
         )
 

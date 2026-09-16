@@ -36,7 +36,7 @@ Btrfs is the base storage layout. LUKS disk encryption is an installer option ra
 
 The non-secret installer input model lives at `install/config.example.toml`. Its target disk is intentionally blank and must be selected explicitly by the installer CLI or a future UI.
 
-The complete staged pipeline can be previewed with `python -m install --device /dev/nvme0n1` and applied only after review with `--apply --confirm-wipe /dev/nvme0n1`. Add `--with-aur` to include the curated third-party packages in the same run; encryption remains optional, so use `--encryption on` consistently for an encrypted target. Detailed stage behavior is documented in [`install/README.md`](install/README.md).
+The complete staged pipeline can be previewed with `python -m install --device /dev/nvme0n1` and applied only after review with `--apply --confirm-wipe /dev/nvme0n1`. Add `--with-aur` to include the curated third-party packages in the same run; the pipeline also deploys the reviewed user configuration, including the AstroNvim submodule. Initialize it with `git submodule update --init --recursive` before applying. Encryption remains optional, so use `--encryption on` consistently for an encrypted target. Detailed stage behavior is documented in [`install/README.md`](install/README.md).
 
 ### Arch Linux CN and Noctalia Greeter stage
 
