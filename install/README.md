@@ -92,7 +92,10 @@ The audit re-discovers the Btrfs, ESP, and optional outer LUKS UUIDs; regenerate
 the expected fstab, mkinitcpio, Limine, locale, identity, sudoers, and greetd
 artifacts; compares their contents, modes, and links; checks the Limine fallback
 EFI copy; and verifies Noctalia Greeter's PAM, executables, and state ownership.
-It makes no target changes. Treat a failed audit as a reason to inspect the
+It also compares the deployed reviewed user configuration with the repository,
+including shell, niri, Noctalia, input, terminal, SSH, and AstroNvim files, and
+checks the configured user's ownership. It makes no target changes.
+Treat a failed audit as a reason to inspect the
 mounted target before rebooting.
 
 The installer must validate the schema, require a non-empty whole-disk device, show the resolved partition plan, and obtain a final destructive confirmation before writing a partition table.

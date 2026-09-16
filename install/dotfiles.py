@@ -218,6 +218,69 @@ def execute_dotfiles(dotfiles_plan: dict[str, Any], *, uid: int, gid: int, home:
         ssh_config.chmod(0o600)
 
 
+def _iter_files(root: Path) -> list[Path]:
+    files: list[Path] = []
+    for current, dirs, names in os.walk(root, followlinks=False):
+        dirs[:] = [name for name in dirs if name not in {".git", "codex"}]
+        if Path(current).name == "gtk-4.0":
+            names = [name for name in names if name not in {"gtk.css", "gtk-dark.css"}]
+        for name in names:
+            files.append(Path(current) / name)
+    return files
+
+
+def audit_deployed(dotfiles_plan: dict[str, Any]) -> list[str]:
+    """Compare deployed files with the source without changing either tree."""
+    source = Path(dotfiles_plan["source_root"])
+    target = storage.canonical_target_root(Path(dotfiles_plan["target_root"]))
+    mismatches: list[str] = []
+    missing = [rel for rel in dotfiles_plan["required_paths"] if not (source / rel).exists()]
+    if missing:
+        return ["required source configuration is missing: " + ", ".join(missing)]
+    nvim = source / ".config/nvim"
+    if not any(nvim.iterdir()):
+        return ["AstroNvim submodule is empty in the source repository"]
+    user_record = _user_record(target, dotfiles_plan["user"])
+    if user_record is None:
+        return [f"configured target user is missing: {dotfiles_plan['user']}"]
+    uid, gid, home_name = user_record
+    home = target / home_name.lstrip("/")
+    if not home.is_dir():
+        return [f"configured user home is missing: {user_record[2]}"]
+    for rel in dotfiles_plan["paths"]:
+        expected = source / rel
+        actual = home / rel
+        if expected.is_dir():
+            if not actual.is_dir():
+                mismatches.append(f"missing directory: {rel}")
+                continue
+            for source_file in _iter_files(expected):
+                relative_file = source_file.relative_to(source)
+                target_file = actual / source_file.relative_to(expected)
+                if not target_file.is_file():
+                    mismatches.append(f"missing: {relative_file}")
+                    continue
+                if source_file.read_bytes() != target_file.read_bytes():
+                    mismatches.append(f"content differs: {relative_file}")
+                if (target_file.stat().st_uid, target_file.stat().st_gid) != (uid, gid):
+                    mismatches.append(f"ownership differs: {relative_file}")
+        else:
+            if not actual.is_file():
+                mismatches.append(f"missing: {rel}")
+            elif expected.read_bytes() != actual.read_bytes():
+                mismatches.append(f"content differs: {rel}")
+            if actual.is_file() and (actual.stat().st_uid, actual.stat().st_gid) != (uid, gid):
+                mismatches.append(f"ownership differs: {rel}")
+    ssh_config = home / ".ssh/config"
+    if ssh_config.is_file() and stat_mode(ssh_config) != 0o600:
+        mismatches.append("mode differs: .ssh/config (expected 0600)")
+    return mismatches
+
+
+def stat_mode(path: Path) -> int:
+    return path.stat().st_mode & 0o777
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Deploy reviewed Utopia user configuration.")
     parser.add_argument("config", nargs="?", type=Path, default=plan.DEFAULT_CONFIG)

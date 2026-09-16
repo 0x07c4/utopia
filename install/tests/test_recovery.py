@@ -2,8 +2,9 @@ import os
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
-from install import archlinuxcn, configure, plan, recovery
+from install import archlinuxcn, configure, dotfiles, plan, recovery
 
 
 class RecoveryTest(unittest.TestCase):
@@ -65,6 +66,7 @@ class RecoveryTest(unittest.TestCase):
             path.parent.mkdir(parents=True, exist_ok=True)
             if relative_path == "etc/passwd":
                 path.write_text(
+                    f"chikee:x:{os.getuid()}:{os.getgid()}::/home/chikee:/bin/zsh\n"
                     f"greeter:x:{os.getuid()}:{os.getgid()}::/var/lib/noctalia-greeter:/bin/bash\n"
                 )
             elif relative_path == "etc/pam.d/greetd":
@@ -74,10 +76,30 @@ class RecoveryTest(unittest.TestCase):
                 path.chmod(0o755)
         (target / "var/lib/noctalia-greeter").mkdir(parents=True)
 
+    def prepare_dotfiles(self, target: Path) -> Path:
+        source = target.parent / f"dotfiles-source-{target.name}"
+        (source / ".config/niri").mkdir(parents=True)
+        (source / ".config/niri/config.kdl").write_text("layout\n")
+        (source / ".config/noctalia").mkdir(parents=True)
+        (source / ".config/noctalia/bar.toml").write_text("bar\n")
+        (source / ".config/nvim").mkdir(parents=True)
+        (source / ".config/nvim/init.lua").write_text("return {}\n")
+        (source / ".zshrc").write_text("zsh\n")
+        (source / ".zimrc").write_text("zim\n")
+        result = dotfiles.build_dotfiles_plan(
+            self.config, target_root=target, source_root=source
+        )
+        home = target / "home/chikee"
+        home.mkdir(parents=True)
+        with mock.patch("install.dotfiles.os.chown"):
+            dotfiles.execute_dotfiles(result, uid=os.getuid(), gid=os.getgid(), home=home)
+        return source
+
     def test_audit_rebuilds_and_checks_target_files(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             target = Path(temporary)
             self.prepare_target(target, encrypted=True)
+            source = self.prepare_dotfiles(target)
             uuid_values = {
                 "/dev/mapper/cryptroot": "00000000-0000-4000-8000-000000000001",
                 "/dev/vda1": "ABCD-1234",
@@ -90,6 +112,7 @@ class RecoveryTest(unittest.TestCase):
                 mount_probe=lambda path: self.mount_probe(path, target, encrypted=True),
                 uuid_probe=uuid_values.__getitem__,
                 backing_probe=lambda _: "/dev/vda2",
+                source_root=source,
             )
 
             self.assertTrue(result["encryption"])
@@ -100,6 +123,7 @@ class RecoveryTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             target = Path(temporary)
             self.prepare_target(target, encrypted=False)
+            source = self.prepare_dotfiles(target)
             (target / "etc/hostname").write_text("tampered\n")
             uuid_values = {
                 "/dev/vda2": "00000000-0000-4000-8000-000000000001",
@@ -112,6 +136,27 @@ class RecoveryTest(unittest.TestCase):
                     encrypted=False,
                     mount_probe=lambda path: self.mount_probe(path, target, encrypted=False),
                     uuid_probe=uuid_values.__getitem__,
+                    source_root=source,
+                )
+
+    def test_audit_reports_user_configuration_drift(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary)
+            self.prepare_target(target, encrypted=False)
+            source = self.prepare_dotfiles(target)
+            (target / "home/chikee/.zshrc").write_text("tampered\n")
+            uuid_values = {
+                "/dev/vda2": "00000000-0000-4000-8000-000000000001",
+                "/dev/vda1": "ABCD-1234",
+            }
+            with self.assertRaisesRegex(recovery.RecoveryError, "zshrc"):
+                recovery.audit_target(
+                    self.config,
+                    target_root=target,
+                    encrypted=False,
+                    mount_probe=lambda path: self.mount_probe(path, target, encrypted=False),
+                    uuid_probe=uuid_values.__getitem__,
+                    source_root=source,
                 )
 
 

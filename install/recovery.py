@@ -10,7 +10,7 @@ import stat
 import sys
 from typing import Any, Callable
 
-from install import archlinuxcn, bootstrap, configure, plan, storage
+from install import archlinuxcn, bootstrap, configure, dotfiles, plan, storage
 
 
 class RecoveryError(RuntimeError):
@@ -33,6 +33,7 @@ def audit_target(
     mount_probe: bootstrap.MountProbe = bootstrap.probe_mount,
     uuid_probe: Callable[[str], str] = configure.blkid_uuid,
     backing_probe: Callable[[str], str] = configure.mapper_backing_device,
+    source_root: Path = plan.REPO_ROOT,
 ) -> dict[str, Any]:
     target = storage.canonical_target_root(target_root)
     identifiers = configure.discover_identifiers(
@@ -87,6 +88,12 @@ def audit_target(
         archlinuxcn.verify_greeter_setup(greeter_plan)
     except archlinuxcn.ArchLinuxCNError as error:
         mismatches.append(str(error))
+    dotfiles_plan = dotfiles.build_dotfiles_plan(
+        config,
+        target_root=target,
+        source_root=source_root,
+    )
+    mismatches.extend(dotfiles.audit_deployed(dotfiles_plan))
     if mismatches:
         raise RecoveryError("target recovery audit failed:\n  " + "\n  ".join(mismatches))
     return {
@@ -95,6 +102,7 @@ def audit_target(
         "identifiers": identifiers,
         "files": list(configuration["files"]),
         "greeter": greeter_plan["greetd"],
+        "dotfiles": list(dotfiles_plan["paths"]),
     }
 
 
@@ -113,6 +121,7 @@ def format_audit(audit: dict[str, Any]) -> str:
     lines.extend(
         [
             f"Checked generated files: {len(audit['files'])}",
+            f"Checked user configuration paths: {len(audit['dotfiles'])}",
             f"Greeter: {audit['greeter']['command']} as {audit['greeter']['user']}",
             "No target files were modified.",
         ]
@@ -154,6 +163,7 @@ def main(argv: list[str] | None = None) -> int:
         archlinuxcn.ArchLinuxCNError,
         bootstrap.BootstrapError,
         configure.ConfigureError,
+        dotfiles.DotfilesError,
         plan.PlanError,
         RecoveryError,
         storage.StorageError,
