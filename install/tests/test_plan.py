@@ -162,6 +162,18 @@ class InstallPlanTest(unittest.TestCase):
         self.assertIn("noctalia-greeter-git", archlinuxcn)
         self.assertEqual(aur, ["clash-verge-rev-bin", "google-chrome", "qqmusic-bin"])
 
+    def test_archlinuxcn_server_requires_https_and_arch_placeholder(self) -> None:
+        for server in (
+            "http://repo.archlinuxcn.org/$arch",
+            "https://repo.archlinuxcn.org/x86_64",
+            "https://repo.archlinuxcn.org/$arch\nSigLevel = Never",
+        ):
+            with self.subTest(server=server):
+                invalid = copy.deepcopy(self.config)
+                invalid["packages"]["archlinuxcn_server"] = server
+                with self.assertRaisesRegex(plan.PlanError, "HTTPS URL"):
+                    plan.validate_config(invalid, allow_empty_device=True)
+
     def test_manifest_paths_cannot_escape_repository(self) -> None:
         with self.assertRaisesRegex(plan.PlanError, "escapes the repository"):
             plan.manifest_path(Path(plan.REPO_ROOT), "../outside.txt")

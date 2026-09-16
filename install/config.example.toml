@@ -68,6 +68,7 @@ mkinitcpio_hooks = [
 encryption_hook = "sd-encrypt"
 
 [packages]
+archlinuxcn_server = "https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch"
 official_manifests = [
   "packages/arch.txt",
   "packages/hardware-intel-laptop.txt",

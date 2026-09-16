@@ -226,6 +226,17 @@ def validate_config(config: dict[str, Any], *, allow_empty_device: bool = False)
         raise PlanError("boot.encryption_hook must be sd-encrypt")
 
     packages = require_table(config, "packages")
+    archlinuxcn_server = require_string(
+        packages, "archlinuxcn_server", "packages"
+    )
+    if (
+        not archlinuxcn_server.startswith("https://")
+        or "$arch" not in archlinuxcn_server
+        or any(character.isspace() for character in archlinuxcn_server)
+    ):
+        raise PlanError(
+            "packages.archlinuxcn_server must be an HTTPS URL containing $arch"
+        )
     for key in PACKAGE_SOURCE_KEYS.values():
         require_string_list(packages, key, "packages")
     require_string(packages, "encrypted_install_manifest", "packages")
