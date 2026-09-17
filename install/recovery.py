@@ -60,12 +60,16 @@ def audit_target(
             continue
         if actual != expected:
             mismatches.append(f"content differs: {relative_path}")
-        expected_mode = configuration["modes"].get(relative_path, 0o644)
-        actual_mode = stat.S_IMODE((target / relative_path).stat().st_mode)
-        if actual_mode != expected_mode:
-            mismatches.append(
-                f"mode differs: {relative_path} ({actual_mode:04o} != {expected_mode:04o})"
-            )
+        # The ESP is vfat, so Unix mode bits are synthesized by its mount
+        # options. Content remains auditable, but an exact mode comparison is
+        # not meaningful for boot artifacts.
+        if not relative_path.startswith("boot/"):
+            expected_mode = configuration["modes"].get(relative_path, 0o644)
+            actual_mode = stat.S_IMODE((target / relative_path).stat().st_mode)
+            if actual_mode != expected_mode:
+                mismatches.append(
+                    f"mode differs: {relative_path} ({actual_mode:04o} != {expected_mode:04o})"
+                )
     for relative_path, link_target in configuration["symlinks"].items():
         path = target / relative_path
         if not path.is_symlink() or os.fspath(path.readlink()) != link_target:

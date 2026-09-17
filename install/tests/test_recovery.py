@@ -159,6 +159,26 @@ class RecoveryTest(unittest.TestCase):
                     source_root=source,
                 )
 
+    def test_audit_ignores_vfat_boot_mode_bits(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary)
+            self.prepare_target(target, encrypted=False)
+            source = self.prepare_dotfiles(target)
+            (target / "boot/limine.conf").chmod(0o755)
+            uuid_values = {
+                "/dev/vda2": "00000000-0000-4000-8000-000000000001",
+                "/dev/vda1": "ABCD-1234",
+            }
+            result = recovery.audit_target(
+                self.config,
+                target_root=target,
+                encrypted=False,
+                mount_probe=lambda path: self.mount_probe(path, target, encrypted=False),
+                uuid_probe=uuid_values.__getitem__,
+                source_root=source,
+            )
+            self.assertIn("boot/limine.conf", result["files"])
+
 
 if __name__ == "__main__":
     unittest.main()

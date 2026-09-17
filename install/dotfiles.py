@@ -224,6 +224,7 @@ def _iter_files(root: Path) -> list[Path]:
     files: list[Path] = []
     for current, dirs, names in os.walk(root, followlinks=False):
         dirs[:] = [name for name in dirs if name not in {".git", "codex"}]
+        names = [name for name in names if name not in {".git", "codex"}]
         if Path(current).name == "gtk-4.0":
             names = [name for name in names if name not in {"gtk.css", "gtk-dark.css"}]
         for name in names:
