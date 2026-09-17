@@ -22,6 +22,12 @@ class DotfilesTest(unittest.TestCase):
             (source / ".config/niri/config.kdl").write_text("layout\n")
             (source / ".config/noctalia").mkdir(parents=True)
             (source / ".config/noctalia/bar.toml").write_text("bar\n")
+            (source / ".config/environment.d").mkdir(parents=True)
+            (source / ".config/environment.d/fcitx5.conf").write_text("GTK_IM_MODULE=fcitx\n")
+            (source / ".config/fcitx5").mkdir(parents=True)
+            (source / ".config/fcitx5/profile").write_text("DefaultIM=rime\n")
+            (source / ".local/share/fcitx5/rime").mkdir(parents=True)
+            (source / ".local/share/fcitx5/rime/rime_ice.custom.yaml").write_text("patch:\n")
             (source / ".config/nvim").mkdir(parents=True)
             (source / ".config/nvim/init.lua").write_text("return {}\n")
             result = dotfiles.build_dotfiles_plan(
@@ -30,6 +36,9 @@ class DotfilesTest(unittest.TestCase):
 
         self.assertIn(".zshrc", result["paths"])
         self.assertIn(".config/nvim", result["paths"])
+        self.assertIn(".config/fcitx5", result["paths"])
+        self.assertIn(".config/environment.d/fcitx5.conf", result["paths"])
+        self.assertIn(".local/share/fcitx5/rime/rime_ice.custom.yaml", result["paths"])
         self.assertNotIn(".zhistory", result["paths"])
 
     def test_preflight_rejects_uninitialized_nvim_submodule(self) -> None:

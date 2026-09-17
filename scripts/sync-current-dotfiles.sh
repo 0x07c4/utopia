@@ -103,6 +103,8 @@ sync_paths=(
   .config/fastfetch
   .config/fish
   .config/fontconfig
+  .config/environment.d/fcitx5.conf
+  .config/fcitx5
   .config/gtk-3.0
   .config/kitty
   .config/lazygit
@@ -127,6 +129,12 @@ done
 
 # Codex is installed by npm; keep its generated launcher out of the snapshot.
 sync_dir_contents_excluding ".local/bin" "codex"
+
+sync_path ".local/share/fcitx5/rime/default.custom.yaml"
+sync_path ".local/share/fcitx5/rime/key_bindings.custom.yaml"
+sync_path ".local/share/fcitx5/rime/rime_ice.custom.yaml"
+sync_path ".local/share/fcitx5/rime/rime_ice.dict.yaml"
+sync_path ".local/share/fcitx5/themes/catppuccin-mocha-green"
 
 sync_git_ref ".config/nvim"
 
