@@ -3,8 +3,8 @@ schema_version = 1
 [system]
 hostname = "arch-laptop"
 timezone = "Asia/Shanghai"
-locale = "en_US.UTF-8"
-extra_locales = ["zh_CN.UTF-8"]
+locale = "zh_CN.UTF-8"
+extra_locales = ["en_US.UTF-8"]
 keymap = "us"
 
 [user]

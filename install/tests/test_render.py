@@ -54,10 +54,10 @@ class RenderTest(unittest.TestCase):
         artifacts, metadata = self.build(encrypted=False)
 
         self.assertEqual(artifacts["etc/hostname"], "arch-laptop\n")
-        self.assertEqual(artifacts["etc/locale.conf"], "LANG=en_US.UTF-8\n")
+        self.assertEqual(artifacts["etc/locale.conf"], "LANG=zh_CN.UTF-8\n")
         self.assertEqual(
             artifacts["etc/locale.gen"],
-            "en_US.UTF-8 UTF-8\nzh_CN.UTF-8 UTF-8\n",
+            "zh_CN.UTF-8 UTF-8\nen_US.UTF-8 UTF-8\n",
         )
         self.assertEqual(artifacts["etc/vconsole.conf"], "KEYMAP=us\n")
         self.assertIn(
