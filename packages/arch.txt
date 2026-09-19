@@ -72,7 +72,6 @@ openssh
 plocate
 python
 ripgrep
-socat
 starship
 wl-clipboard
 wtype
