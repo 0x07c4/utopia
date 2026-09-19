@@ -7,8 +7,9 @@ import argparse
 import os
 from pathlib import Path
 import shutil
+import subprocess
 import sys
-from typing import Any
+from typing import Any, Callable
 
 from install import bootstrap, plan, storage
 
@@ -66,6 +67,14 @@ REQUIRED_PATHS = (
     ".config/niri/config.kdl",
     ".config/noctalia",
     ".config/nvim",
+)
+
+RIME_USER_DIR = ".local/share/fcitx5/rime"
+RIME_SOURCE_PATH = f"{RIME_USER_DIR}/default.custom.yaml"
+RIME_BUILD_OUTPUTS = (
+    "default.yaml",
+    "rime_ice.schema.yaml",
+    "rime_ice.table.bin",
 )
 
 
@@ -126,6 +135,7 @@ def format_dotfiles_plan(dotfiles_plan: dict[str, Any], *, dry_run: bool) -> str
         "Actions:",
         "  [01] Copy the reviewed shell, desktop, input, and editor configuration",
         "  [02] Set target-user ownership; protect ~/.ssh/config",
+        "  [03] Build and verify the Rime Ice user data as the target user",
         "",
     ]
     lines.append(
@@ -182,6 +192,22 @@ def preflight_apply(
         raise DotfilesError(f"configured user home is missing: {home}") from error
     if home_path.is_symlink() or not home_path.is_dir() or (home_stat.st_uid, home_stat.st_gid) != (uid, gid):
         raise DotfilesError(f"configured user home is not owned by {user['name']}")
+    if RIME_SOURCE_PATH in dotfiles_plan["paths"]:
+        if shutil.which("arch-chroot") is None:
+            raise DotfilesError("required Rime deployment program is missing: arch-chroot")
+        required_rime_paths = (
+            "usr/bin/rime_deployer",
+            "usr/share/rime-data/rime_ice.schema.yaml",
+            "usr/share/rime-data/rime_ice.dict.yaml",
+        )
+        missing_rime_paths = [
+            path for path in required_rime_paths if not (target / path).is_file()
+        ]
+        if missing_rime_paths:
+            raise DotfilesError(
+                "target Rime Ice installation is incomplete; missing: "
+                + ", ".join(missing_rime_paths)
+            )
     return uid, gid, home_path
 
 
@@ -213,7 +239,56 @@ def _chown_tree(path: Path, uid: int, gid: int) -> None:
             os.chown(Path(root) / name, uid, gid, follow_symlinks=False)
 
 
-def execute_dotfiles(dotfiles_plan: dict[str, Any], *, uid: int, gid: int, home: Path) -> None:
+RunCommand = Callable[..., subprocess.CompletedProcess[Any]]
+
+
+def deploy_rime(
+    dotfiles_plan: dict[str, Any],
+    *,
+    home: Path,
+    run: RunCommand = subprocess.run,
+) -> None:
+    if RIME_SOURCE_PATH not in dotfiles_plan["paths"]:
+        return
+    target = storage.canonical_target_root(Path(dotfiles_plan["target_root"]))
+    try:
+        guest_home = "/" + home.relative_to(target).as_posix()
+    except ValueError as error:
+        raise DotfilesError("configured user home is outside the target root") from error
+    rime_dir = f"{guest_home}/{RIME_USER_DIR}"
+    command = [
+        "arch-chroot",
+        "-u",
+        dotfiles_plan["user"],
+        os.fspath(target),
+        "env",
+        f"HOME={guest_home}",
+        "rime_deployer",
+        "--build",
+        rime_dir,
+        "/usr/share/rime-data",
+        f"{rime_dir}/build",
+    ]
+    try:
+        run(command, check=True)
+    except (FileNotFoundError, subprocess.CalledProcessError) as error:
+        raise DotfilesError("Rime Ice user data deployment failed") from error
+    build_dir = home / RIME_USER_DIR / "build"
+    missing = [name for name in RIME_BUILD_OUTPUTS if not (build_dir / name).is_file()]
+    if missing:
+        raise DotfilesError(
+            "Rime Ice deployment did not produce: " + ", ".join(missing)
+        )
+
+
+def execute_dotfiles(
+    dotfiles_plan: dict[str, Any],
+    *,
+    uid: int,
+    gid: int,
+    home: Path,
+    run: RunCommand = subprocess.run,
+) -> None:
     source = Path(dotfiles_plan["source_root"])
     for rel in dotfiles_plan["paths"]:
         destination = home / rel
@@ -225,6 +300,7 @@ def execute_dotfiles(dotfiles_plan: dict[str, Any], *, uid: int, gid: int, home:
         ssh_dir.chmod(0o700)
     if ssh_config.is_file():
         ssh_config.chmod(0o600)
+    deploy_rime(dotfiles_plan, home=home, run=run)
 
 
 def _iter_files(root: Path) -> list[Path]:

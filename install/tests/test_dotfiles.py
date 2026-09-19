@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import subprocess
 import tempfile
 import unittest
 from unittest import mock
@@ -88,6 +89,66 @@ class DotfilesTest(unittest.TestCase):
             self.assertEqual((target / ".ssh/config").stat().st_mode & 0o777, 0o600)
             self.assertTrue((target / ".config/gtk-4.0/settings.ini").is_file())
             self.assertFalse((target / ".config/gtk-4.0/gtk.css").exists())
+
+    def test_rime_deployment_runs_as_target_user_and_verifies_build(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / "target"
+            home = target / "home/chikee"
+            rime_dir = home / dotfiles.RIME_USER_DIR
+            rime_dir.mkdir(parents=True)
+            (rime_dir / "default.custom.yaml").write_text("patch:\n")
+            calls: list[list[str]] = []
+
+            def runner(argv, **kwargs):
+                calls.append(argv)
+                self.assertTrue(kwargs["check"])
+                build = rime_dir / "build"
+                build.mkdir()
+                for name in dotfiles.RIME_BUILD_OUTPUTS:
+                    (build / name).touch()
+                return subprocess.CompletedProcess(argv, 0)
+
+            result = {
+                "target_root": str(target),
+                "user": "chikee",
+                "paths": (dotfiles.RIME_SOURCE_PATH,),
+            }
+            dotfiles.deploy_rime(result, home=home, run=runner)
+
+            self.assertEqual(
+                calls,
+                [[
+                    "arch-chroot",
+                    "-u",
+                    "chikee",
+                    str(target),
+                    "env",
+                    "HOME=/home/chikee",
+                    "rime_deployer",
+                    "--build",
+                    "/home/chikee/.local/share/fcitx5/rime",
+                    "/usr/share/rime-data",
+                    "/home/chikee/.local/share/fcitx5/rime/build",
+                ]],
+            )
+
+    def test_rime_deployment_rejects_an_incomplete_build(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / "target"
+            home = target / "home/chikee"
+            (home / dotfiles.RIME_USER_DIR).mkdir(parents=True)
+            result = {
+                "target_root": str(target),
+                "user": "chikee",
+                "paths": (dotfiles.RIME_SOURCE_PATH,),
+            }
+
+            with self.assertRaisesRegex(dotfiles.DotfilesError, "did not produce"):
+                dotfiles.deploy_rime(
+                    result,
+                    home=home,
+                    run=lambda argv, **kwargs: subprocess.CompletedProcess(argv, 0),
+                )
 
 
 if __name__ == "__main__":

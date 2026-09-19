@@ -58,7 +58,8 @@ git submodule update --init --recursive
 
 The dotfiles stage never copies shell history, caches, credentials, Noctalia
 runtime state, generated Codex launchers, or the broken GTK 4 generated CSS.
-It sets the target user's ownership and protects `~/.ssh/config` with mode 600.
+It sets the target user's ownership, protects `~/.ssh/config` with mode 600,
+then builds and verifies the configured Rime Ice schema as the target user.
 
 ## Separate AUR stage
 
