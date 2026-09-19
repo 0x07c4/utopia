@@ -239,6 +239,19 @@ def _chown_tree(path: Path, uid: int, gid: int) -> None:
             os.chown(Path(root) / name, uid, gid, follow_symlinks=False)
 
 
+def _chown_parent_directories(path: Path, *, home: Path, uid: int, gid: int) -> None:
+    try:
+        path.relative_to(home)
+    except ValueError as error:
+        raise DotfilesError("dotfiles target parent escapes the configured home") from error
+    current = path
+    while current != home:
+        if current.is_symlink() or not current.is_dir():
+            raise DotfilesError(f"dotfiles target parent is not a safe directory: {current}")
+        os.chown(current, uid, gid, follow_symlinks=False)
+        current = current.parent
+
+
 RunCommand = Callable[..., subprocess.CompletedProcess[Any]]
 
 
@@ -293,6 +306,7 @@ def execute_dotfiles(
     for rel in dotfiles_plan["paths"]:
         destination = home / rel
         _copy_entry(source / rel, destination)
+        _chown_parent_directories(destination.parent, home=home, uid=uid, gid=gid)
         _chown_tree(destination, uid, gid)
     ssh_dir = home / ".ssh"
     ssh_config = ssh_dir / "config"
@@ -333,9 +347,20 @@ def audit_deployed(dotfiles_plan: dict[str, Any]) -> list[str]:
     home = target / home_name.lstrip("/")
     if not home.is_dir():
         return [f"configured user home is missing: {user_record[2]}"]
+    checked_parents: set[Path] = set()
     for rel in dotfiles_plan["paths"]:
         expected = source / rel
         actual = home / rel
+        current = actual.parent
+        while current != home:
+            if current not in checked_parents:
+                checked_parents.add(current)
+                relative_parent = current.relative_to(home)
+                if not current.is_dir():
+                    mismatches.append(f"missing directory: {relative_parent}")
+                elif (current.stat().st_uid, current.stat().st_gid) != (uid, gid):
+                    mismatches.append(f"ownership differs: {relative_parent}")
+            current = current.parent
         if expected.is_dir():
             if not actual.is_dir():
                 mismatches.append(f"missing directory: {rel}")

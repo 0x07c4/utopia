@@ -90,6 +90,28 @@ class DotfilesTest(unittest.TestCase):
             self.assertTrue((target / ".config/gtk-4.0/settings.ini").is_file())
             self.assertFalse((target / ".config/gtk-4.0/gtk.css").exists())
 
+    def test_execution_assigns_generated_parent_directories_to_target_user(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            source = Path(temporary) / "source"
+            home = Path(temporary) / "target/home/chikee"
+            relative = ".local/share/example/config"
+            (source / relative).parent.mkdir(parents=True)
+            (source / relative).write_text("value\n")
+            plan_result = {
+                "source_root": str(source),
+                "paths": (relative,),
+            }
+
+            with mock.patch("install.dotfiles.os.chown") as chown:
+                dotfiles.execute_dotfiles(plan_result, uid=1000, gid=1001, home=home)
+
+            for parent in (
+                home / ".local",
+                home / ".local/share",
+                home / ".local/share/example",
+            ):
+                chown.assert_any_call(parent, 1000, 1001, follow_symlinks=False)
+
     def test_rime_deployment_runs_as_target_user_and_verifies_build(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             target = Path(temporary) / "target"
