@@ -21,6 +21,7 @@ vim
 alsa-utils
 bluez
 bluez-utils
+breeze-cursors
 brightnessctl
 fcitx5
 fcitx5-configtool

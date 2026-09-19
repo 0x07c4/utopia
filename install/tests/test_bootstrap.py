@@ -22,7 +22,7 @@ class BootstrapTest(unittest.TestCase):
     def test_plain_bootstrap_contains_only_official_packages(self) -> None:
         result = self.build(Path("/mnt"), encrypted=False)
 
-        self.assertEqual(result["official"]["total"], 80)
+        self.assertEqual(result["official"]["total"], 81)
         self.assertEqual(
             result["command"][:5],
             (
@@ -44,7 +44,7 @@ class BootstrapTest(unittest.TestCase):
         plain = self.build(Path("/mnt"), encrypted=False)
         encrypted = self.build(Path("/mnt"), encrypted=True)
 
-        self.assertEqual(encrypted["official"]["total"], 81)
+        self.assertEqual(encrypted["official"]["total"], 82)
         self.assertEqual(
             set(encrypted["official"]["packages"])
             - set(plain["official"]["packages"]),

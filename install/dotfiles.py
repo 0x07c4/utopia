@@ -56,7 +56,6 @@ DEPLOY_PATHS = (
     ".local/share/fcitx5/rime/rime_ice.custom.yaml",
     ".local/share/fcitx5/rime/rime_ice.dict.yaml",
     ".local/share/fcitx5/themes/catppuccin-mocha-green",
-    ".local/share/icons/breeze_cursors",
     ".config/nvim",
     ".config/niri",
 )

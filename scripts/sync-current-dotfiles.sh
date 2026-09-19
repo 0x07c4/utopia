@@ -120,7 +120,6 @@ sync_paths=(
   .config/xdg-desktop-portal
   .config/xfce4
   .config/yazi
-  .local/share/icons/breeze_cursors
 )
 
 for rel in "${sync_paths[@]}"; do
