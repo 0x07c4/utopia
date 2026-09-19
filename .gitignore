@@ -1,6 +1,13 @@
 .zim/
 .viminfo
 
+# Machine-local shell and session state
+.bash_history
+.zhistory
+.pulse-cookie
+.config/pulse/cookie
+.config/dconf/user
+
 # Local UI state
 .config/Thunar/accels.scm
 .config/gtk-3.0/bookmarks
