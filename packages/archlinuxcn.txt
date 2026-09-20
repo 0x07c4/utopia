@@ -1,0 +1,5 @@
+archlinuxcn-keyring
+noctalia-greeter-git
+paru
+rime-ice-git
+ttf-maplemono-nf-cn-unhinted

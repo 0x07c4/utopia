@@ -1,0 +1,247 @@
+schema_version = 1
+
+# This catalog maps reviewed repository content to paths relative to $HOME.
+# It is planning data: resolving it never reads or writes the live home.
+
+[[artifacts]]
+id = "shell.zshrc"
+layer = "workstation.utopia"
+domain = "shell"
+source = ".zshrc"
+destination = ".zshrc"
+kind = "file"
+state = "managed"
+capture = true
+deploy = true
+validators = ["zsh-syntax"]
+
+[[artifacts]]
+id = "shell.zimrc"
+layer = "workstation.utopia"
+domain = "shell"
+source = ".zimrc"
+destination = ".zimrc"
+kind = "file"
+state = "managed"
+capture = true
+deploy = true
+validators = ["zsh-syntax"]
+
+[[artifacts]]
+id = "shell.starship"
+layer = "workstation.utopia"
+domain = "shell"
+source = ".config/starship.toml"
+destination = ".config/starship.toml"
+kind = "file"
+state = "managed"
+capture = true
+deploy = true
+validators = []
+
+[[artifacts]]
+id = "development.ssh-client"
+layer = "workstation.utopia"
+domain = "development"
+source = ".ssh/config"
+destination = ".ssh/config"
+kind = "file"
+state = "managed"
+capture = true
+deploy = true
+validators = ["ssh-config"]
+mode = "0600"
+
+[[artifacts]]
+id = "development.gdb"
+layer = "workstation.utopia"
+domain = "development"
+source = ".gdbinit"
+destination = ".gdbinit"
+kind = "file"
+state = "managed"
+capture = true
+deploy = true
+validators = []
+
+[[artifacts]]
+id = "editor.nvim"
+layer = "workstation.utopia"
+domain = "editor"
+source = ".config/nvim"
+destination = ".config/nvim"
+kind = "gitlink"
+state = "managed"
+capture = true
+deploy = true
+validators = ["nvim-headless"]
+
+[[artifacts]]
+id = "desktop.niri"
+layer = "workstation.utopia"
+domain = "desktop"
+source = "desktop/niri"
+destination = ".config/niri"
+kind = "tree"
+state = "managed"
+capture = true
+deploy = true
+validators = ["niri-config"]
+excludes = ["cfg/display.kdl"]
+
+[[artifacts]]
+id = "desktop.niri-display-arch-laptop"
+layer = "host.arch-laptop"
+domain = "desktop"
+source = "hosts/arch-laptop/desktop/niri/display.kdl"
+destination = ".config/niri/cfg/display.kdl"
+kind = "file"
+state = "managed"
+capture = true
+deploy = true
+validators = ["niri-config"]
+
+[[artifacts]]
+id = "desktop.niri-display-cachyos-desktop"
+layer = "host.cachyos-desktop"
+domain = "desktop"
+source = "hosts/cachyos-desktop/desktop/niri/display.kdl"
+destination = ".config/niri/cfg/display.kdl"
+kind = "file"
+state = "managed"
+capture = true
+deploy = true
+validators = ["niri-config"]
+
+[[artifacts]]
+id = "desktop.noctalia"
+layer = "workstation.utopia"
+domain = "desktop"
+source = ".config/noctalia"
+destination = ".config/noctalia"
+kind = "tree"
+state = "managed"
+capture = true
+deploy = true
+validators = ["noctalia-config"]
+
+[[artifacts]]
+id = "terminal.kitty"
+layer = "workstation.utopia"
+domain = "terminal"
+source = ".config/kitty"
+destination = ".config/kitty"
+kind = "tree"
+state = "managed"
+capture = true
+deploy = true
+validators = ["kitty-config"]
+excludes = ["kitty.conf.bak"]
+
+[[artifacts]]
+id = "input.fcitx5"
+layer = "workstation.utopia"
+domain = "input"
+source = ".config/fcitx5"
+destination = ".config/fcitx5"
+kind = "tree"
+state = "managed"
+capture = true
+deploy = true
+validators = []
+
+[[artifacts]]
+id = "input.fcitx5-environment"
+layer = "workstation.utopia"
+domain = "input"
+source = ".config/environment.d/fcitx5.conf"
+destination = ".config/environment.d/fcitx5.conf"
+kind = "file"
+state = "managed"
+capture = true
+deploy = true
+validators = []
+
+[[artifacts]]
+id = "input.rime-default"
+layer = "workstation.utopia"
+domain = "input"
+source = ".local/share/fcitx5/rime/default.custom.yaml"
+destination = ".local/share/fcitx5/rime/default.custom.yaml"
+kind = "file"
+state = "managed"
+capture = true
+deploy = true
+validators = []
+
+[[artifacts]]
+id = "input.rime-key-bindings"
+layer = "workstation.utopia"
+domain = "input"
+source = ".local/share/fcitx5/rime/key_bindings.custom.yaml"
+destination = ".local/share/fcitx5/rime/key_bindings.custom.yaml"
+kind = "file"
+state = "managed"
+capture = true
+deploy = true
+validators = []
+
+[[artifacts]]
+id = "input.rime-ice"
+layer = "workstation.utopia"
+domain = "input"
+source = ".local/share/fcitx5/rime/rime_ice.custom.yaml"
+destination = ".local/share/fcitx5/rime/rime_ice.custom.yaml"
+kind = "file"
+state = "managed"
+capture = true
+deploy = true
+validators = []
+
+[[artifacts]]
+id = "input.rime-dictionary"
+layer = "workstation.utopia"
+domain = "input"
+source = ".local/share/fcitx5/rime/rime_ice.dict.yaml"
+destination = ".local/share/fcitx5/rime/rime_ice.dict.yaml"
+kind = "file"
+state = "managed"
+capture = true
+deploy = true
+validators = []
+
+[[artifacts]]
+id = "input.fcitx5-theme"
+layer = "workstation.utopia"
+domain = "input"
+source = ".local/share/fcitx5/themes/catppuccin-mocha-green"
+destination = ".local/share/fcitx5/themes/catppuccin-mocha-green"
+kind = "tree"
+state = "managed"
+capture = true
+deploy = true
+validators = []
+
+[[artifacts]]
+id = "monitoring.bottom"
+layer = "workstation.utopia"
+domain = "monitoring"
+source = ".config/bottom"
+destination = ".config/bottom"
+kind = "tree"
+state = "managed"
+capture = true
+deploy = true
+validators = []
+
+[[artifacts]]
+id = "development.lazygit"
+layer = "workstation.utopia"
+domain = "development"
+source = ".config/lazygit"
+destination = ".config/lazygit"
+kind = "tree"
+state = "managed"
+capture = true
+deploy = true
+validators = []

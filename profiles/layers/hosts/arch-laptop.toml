@@ -1,0 +1,15 @@
+schema_version = 1
+
+[layer]
+id = "host.arch-laptop"
+kind = "host"
+description = "Desired laptop-specific display identity retained from the previous Arch setup."
+overrides = []
+
+[values.host]
+id = "arch-laptop"
+
+[values.display]
+connector = "eDP-1"
+mode = "1920x1080@120.000"
+scale = 2.0

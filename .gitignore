@@ -1,0 +1,44 @@
+.zim/
+.viminfo
+
+# Machine-local shell and session state
+.bash_history
+.zhistory
+.pulse-cookie
+.sys1og.conf
+.config/pulse/cookie
+.config/dconf/user
+
+# Local UI state
+.config/Thunar/accels.scm
+.config/gtk-3.0/bookmarks
+.config/QtProject.conf
+.config/autostart/Snipaste.desktop
+.nvidia-settings-rc
+
+# Fcitx5 runtime state
+.config/fcitx5/conf/cached_layouts
+.config/fcitx5/conf/vinput.conf
+.local/share/fcitx5/rime/build/
+.local/share/fcitx5/rime/*.userdb/
+.local/share/fcitx5/rime/installation.yaml
+.local/share/fcitx5/rime/user.yaml
+.local/share/fcitx5/rime/sync/
+
+# Generated runtime state and caches
+.config/Mesen2/*.lock
+.config/mozilla/firefox/Crash Reports/*.log
+.config/session/
+.debuginfod.sqlite*
+.zcompdump*
+
+# Python installer tooling
+__pycache__/
+*.py[cod]
+
+# Generated npm launcher
+.local/bin/codex
+
+# Local application data and generated telemetry
+.config/Mesen2/
+.config/go/telemetry/

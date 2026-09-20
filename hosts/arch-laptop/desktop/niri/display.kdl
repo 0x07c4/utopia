@@ -1,0 +1,6 @@
+output "eDP-1" {
+    mode "1920x1080@120.000"
+    scale 2
+    transform "normal"
+    position x=0 y=0
+}

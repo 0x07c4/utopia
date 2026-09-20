@@ -1,0 +1,7 @@
+rime_ice_safe_switches:
+  __append:
+    - {accept: "Shift+space", toggle: ascii_mode, when: always}
+    - {accept: "Control+Shift+3", toggle: ascii_punct, when: always}
+    - {accept: "Control+Shift+numbersign", toggle: ascii_punct, when: always}
+    - {accept: "Control+Shift+4", toggle: traditionalization, when: always}
+    - {accept: "Control+Shift+dollar", toggle: traditionalization, when: always}

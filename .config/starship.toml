@@ -1,0 +1,56 @@
+"$schema" = "https://starship.rs/config-schema.json"
+
+# Utopia's compact prompt keeps context visible without coupling the shell to a
+# generated desktop palette.
+format = "$os$username$directory$git_branch$git_status$time$line_break$character"
+palette = "utopia-frappe"
+
+[palettes.utopia-frappe]
+base = "#303446"
+surface = "#414559"
+text = "#c6d0f5"
+blue = "#8caaee"
+green = "#a6d189"
+red = "#e78284"
+yellow = "#e5c890"
+
+[os]
+disabled = false
+style = "fg:text bg:blue"
+format = "[ $symbol ]($style)"
+
+[os.symbols]
+Arch = "󰣇"
+Linux = "󰌽"
+
+[username]
+show_always = true
+style_user = "fg:base bg:blue"
+style_root = "fg:base bg:red"
+format = "[$user ]($style)"
+
+[directory]
+style = "fg:text bg:surface"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncation_symbol = "…/"
+
+[git_branch]
+symbol = ""
+style = "fg:base bg:green"
+format = "[ $symbol $branch ]($style)"
+
+[git_status]
+style = "fg:base bg:green"
+format = "[($all_status$ahead_behind )]($style)"
+
+[time]
+disabled = false
+time_format = "%R"
+style = "fg:base bg:yellow"
+format = "[  $time ]($style)"
+
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+vimcmd_symbol = "[❮](bold green)"

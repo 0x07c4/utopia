@@ -1,0 +1,11 @@
+schema_version = 1
+
+[layer]
+id = "hardware.intel-laptop"
+kind = "hardware"
+description = "Intel laptop hardware scope."
+overrides = []
+
+[values.hardware]
+cpu_vendor = "intel"
+form_factor = "laptop"

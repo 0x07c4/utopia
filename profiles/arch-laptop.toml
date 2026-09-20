@@ -1,0 +1,12 @@
+schema_version = 1
+
+[profile]
+id = "arch-laptop"
+description = "Arch laptop with the shared Utopia workstation and BORE/LTO kernel experiment."
+layers = [
+  "system.arch",
+  "hardware.intel-laptop",
+  "workstation.utopia",
+  "host.arch-laptop",
+  "experiment.bore-lto",
+]

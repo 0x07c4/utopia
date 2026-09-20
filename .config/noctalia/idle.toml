@@ -1,0 +1,20 @@
+# Lock the session after ten minutes of inactivity.
+# Screen power and suspend remain disabled until they are configured explicitly.
+[idle]
+behavior_order = ["lock"]
+pre_action_fade_seconds = 2.0
+
+[idle.behavior.lock]
+timeout = 600
+action = "lock"
+enabled = true
+
+[idle.behavior.screen-off]
+timeout = 0
+action = "screen_off"
+enabled = false
+
+[idle.behavior.suspend]
+timeout = 0
+action = "lock_and_suspend"
+enabled = false

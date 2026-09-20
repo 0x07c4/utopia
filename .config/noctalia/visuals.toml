@@ -1,0 +1,18 @@
+# Declarative visual baseline for Noctalia v5.
+# An empty directory follows the host's XDG Pictures directory.
+
+[theme]
+mode = "dark"
+source = "builtin"
+builtin = "Tokyo-Night"
+wallpaper_scheme = "m3-content"
+
+[wallpaper]
+directory = ""
+
+    [wallpaper.default]
+    path = "/usr/share/noctalia/assets/noctalia-wallpaper.png"
+
+[bar.default]
+font_family = "Maple Mono NF CN"
+margin_ends = 0

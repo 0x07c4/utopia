@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd -- "$script_dir/.." && pwd)"
+inbox="${UTOPIA_IDEA_INBOX:-$repo_root/ideas/inbox.md}"
+
+if (( $# > 0 )); then
+    idea="$*"
+elif [[ ! -t 0 ]]; then
+    idea="$(cat)"
+else
+    exec "${EDITOR:-nvim}" "$inbox"
+fi
+
+if [[ -z "${idea//[[:space:]]/}" ]]; then
+    echo "Error: idea text is empty." >&2
+    exit 1
+fi
+
+timestamp="$(date --iso-8601=seconds)"
+indented="${idea//$'\n'/$'\n  '}"
+
+printf '\n- [%s]\n\n  %s\n' "$timestamp" "$indented" >>"$inbox"
+printf 'Captured in %s\n' "$inbox"

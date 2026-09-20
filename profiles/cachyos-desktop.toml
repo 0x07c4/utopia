@@ -1,0 +1,11 @@
+schema_version = 1
+
+[profile]
+id = "cachyos-desktop"
+description = "CachyOS NVIDIA desktop used as the current integration baseline."
+layers = [
+  "system.cachyos",
+  "hardware.nvidia-desktop",
+  "workstation.utopia",
+  "host.cachyos-desktop",
+]

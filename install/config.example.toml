@@ -1,0 +1,82 @@
+schema_version = 1
+
+[system]
+hostname = "arch-laptop"
+timezone = "Asia/Shanghai"
+locale = "zh_CN.UTF-8"
+extra_locales = ["en_US.UTF-8"]
+keymap = "us"
+
+[user]
+name = "utopia"
+shell = "/bin/zsh"
+groups = ["wheel"]
+sudo_group = "wheel"
+
+[services]
+enable_after_official = [
+  "NetworkManager.service",
+  "bluetooth.service",
+]
+enable_after_archlinuxcn = [
+  "greetd.service",
+]
+
+[greetd]
+vt = 1
+command = "/usr/bin/noctalia-greeter-session"
+user = "greeter"
+setup_command = "/usr/share/noctalia-greeter/setup_greeter_system.sh"
+
+[storage]
+# Required. The installer must refuse to continue while this is empty.
+device = ""
+wipe = true
+filesystem = "btrfs"
+esp_size_mib = 2048
+swap = "none"
+encryption = false
+luks_mapper_name = "cryptroot"
+
+[storage.btrfs]
+label = "arch"
+mount_options = ["noatime", "compress=zstd:3", "ssd", "space_cache=v2"]
+subvolumes = [
+  { name = "@", mountpoint = "/" },
+  { name = "@home", mountpoint = "/home" },
+  { name = "@log", mountpoint = "/var/log" },
+  { name = "@pkg", mountpoint = "/var/cache/pacman/pkg" },
+]
+
+[boot]
+loader = "limine"
+kernel = "linux"
+fallback_initramfs = false
+mkinitcpio_hooks = [
+  "base",
+  "systemd",
+  "autodetect",
+  "microcode",
+  "modconf",
+  "kms",
+  "keyboard",
+  "sd-vconsole",
+  "block",
+  "filesystems",
+  "fsck",
+]
+encryption_hook = "sd-encrypt"
+
+[packages]
+archlinuxcn_server = "https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch"
+official_manifests = [
+  "packages/arch.txt",
+  "packages/hardware-intel-laptop.txt",
+]
+archlinuxcn_manifests = [
+  "packages/archlinuxcn.txt",
+]
+aur_manifests = [
+  "packages/aur.txt",
+]
+encrypted_install_manifest = "packages/features/disk-encryption.txt"

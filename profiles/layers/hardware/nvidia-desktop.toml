@@ -1,0 +1,12 @@
+schema_version = 1
+
+[layer]
+id = "hardware.nvidia-desktop"
+kind = "hardware"
+description = "Intel CPU and NVIDIA GPU desktop hardware scope."
+overrides = []
+
+[values.hardware]
+cpu_vendor = "intel"
+form_factor = "desktop"
+gpu_vendor = "nvidia"

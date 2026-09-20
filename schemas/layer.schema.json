@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://utopia.local/schemas/layer.schema.json",
+  "title": "Utopia profile layer",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "layer", "values"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "layer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "description", "overrides"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_.-]*$" },
+        "kind": {
+          "enum": ["system", "hardware", "workstation", "host", "experiment"]
+        },
+        "description": { "type": "string", "minLength": 1 },
+        "overrides": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]*(\\.[a-z][a-z0-9_-]*)*$"
+          }
+        }
+      }
+    },
+    "values": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/jsonValue" }
+    }
+  },
+  "$defs": {
+    "jsonValue": {
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        { "type": "number" },
+        { "type": "boolean" },
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/jsonValue" }
+        },
+        {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": { "pattern": "^[a-z][a-z0-9_-]*$" },
+          "additionalProperties": { "$ref": "#/$defs/jsonValue" }
+        }
+      ]
+    }
+  }
+}

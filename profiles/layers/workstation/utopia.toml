@@ -1,0 +1,37 @@
+schema_version = 1
+
+[layer]
+id = "workstation.utopia"
+kind = "workstation"
+description = "Shared Utopia desktop, shell, editor, and input-method intent."
+overrides = []
+
+[values.workstation]
+desktop = "niri"
+editor = "nvim"
+input_method = "fcitx5-rime"
+shell = "zsh"
+terminal = "kitty"
+
+[values.packages]
+required = [
+  "curl",
+  "eza",
+  "fcitx5",
+  "fcitx5-rime",
+  "fastfetch",
+  "git",
+  "kitty",
+  "lazygit",
+  "mpv",
+  "neovim",
+  "niri",
+  "noctalia",
+  "rime-ice-git",
+  "starship",
+  "yazi",
+  "zoxide",
+  "zsh",
+]
+optional = ["bottom", "cava", "satty"]
+disabled = ["wezterm"]

@@ -1,0 +1,14 @@
+schema_version = 1
+
+[layer]
+id = "experiment.bore-lto"
+kind = "experiment"
+description = "Laptop kernel entry point for BORE, Clang, and LTO investigation."
+overrides = []
+
+[values.experiment]
+id = "bore-lto"
+status = "daily-driver-under-study"
+
+[values.kernel]
+package = "linux-cachyos-bore-lto"

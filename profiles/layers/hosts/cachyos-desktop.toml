@@ -1,0 +1,15 @@
+schema_version = 1
+
+[layer]
+id = "host.cachyos-desktop"
+kind = "host"
+description = "Desired desktop display identity observed during the CachyOS migration."
+overrides = []
+
+[values.host]
+id = "cachyos-desktop"
+
+[values.display]
+connector = "DP-3"
+mode = "3840x2160@59.997"
+scale = 2.0

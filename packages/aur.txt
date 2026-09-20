@@ -1,0 +1,3 @@
+clash-verge-rev-bin
+google-chrome
+qqmusic-bin

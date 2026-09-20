@@ -1,0 +1,18 @@
+schema_version = 1
+
+[layer]
+id = "system.cachyos"
+kind = "system"
+description = "Existing CachyOS base used as an integration reference."
+overrides = []
+
+[values.system]
+distribution = "cachyos"
+integration_role = "full-cachyos-baseline"
+
+[values.boundaries]
+boot = "unmanaged"
+filesystems = "unmanaged"
+kernel = "unmanaged"
+services = "unmanaged"
+storage = "unmanaged"
