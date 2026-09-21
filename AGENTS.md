@@ -34,6 +34,8 @@ do not assume planned paths or commands already exist.
 Read [`docs/vision.md`](docs/vision.md) for the durable project direction and
 [`docs/journal/2026-09-20-cachyos-desktop-and-utopia-direction.md`](docs/journal/2026-09-20-cachyos-desktop-and-utopia-direction.md)
 for the migration facts and design discussion that led to the current branch.
+Read [`docs/handoff.md`](docs/handoff.md) for the current trusted baseline and
+the immediate continuation path across machines or agent sessions.
 Read [`docs/privacy.md`](docs/privacy.md) before capturing machine state or
 publishing history.
 

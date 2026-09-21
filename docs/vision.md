@@ -129,8 +129,8 @@ a validation method. Performance work also needs a baseline and rollback path.
 
 The presence of a configuration file does not mean that an application should
 be installed. Profiles should classify packages as `required`, `optional`, or
-`disabled`. WezTerm is currently disabled for the workstation even though an old
-configuration remains in repository history.
+`disabled`. WezTerm is currently disabled for the workstation and no WezTerm
+configuration is tracked.
 
 ### Preserve recovery paths
 

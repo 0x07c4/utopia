@@ -10,6 +10,8 @@ The durable direction is recorded in [`docs/vision.md`](docs/vision.md), while
 the CachyOS desktop migration and architecture discussion are preserved in the
 [`2026-09-20 journal`](docs/journal/2026-09-20-cachyos-desktop-and-utopia-direction.md).
 Agents should begin with [`AGENTS.md`](AGENTS.md).
+Cross-machine and cross-session work should continue from the rolling
+[`current handoff`](docs/handoff.md).
 Public-repository privacy boundaries are defined in
 [`docs/privacy.md`](docs/privacy.md).
 
