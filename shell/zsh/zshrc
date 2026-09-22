@@ -135,9 +135,6 @@ if (( ${+commands[starship]} )) && [[ ${TERM:-} != dumb ]]; then
   eval "$(starship init zsh)"
 fi
 
-# gdb
-export DEBUGINFOD_URLS="https://debuginfod.archlinux.org"
-
 export PATH=$HOME/.local/bin:$PATH
 
 unalias ls 2>/dev/null

@@ -30,9 +30,9 @@ session history in [`journal/`](journal/).
   absolute home path. Capture, deployment, and last-deployment-aware recovery
   are not working commands yet.
 - Niri has shared domain-owned configuration plus output-only host overlays.
-  Shell, terminal, input, and editor configuration are domain-owned under
-  `shell/`, `terminal/`, `input/`, and `editor/`. Most other home-relative
-  configuration still lives at the repository root.
+  Shell, terminal, input, editor, and reviewed development configuration are
+  domain-owned. Several other home-relative artifacts still live at the
+  repository root.
 - The staged installer remains an unfinished Arch laptop prototype. It is not a
   CachyOS restore path.
 - Boot, storage, kernel, driver, and service management remain unmanaged until
@@ -75,8 +75,8 @@ public commit.
 2. Review the domain-owned shell, terminal, and input baselines against live
    behavior without recapturing generated themes or Rime runtime state. Resolve
    the Fcitx5 theme's incomplete upstream/license record before treating it as a
-   durable product asset. Choose development or monitoring as the next narrow
-   domain migration.
+   durable product asset. Move monitoring into domain ownership next; keep
+   package intent independent from whether an application has configuration.
 3. Add last-deployment state and three-way conflict detection before capture or
    deployment can write either side.
 4. Audit declared package intent independently of configuration presence.

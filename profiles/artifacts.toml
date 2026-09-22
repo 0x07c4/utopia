@@ -43,7 +43,7 @@ validators = []
 id = "development.ssh-client"
 layer = "workstation.utopia"
 domain = "development"
-source = ".ssh/config"
+source = "development/ssh/config"
 destination = ".ssh/config"
 kind = "file"
 state = "managed"
@@ -51,18 +51,6 @@ capture = true
 deploy = true
 validators = ["ssh-config"]
 mode = "0600"
-
-[[artifacts]]
-id = "development.gdb"
-layer = "workstation.utopia"
-domain = "development"
-source = ".gdbinit"
-destination = ".gdbinit"
-kind = "file"
-state = "managed"
-capture = true
-deploy = true
-validators = []
 
 [[artifacts]]
 id = "editor.nvim"
@@ -228,18 +216,6 @@ layer = "workstation.utopia"
 domain = "monitoring"
 source = ".config/bottom"
 destination = ".config/bottom"
-kind = "tree"
-state = "managed"
-capture = true
-deploy = true
-validators = []
-
-[[artifacts]]
-id = "development.lazygit"
-layer = "workstation.utopia"
-domain = "development"
-source = ".config/lazygit"
-destination = ".config/lazygit"
 kind = "tree"
 state = "managed"
 capture = true

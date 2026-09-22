@@ -90,8 +90,7 @@ Git mapping should deploy only shared behavior through an include file, leaving
 the name, email address, signing key, and other identity data in an untracked
 host-local configuration.
 
-Shell and Niri demonstrate domain-first ownership while preserving home-relative
-deployment destinations:
+Current domain-owned sources preserve home-relative deployment destinations:
 
 ```text
 shell/zsh/zshrc                                    shared Zsh behavior
@@ -103,6 +102,7 @@ input/fcitx5/environment.d/fcitx5.conf             input-method environment
 input/fcitx5/themes/                               reviewed candidate themes
 input/rime/                                        reviewed Rime customizations
 editor/nvim                                        pinned Neovim gitlink
+development/ssh/config                             shared SSH client policy
 desktop/niri/                                      shared desktop behavior
 hosts/arch-laptop/desktop/niri/display.kdl        laptop output only
 hosts/cachyos-desktop/desktop/niri/display.kdl    desktop output only

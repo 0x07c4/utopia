@@ -397,3 +397,11 @@ The Neovim gitlink now lives at `editor/nvim` while still targeting
 `.config/nvim` in a live home. It retains the same pinned commit and clean
 submodule worktree. The move uses Git's submodule-aware path handling so a fresh
 clone continues to initialize the editor dependency through `.gitmodules`.
+
+Reviewed development configuration now lives under `development/`. The SSH
+client artifact contains only public GitHub connection policy and retains its
+declared `0600` deployment mode. The unused GDB artifact, its partial
+debuginfod environment policy, and an empty Lazygit artifact were removed
+because they did not form complete active shared behavior. Lazygit package
+intent remains an independent profile decision; debugging policy can return as
+an explicit domain with network and cache behavior.

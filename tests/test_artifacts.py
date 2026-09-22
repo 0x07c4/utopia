@@ -117,6 +117,24 @@ class ArtifactResolutionTest(unittest.TestCase):
         self.assertEqual(editor["destination"], ".config/nvim")
         self.assertEqual(editor["kind"], "gitlink")
 
+    def test_development_has_only_reviewed_nonempty_artifacts(self) -> None:
+        result = workstation.resolve(profiles.REPO_ROOT, "arch-laptop")
+        development = [
+            artifact
+            for artifact in result["artifacts"]
+            if artifact["domain"] == "development"
+        ]
+
+        self.assertEqual(
+            {artifact["id"] for artifact in development},
+            {"development.ssh-client"},
+        )
+        ssh = development[0]
+        self.assertEqual(ssh["source"], "development/ssh/config")
+        self.assertEqual(ssh["destination"], ".ssh/config")
+        self.assertEqual(ssh["mode"], "0600")
+        self.assertGreater((profiles.REPO_ROOT / ssh["source"]).stat().st_size, 0)
+
     def test_host_display_artifact_matches_profile_facts(self) -> None:
         for profile_id in ("arch-laptop", "cachyos-desktop"):
             with self.subTest(profile=profile_id):
