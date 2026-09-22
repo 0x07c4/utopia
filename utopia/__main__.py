@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 import sys
 
-from utopia import artifacts, profiles, workstation
+from utopia import artifacts, audit, profiles, workstation
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -17,6 +17,15 @@ def build_parser() -> argparse.ArgumentParser:
     profile.add_argument("profile_id")
     profile.add_argument("--json", action="store_true", dest="as_json")
     profile.add_argument(
+        "--repo-root", type=Path, default=profiles.REPO_ROOT, help=argparse.SUPPRESS
+    )
+    audit_command = subcommands.add_parser(
+        "audit", help="compare resolved artifacts with a live home directory"
+    )
+    audit_command.add_argument("profile_id")
+    audit_command.add_argument("--json", action="store_true", dest="as_json")
+    audit_command.add_argument("--home", type=Path, default=Path.home())
+    audit_command.add_argument(
         "--repo-root", type=Path, default=profiles.REPO_ROOT, help=argparse.SUPPRESS
     )
     return parser
@@ -32,7 +41,14 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 print(workstation.format_plan(result))
             return 0
-    except (profiles.ProfileError, artifacts.ArtifactError) as error:
+        if args.command == "audit":
+            result = audit.audit_home(args.repo_root, args.profile_id, args.home)
+            if args.as_json:
+                print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+            else:
+                print(audit.format_audit(result))
+            return 1 if audit.has_drift(result) else 0
+    except (profiles.ProfileError, artifacts.ArtifactError, audit.AuditError) as error:
         print(f"Error: {error}", file=sys.stderr)
         return 2
     return 2

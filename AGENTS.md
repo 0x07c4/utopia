@@ -20,16 +20,18 @@ power management, and runtime state require an explicit host scope.
 
 ## Repository status
 
-The current repository still stores most home-relative paths directly at its
-root. Niri is the first configuration captured under domain ownership, with its
-shared files under `desktop/niri/` and output-only overlays under `hosts/`.
-The staged Arch installer under `install/` is work in progress and models
-the laptop-oriented Arch target. It is not a CachyOS restore mechanism.
+Shell, terminal, input, editor, development, and Niri configuration now live
+under domain ownership. Niri output-only overlays remain under `hosts/`.
+Several other home-relative artifacts still live at the repository root and
+must be migrated gradually after behavior and provenance review. The staged
+Arch installer under `install/` is work in progress and models the
+laptop-oriented Arch target. It is not a CachyOS restore mechanism.
 
 The intended architecture is domain-oriented (`desktop`, `editor`, `shell`,
-`kernel`, `scheduler`, `tuning`, `benchmarks`, and `bootstrap`) with profiles
-and host overlays composing those domains. Until that migration is implemented,
-do not assume planned paths or commands already exist.
+`terminal`, `input`, `development`, `kernel`, `scheduler`, `tuning`,
+`benchmarks`, and `bootstrap`) with profiles and host overlays composing those
+domains. Until that migration is implemented, do not assume planned paths or
+commands already exist.
 
 Read [`docs/vision.md`](docs/vision.md) for the durable project direction and
 [`docs/journal/2026-09-20-cachyos-desktop-and-utopia-direction.md`](docs/journal/2026-09-20-cachyos-desktop-and-utopia-direction.md)

@@ -11,6 +11,20 @@ python -m utopia profile arch-laptop
 python -m utopia profile cachyos-desktop --json
 ```
 
+Compare the resolved artifact plan with a live home directory without changing
+either side:
+
+```sh
+python -m utopia audit arch-laptop
+python -m utopia audit cachyos-desktop --json
+```
+
+The audit reports matching, drifted, missing, and unsafe artifacts. It exits
+with status 1 when drift is present and status 2 for an invalid plan or invalid
+home root. `--home` may point at a temporary fixture or another mounted home for
+inspection; the report does not include its absolute path and does not follow
+symbolic links.
+
 ## Model
 
 A profile selects an ordered list of layers:
@@ -68,16 +82,27 @@ resolver validates the entire catalog before selecting entries for a profile.
 
 The initial catalog is intentionally descriptive. `capture = true` and
 `deploy = true` state future intent; there is no command that performs either
-operation yet. `python -m utopia profile ...` only prints the resulting plan.
+operation yet. `python -m utopia profile ...` prints the resulting plan, while
+`python -m utopia audit ...` only reads the mapped live paths and reports drift.
 
 Git author identity is deliberately absent from the artifact catalog. A future
 Git mapping should deploy only shared behavior through an include file, leaving
 the name, email address, signing key, and other identity data in an untracked
 host-local configuration.
 
-Niri demonstrates the domain-first split:
+Current domain-owned sources preserve home-relative deployment destinations:
 
 ```text
+shell/zsh/zshrc                                    shared Zsh behavior
+shell/zsh/zimrc                                    shared Zim modules
+shell/starship/starship.toml                       shared prompt configuration
+terminal/kitty/                                    shared terminal configuration
+input/fcitx5/config/                               shared Fcitx5 configuration
+input/fcitx5/environment.d/fcitx5.conf             input-method environment
+input/fcitx5/themes/                               reviewed candidate themes
+input/rime/                                        reviewed Rime customizations
+editor/nvim                                        pinned Neovim gitlink
+development/ssh/config                             shared SSH client policy
 desktop/niri/                                      shared desktop behavior
 hosts/arch-laptop/desktop/niri/display.kdl        laptop output only
 hosts/cachyos-desktop/desktop/niri/display.kdl    desktop output only

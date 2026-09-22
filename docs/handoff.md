@@ -24,10 +24,15 @@ session history in [`journal/`](journal/).
 - [`AGENTS.md`](../AGENTS.md) is the required agent entry point and safety
   boundary.
 - Two profiles resolve today: `arch-laptop` and `cachyos-desktop`.
-- Profile resolution and artifact mapping are read-only. Capture, deployment,
-  audit, and recovery are design targets, not working commands yet.
+- Profile resolution, artifact mapping, and repository-to-home audit are
+  read-only. `python -m utopia audit <profile>` reports matching, drifted,
+  missing, and unsafe artifacts without following symbolic links or exposing an
+  absolute home path. Capture, deployment, and last-deployment-aware recovery
+  are not working commands yet.
 - Niri has shared domain-owned configuration plus output-only host overlays.
-  Most other home-relative configuration still lives at the repository root.
+  Shell, terminal, input, editor, and reviewed development configuration are
+  domain-owned. Several other home-relative artifacts still live at the
+  repository root.
 - The staged installer remains an unfinished Arch laptop prototype. It is not a
   CachyOS restore path.
 - Boot, storage, kernel, driver, and service management remain unmanaged until
@@ -64,15 +69,19 @@ public commit.
 
 ## Immediate next work
 
-1. Compare the laptop's live state with the resolved `arch-laptop` profile
-   without applying changes.
-2. Decide the first narrow feature to capture; shell, terminal, editor, input,
-   or desktop behavior should remain separate from system experiments.
-3. Continue the shared profile/resolver design so audit, capture, deployment,
-   recovery, and bootstrap can consume one provenance-aware plan.
-4. Add package intent independently of configuration presence.
-5. Move remaining root-level configuration into domain ownership gradually,
-   with destination mappings and validation preserved at each step.
+1. Review the laptop audit drift one domain at a time. Do not recapture generated
+   themes, absolute wallpaper paths, cache files, or the old monolithic Niri
+   tree.
+2. Review the domain-owned shell, terminal, and input baselines against live
+   behavior without recapturing generated themes or Rime runtime state. Resolve
+   the Fcitx5 theme's incomplete upstream/license record before treating it as a
+   durable product asset. Move monitoring into domain ownership next; keep
+   package intent independent from whether an application has configuration.
+3. Add last-deployment state and three-way conflict detection before capture or
+   deployment can write either side.
+4. Audit declared package intent independently of configuration presence.
+5. Continue the shared resolver integration so capture, deployment, recovery,
+   and bootstrap consume the same provenance-aware plan.
 
 Run the repository checks relevant to the changed domain. The current baseline
 checks are documented in `AGENTS.md`; at minimum, run both Python suites and
