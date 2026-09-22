@@ -358,3 +358,42 @@ belongs to the system domain; concrete disks, identifiers, and boot entries are
 host facts. Any transition to managed state requires a reviewable plan, machine
 preconditions, a preserved boot or storage fallback, validation, and tested
 recovery.
+
+## Progress note — read-only home audit and shell ownership
+
+The artifact plan can now be compared with a live home using
+`python -m utopia audit <profile>`. The command reports matching, drifted,
+missing, and unsafe artifacts in human-readable or JSON form. It does not write
+either side, reveal the absolute home path, follow symbolic links, or descend
+into unexpected Git metadata. Gitlink artifacts compare the recorded commit and
+live worktree state without exposing file names from that worktree.
+
+This audit boundary deliberately precedes capture and deployment. It can reveal
+generated themes, runtime caches, absolute wallpaper paths, and legacy layout
+differences without treating them as content that belongs in the product.
+Last-deployment records and three-way conflict detection remain prerequisites
+for any command that writes files.
+
+Shell is the second domain-owned configuration after Niri. Repository sources
+now live under `shell/zsh/` and `shell/starship/`, while their destination paths
+remain `.zshrc`, `.zimrc`, and `.config/starship.toml`. The move preserves file
+content and does not deploy the repository version into a live home.
+
+Kitty follows the same model under `terminal/kitty/`, with
+`.config/kitty` retained only as its home destination. The reviewed Kitty
+configuration and attributed Frappe theme remain unchanged. The tracked legacy
+backup was removed, while `kitty.conf.bak` remains excluded from audit and any
+future capture so machine-local backups do not become product inputs.
+
+Fcitx5 and Rime sources now live under `input/`, while their XDG and Rime home
+destinations remain unchanged. The move keeps the small explicit Rime
+customizations separate from generated databases and build output. The existing
+Catppuccin Fcitx5 theme was relocated without modification, but its metadata
+does not provide a complete upstream and license record; it remains a temporary
+candidate pending provenance review or replacement by Utopia's future unified
+theme generator.
+
+The Neovim gitlink now lives at `editor/nvim` while still targeting
+`.config/nvim` in a live home. It retains the same pinned commit and clean
+submodule worktree. The move uses Git's submodule-aware path handling so a fresh
+clone continues to initialize the editor dependency through `.gitmodules`.

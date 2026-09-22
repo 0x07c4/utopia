@@ -27,6 +27,16 @@ The output now includes shared, domain-owned home artifacts and thin host
 overlays, with source provenance and safety checks. It remains a read-only plan:
 capture, deployment, and installer integration are not implemented.
 
+Compare that plan with the current home without changing either side:
+
+```sh
+python -m utopia audit arch-laptop
+```
+
+The command reports matching, drifted, missing, and unsafe artifacts. A drifted
+audit exits with status 1 so it can also serve as a read-only CI or migration
+check.
+
 ## Current stack
 
 - modular niri configuration with shared behavior and host-specific output data
@@ -38,8 +48,9 @@ capture, deployment, and installer integration are not implemented.
 ## Configuration capture
 
 The capture command is not implemented yet. Until it is, inspect
-`python -m utopia profile <id>` and copy only explicitly reviewed artifacts,
-leaving the final diff and commit to Git.
+`python -m utopia profile <id>`, audit with `python -m utopia audit <id>`, and
+copy only explicitly reviewed artifacts, leaving the final diff and commit to
+Git.
 
 ## Target packages
 
