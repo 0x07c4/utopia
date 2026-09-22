@@ -26,7 +26,7 @@ class ArtifactResolutionTest(unittest.TestCase):
         self.assertNotIn(
             "themes/frappe.conf", by_id["terminal.kitty"]["excludes"]
         )
-        kitty_config = (profiles.REPO_ROOT / ".config/kitty/kitty.conf").read_text()
+        kitty_config = (profiles.REPO_ROOT / "terminal/kitty/kitty.conf").read_text()
         self.assertIn("include themes/frappe.conf", kitty_config)
         self.assertFalse(
             any("wezterm" in item["source"] for item in result["artifacts"])
@@ -40,6 +40,82 @@ class ArtifactResolutionTest(unittest.TestCase):
         self.assertIn("desktop.niri", identifiers)
         self.assertIn("desktop.niri-display-arch-laptop", identifiers)
         self.assertNotIn("desktop.niri-display-cachyos-desktop", identifiers)
+
+    def test_shell_artifacts_are_owned_by_the_shell_domain(self) -> None:
+        result = workstation.resolve(profiles.REPO_ROOT, "arch-laptop")
+        shell_artifacts = [
+            artifact
+            for artifact in result["artifacts"]
+            if artifact["domain"] == "shell"
+        ]
+
+        self.assertEqual(len(shell_artifacts), 3)
+        self.assertEqual(
+            {artifact["source"] for artifact in shell_artifacts},
+            {
+                "shell/zsh/zshrc",
+                "shell/zsh/zimrc",
+                "shell/starship/starship.toml",
+            },
+        )
+        self.assertTrue(
+            all(artifact["source"].startswith("shell/") for artifact in shell_artifacts)
+        )
+
+    def test_terminal_artifact_is_owned_by_the_terminal_domain(self) -> None:
+        result = workstation.resolve(profiles.REPO_ROOT, "arch-laptop")
+        terminal = next(
+            artifact
+            for artifact in result["artifacts"]
+            if artifact["id"] == "terminal.kitty"
+        )
+
+        self.assertEqual(terminal["source"], "terminal/kitty")
+        self.assertEqual(terminal["destination"], ".config/kitty")
+        self.assertEqual(terminal["excludes"], ["kitty.conf.bak"])
+        backup = profiles.REPO_ROOT / "terminal/kitty/kitty.conf.bak"
+        self.assertFalse(backup.exists())
+
+    def test_input_artifacts_are_owned_by_the_input_domain(self) -> None:
+        result = workstation.resolve(profiles.REPO_ROOT, "arch-laptop")
+        input_artifacts = [
+            artifact
+            for artifact in result["artifacts"]
+            if artifact["domain"] == "input"
+        ]
+
+        self.assertEqual(len(input_artifacts), 7)
+        self.assertTrue(
+            all(artifact["source"].startswith("input/") for artifact in input_artifacts)
+        )
+        self.assertEqual(
+            next(
+                artifact["source"]
+                for artifact in input_artifacts
+                if artifact["id"] == "input.fcitx5"
+            ),
+            "input/fcitx5/config",
+        )
+        self.assertEqual(
+            next(
+                artifact["source"]
+                for artifact in input_artifacts
+                if artifact["id"] == "input.fcitx5-theme"
+            ),
+            "input/fcitx5/themes/catppuccin-mocha-green",
+        )
+
+    def test_editor_gitlink_is_owned_by_the_editor_domain(self) -> None:
+        result = workstation.resolve(profiles.REPO_ROOT, "arch-laptop")
+        editor = next(
+            artifact
+            for artifact in result["artifacts"]
+            if artifact["id"] == "editor.nvim"
+        )
+
+        self.assertEqual(editor["source"], "editor/nvim")
+        self.assertEqual(editor["destination"], ".config/nvim")
+        self.assertEqual(editor["kind"], "gitlink")
 
     def test_host_display_artifact_matches_profile_facts(self) -> None:
         for profile_id in ("arch-laptop", "cachyos-desktop"):

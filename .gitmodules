@@ -1,4 +1,4 @@
 [submodule ".config/nvim"]
-	path = .config/nvim
+	path = editor/nvim
 	url = https://github.com/0x07c4/nvim-astro.git
 	ignore = untracked
