@@ -69,19 +69,34 @@ public commit.
 
 ## Immediate next work
 
-1. Review the laptop audit drift one domain at a time. Do not recapture generated
-   themes, absolute wallpaper paths, cache files, or the old monolithic Niri
-   tree.
-2. Review the domain-owned shell, terminal, and input baselines against live
-   behavior without recapturing generated themes or Rime runtime state. Resolve
-   the Fcitx5 theme's incomplete upstream/license record before treating it as a
-   durable product asset. Move monitoring into domain ownership next; keep
-   package intent independent from whether an application has configuration.
-3. Add last-deployment state and three-way conflict detection before capture or
-   deployment can write either side.
-4. Audit declared package intent independently of configuration presence.
-5. Continue the shared resolver integration so capture, deployment, recovery,
-   and bootstrap consume the same provenance-aware plan.
+The current repository is clean and both Python suites pass (32 profile/audit
+tests and 67 Arch-installer tests). Continue in this order, one focused change
+at a time:
+
+1. **Finish provenance and licensing.** Add a project license for original
+   Utopia code, add `THIRD_PARTY_NOTICES`, and record the GPL-3.0-only Rime Ice
+   material, MIT Catppuccin theme, AstroNvim submodule, and any remaining
+   imported assets. Do not label the whole tree MIT without path-level review.
+2. **Resolve audit drift by domain.** Run `python -m utopia audit arch-laptop`
+   and `python -m utopia audit cachyos-desktop`; review shell, terminal, input,
+   desktop, and monitoring separately. Do not recapture generated themes,
+   absolute wallpaper paths, cache files, Rime runtime/build output, or the old
+   monolithic Niri tree. Keep expected host differences in host overlays.
+3. **Complete the artifact lifecycle.** Implement capture and deployment as
+   dry-run-first commands using the existing resolver and validators. Add a
+   last-deployment record and three-way conflict detection before either side
+   can be overwritten. Preserve backups and provide rollback instructions.
+4. **Unify installation with profiles.** Keep the existing Arch installer as a
+   tested prototype, then make bootstrap, configuration, recovery, and package
+   intent consume the same provenance-aware plan. Encryption remains optional;
+   Limine and systemd+sd-encrypt remain the supported encrypted path.
+5. **Rehearse the complete path in a fresh VM.** Validate plain and encrypted
+   Arch installs, package source separation, Noctalia Greeter, Rime deployment,
+   SSH permissions, recovery audit, and reboot behavior. Do not run an apply
+   path against the current host.
+6. **Release hygiene.** Add CI for both Python suites and profile validation,
+   document supported profiles and unmanaged boundaries, then create a first
+   versioned product release only after the VM rehearsal passes.
 
 Run the repository checks relevant to the changed domain. The current baseline
 checks are documented in `AGENTS.md`; at minimum, run both Python suites and
