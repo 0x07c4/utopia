@@ -62,6 +62,12 @@ class ArtifactResolutionTest(unittest.TestCase):
             all(artifact["source"].startswith("shell/") for artifact in shell_artifacts)
         )
 
+    def test_eza_icons_option_cannot_consume_the_ls_path(self) -> None:
+        zshrc = (profiles.REPO_ROOT / "shell/zsh/zshrc").read_text()
+
+        self.assertIn('eza --icons=auto "$@"', zshrc)
+        self.assertNotIn('eza --icons "$@"', zshrc)
+
     def test_terminal_artifact_is_owned_by_the_terminal_domain(self) -> None:
         result = workstation.resolve(profiles.REPO_ROOT, "arch-laptop")
         terminal = next(
