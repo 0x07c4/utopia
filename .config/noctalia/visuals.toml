@@ -3,9 +3,26 @@
 
 [theme]
 mode = "dark"
-source = "builtin"
+source = "wallpaper"
 builtin = "Tokyo-Night"
 wallpaper_scheme = "m3-content"
+
+# Only Starship needs Noctalia's mutation-aware built-in integration. Kitty
+# and Niri use Utopia-owned templates so their base configuration stays static.
+[theme.templates]
+enable_builtin_templates = true
+builtin_ids = ["starship"]
+enable_community_templates = false
+community_ids = []
+
+[theme.templates.user.utopia-kitty]
+input_path = "templates/utopia/kitty.conf"
+output_path = "$XDG_CONFIG_HOME/kitty/themes/noctalia.conf"
+post_hook = "sh -c 'pkill -USR1 -x kitty >/dev/null 2>&1 || true'"
+
+[theme.templates.user.utopia-niri]
+input_path = "templates/utopia/niri.kdl"
+output_path = "$XDG_CONFIG_HOME/niri/noctalia.kdl"
 
 [wallpaper]
 directory = ""

@@ -31,6 +31,12 @@ class ArtifactError(ValueError):
 
 
 @dataclass(frozen=True)
+class GeneratedBlock:
+    begin: str
+    end: str
+
+
+@dataclass(frozen=True)
 class Artifact:
     identifier: str
     layer: str
@@ -43,6 +49,7 @@ class Artifact:
     deploy: bool
     validators: tuple[str, ...]
     excludes: tuple[str, ...]
+    generated_blocks: tuple[GeneratedBlock, ...]
     mode: str | None
     replaces: str | None
 
@@ -96,6 +103,36 @@ def _strings(table: dict[str, Any], key: str, context: str) -> tuple[str, ...]:
     if len(value) != len(set(value)):
         raise ArtifactError(f"{context}.{key} contains duplicates")
     return tuple(value)
+
+
+def _generated_blocks(
+    table: dict[str, Any], key: str, context: str
+) -> tuple[GeneratedBlock, ...]:
+    value = table.get(key, [])
+    if not isinstance(value, list):
+        raise ArtifactError(f"{context}.{key} must be a list of marker tables")
+    blocks: list[GeneratedBlock] = []
+    for index, raw in enumerate(value):
+        block_context = f"{context}.{key}[{index}]"
+        if not isinstance(raw, dict):
+            raise ArtifactError(f"{block_context} must be a table")
+        _check_keys(
+            raw,
+            allowed={"begin", "end"},
+            required={"begin", "end"},
+            context=block_context,
+        )
+        begin = _string(raw, "begin", block_context)
+        end = _string(raw, "end", block_context)
+        if begin == end or "\n" in begin or "\n" in end:
+            raise ArtifactError(
+                f"{block_context} markers must be distinct single-line strings"
+            )
+        blocks.append(GeneratedBlock(begin=begin, end=end))
+    markers = [marker for block in blocks for marker in (block.begin, block.end)]
+    if len(markers) != len(set(markers)):
+        raise ArtifactError(f"{context}.{key} reuses a marker")
+    return tuple(blocks)
 
 
 def _relative_posix(value: str, context: str) -> str:
@@ -238,7 +275,7 @@ def _parse_artifact(
     }
     _check_keys(
         raw,
-        allowed=required | {"excludes", "mode", "replaces"},
+        allowed=required | {"excludes", "generated_blocks", "mode", "replaces"},
         required=required,
         context=context,
     )
@@ -254,6 +291,7 @@ def _parse_artifact(
     state = _string(raw, "state", context)
     validators = _strings(raw, "validators", context)
     excludes = _strings(raw, "excludes", context)
+    generated_blocks = _generated_blocks(raw, "generated_blocks", context)
     mode = raw.get("mode")
     replaces = raw.get("replaces")
 
@@ -278,6 +316,10 @@ def _parse_artifact(
     if kind != "tree" and excludes:
         raise ArtifactError(
             f"artifact {identifier!r} may only exclude paths from a tree"
+        )
+    if kind != "file" and generated_blocks:
+        raise ArtifactError(
+            f"artifact {identifier!r} may only declare generated blocks for a file"
         )
     for exclude in excludes:
         _relative_posix(exclude, f"artifact {identifier!r} exclude")
@@ -310,10 +352,42 @@ def _parse_artifact(
         deploy=raw["deploy"],
         validators=validators,
         excludes=excludes,
+        generated_blocks=generated_blocks,
         mode=mode,
         replaces=replaces,
     )
     _validate_source(repo_root, artifact)
+    if generated_blocks:
+        try:
+            source_text = (repo_root / source).read_text()
+        except UnicodeDecodeError as error:
+            raise ArtifactError(
+                f"artifact {identifier!r} with generated blocks must be UTF-8 text"
+            ) from error
+        ranges: list[tuple[int, int]] = []
+        for block in generated_blocks:
+            begin_count = source_text.count(block.begin)
+            end_count = source_text.count(block.end)
+            if begin_count != 1 or end_count != 1:
+                raise ArtifactError(
+                    f"artifact {identifier!r} generated block markers must each "
+                    "occur exactly once in the source"
+                )
+            begin_at = source_text.index(block.begin)
+            end_at = source_text.index(block.end)
+            if begin_at >= end_at:
+                raise ArtifactError(
+                    f"artifact {identifier!r} generated block end precedes its begin"
+                )
+            ranges.append((begin_at, end_at + len(block.end)))
+        ranges.sort()
+        if any(
+            current_start <= previous_end
+            for (_, previous_end), (current_start, _) in zip(ranges, ranges[1:])
+        ):
+            raise ArtifactError(
+                f"artifact {identifier!r} generated blocks must not overlap"
+            )
     forbidden_target = next(
         (
             target.as_posix()
@@ -446,6 +520,9 @@ def resolve_artifacts(
         item["id"] = item.pop("identifier")
         item["validators"] = list(artifact.validators)
         item["excludes"] = list(artifact.excludes)
+        item["generated_blocks"] = [
+            asdict(block) for block in artifact.generated_blocks
+        ]
         if item["mode"] is None:
             del item["mode"]
         if item["replaces"] is None:

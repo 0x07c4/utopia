@@ -1,18 +1,9 @@
 "$schema" = "https://starship.rs/config-schema.json"
+palette = "noctalia"
 
 # Utopia's compact prompt keeps context visible without coupling the shell to a
-# generated desktop palette.
+# generated desktop palette. Noctalia replaces only the marked fallback palette.
 format = "$os$username$directory$git_branch$git_status$time$line_break$character"
-palette = "utopia-frappe"
-
-[palettes.utopia-frappe]
-base = "#303446"
-surface = "#414559"
-text = "#c6d0f5"
-blue = "#8caaee"
-green = "#a6d189"
-red = "#e78284"
-yellow = "#e5c890"
 
 [os]
 disabled = false
@@ -54,3 +45,15 @@ format = "[  $time ]($style)"
 success_symbol = "[❯](bold green)"
 error_symbol = "[❯](bold red)"
 vimcmd_symbol = "[❮](bold green)"
+
+# >>> NOCTALIA STARSHIP PALETTE >>>
+# Deterministic Catppuccin Frappe fallback. Noctalia owns this marked block.
+[palettes.noctalia]
+base = "#303446"
+surface = "#414559"
+text = "#c6d0f5"
+blue = "#8caaee"
+green = "#a6d189"
+red = "#e78284"
+yellow = "#e5c890"
+# <<< NOCTALIA STARSHIP PALETTE <<<

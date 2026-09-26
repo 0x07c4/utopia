@@ -38,6 +38,13 @@ in [`journal/`](journal/).
   runs Noctalia v5.1.0 and its live configuration validates. DMS remains a
   reference rather than a migration target; revisit it only for a reproduced
   Noctalia limitation.
+- The first Desktop v0.1 theme slice now makes Noctalia's wallpaper palette the
+  source for Niri, Kitty, and Starship. Niri and Kitty use versioned Utopia
+  templates and retain explicit static fallbacks; Starship retains its prompt
+  policy while Noctalia owns only a marked palette block. Generated outputs are
+  excluded from static tree audit, while edits outside the Starship block still
+  count as drift. The slice is validated with Noctalia 5.1.0 and Niri 26.04;
+  it has not yet been deployed to the live laptop configuration.
 - [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md) records the exact
   Catppuccin for Kitty and Rime Ice revisions and their bundled license texts.
   The Fcitx theme with unverifiable redistribution permission was removed;
@@ -62,11 +69,12 @@ profile resolution, audit boundaries, and a heavily tested Arch installer, but
 the distinctive product is still mostly a collection of usable domain
 configurations rather than one coherent system.
 
-- The visual system has no shared source of truth. Noctalia uses Tokyo Night
-  and a Material-derived wallpaper scheme, Kitty and Starship use Catppuccin
-  Frappe, Neovim uses Tokyo Night Moon, and Fcitx currently falls back to its
-  packaged theme. Generated GTK/Qt remnants at the repository root are not an
-  intentional Utopia design.
+- The visual system is only partially unified. Noctalia now defines the
+  wallpaper-derived source for Niri, Kitty, and Starship, with deterministic
+  fallbacks, but the live laptop has not adopted that composition. Neovim still
+  uses Tokyo Night Moon, Fcitx uses its packaged theme, and GTK/Qt integration
+  is not yet intentional. Generated GTK/Qt remnants at the repository root are
+  not an intentional Utopia design.
 - Several declared interactions are not closed product loops. Niri binds a
   browser that is absent from package intent, names a cursor theme that is not
   declared, and hard-codes a localized screenshot directory. Editor features
@@ -114,15 +122,16 @@ public commit.
 
 ## Immediate next work
 
-The current repository is clean and both Python suites pass (33 profile/audit
+The current repository is clean and both Python suites pass (36 profile/audit
 tests and 67 Arch-installer tests). Continue in this order, one focused change
 at a time:
 
-1. **Build Utopia Desktop v0.1.** Follow [`roadmap.md`](roadmap.md): use
-   Noctalia v5's wallpaper palette and template engine as the theme source,
-   define explicit visual tokens, and generate or validate palettes for Niri,
-   Kitty, Starship, Fcitx, Neovim, GTK, and Qt. Preserve a deterministic
-   fallback when no wallpaper is available.
+1. **Continue Utopia Desktop v0.1 theme integration.** Reconcile the Niri,
+   Kitty, and Starship slice, already validated in an isolated home, on the
+   laptop with timestamped backups and a reviewable diff. Next, choose explicit
+   adapters for GTK/Qt, Fcitx, and Neovim instead of enabling every built-in or
+   network-fetched template. Preserve deterministic fallbacks and keep rendered
+   colors outside Git.
 2. **Close the interaction and dependency gaps exposed by that milestone.** A
    key binding, font, cursor, application, editor integration, or background
    service must either have declared intent and validation or be removed from

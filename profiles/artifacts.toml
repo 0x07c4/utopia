@@ -38,6 +38,9 @@ state = "managed"
 capture = true
 deploy = true
 validators = []
+generated_blocks = [
+  { begin = "# >>> NOCTALIA STARSHIP PALETTE >>>", end = "# <<< NOCTALIA STARSHIP PALETTE <<<" },
+]
 
 [[artifacts]]
 id = "development.ssh-client"
@@ -75,7 +78,7 @@ state = "managed"
 capture = true
 deploy = true
 validators = ["niri-config"]
-excludes = ["cfg/display.kdl"]
+excludes = ["cfg/display.kdl", "noctalia.kdl"]
 
 [[artifacts]]
 id = "desktop.niri-display-arch-laptop"
@@ -124,7 +127,7 @@ state = "managed"
 capture = true
 deploy = true
 validators = ["kitty-config"]
-excludes = ["kitty.conf.bak"]
+excludes = ["kitty.conf.bak", "themes/noctalia.conf"]
 
 [[artifacts]]
 id = "input.fcitx5"

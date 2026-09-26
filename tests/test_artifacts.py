@@ -4,6 +4,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+import tomllib
 import unittest
 
 from utopia import artifacts, profiles, workstation
@@ -28,6 +29,7 @@ class ArtifactResolutionTest(unittest.TestCase):
         )
         kitty_config = (profiles.REPO_ROOT / "terminal/kitty/kitty.conf").read_text()
         self.assertIn("include themes/frappe.conf", kitty_config)
+        self.assertIn("globinclude themes/noctalia.conf", kitty_config)
         self.assertFalse(
             any("wezterm" in item["source"] for item in result["artifacts"])
         )
@@ -78,9 +80,57 @@ class ArtifactResolutionTest(unittest.TestCase):
 
         self.assertEqual(terminal["source"], "terminal/kitty")
         self.assertEqual(terminal["destination"], ".config/kitty")
-        self.assertEqual(terminal["excludes"], ["kitty.conf.bak"])
+        self.assertEqual(
+            terminal["excludes"],
+            ["kitty.conf.bak", "themes/noctalia.conf"],
+        )
         backup = profiles.REPO_ROOT / "terminal/kitty/kitty.conf.bak"
         self.assertFalse(backup.exists())
+
+    def test_noctalia_theme_has_exact_core_adapters_and_fallbacks(self) -> None:
+        visuals = profiles.REPO_ROOT / ".config/noctalia/visuals.toml"
+        with visuals.open("rb") as source:
+            config = tomllib.load(source)
+
+        self.assertEqual(config["theme"]["source"], "wallpaper")
+        templates = config["theme"]["templates"]
+        self.assertEqual(templates["builtin_ids"], ["starship"])
+        self.assertFalse(templates["enable_community_templates"])
+        self.assertEqual(
+            set(templates["user"]), {"utopia-kitty", "utopia-niri"}
+        )
+        for template in templates["user"].values():
+            path = template["input_path"]
+            self.assertTrue(
+                (profiles.REPO_ROOT / ".config/noctalia" / path).is_file()
+            )
+
+        plan = workstation.resolve(profiles.REPO_ROOT, "arch-laptop")
+        niri = next(
+            artifact
+            for artifact in plan["artifacts"]
+            if artifact["id"] == "desktop.niri"
+        )
+        self.assertIn("noctalia.kdl", niri["excludes"])
+        niri_config = (profiles.REPO_ROOT / "desktop/niri/config.kdl").read_text()
+        self.assertIn('include optional=true "./noctalia.kdl"', niri_config)
+
+        starship = next(
+            artifact
+            for artifact in plan["artifacts"]
+            if artifact["id"] == "shell.starship"
+        )
+        self.assertEqual(len(starship["generated_blocks"]), 1)
+        starship_config = (
+            profiles.REPO_ROOT / "shell/starship/starship.toml"
+        ).read_text()
+        self.assertEqual(
+            starship_config.splitlines()[:2],
+            [
+                '"$schema" = "https://starship.rs/config-schema.json"',
+                'palette = "noctalia"',
+            ],
+        )
 
     def test_input_artifacts_are_owned_by_the_input_domain(self) -> None:
         result = workstation.resolve(profiles.REPO_ROOT, "arch-laptop")

@@ -6,3 +6,7 @@ include "./cfg/display.kdl"
 include "./cfg/layout.kdl"
 include "./cfg/rules.kdl"
 include "./cfg/misc.kdl"
+
+// The explicit colors in layout.kdl remain the fallback until Noctalia renders
+// this optional, watched palette override (optional includes require Niri 26.04+).
+include optional=true "./noctalia.kdl"

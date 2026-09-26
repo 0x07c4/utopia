@@ -80,6 +80,14 @@ The current workstation marks WezTerm disabled and Kitty required.
 kind, management state, capture/deploy intent, and symbolic validators. The
 resolver validates the entire catalog before selecting entries for a profile.
 
+An artifact may declare `generated_blocks` for a text file whose stable body is
+managed by Utopia while a runtime integration owns a uniquely marked section.
+The audit still detects edits outside the markers or missing/duplicated markers,
+but ignores the generated contents between them. Starship uses this boundary so
+Noctalia can refresh its palette without turning every wallpaper change into
+configuration drift. Tree `excludes` similarly omit separate generated theme
+files such as Kitty's `themes/noctalia.conf` and Niri's `noctalia.kdl`.
+
 The initial catalog is intentionally descriptive. `capture = true` and
 `deploy = true` state future intent; there is no command that performs either
 operation yet. `python -m utopia profile ...` prints the resulting plan, while
