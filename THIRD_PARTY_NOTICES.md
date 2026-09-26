@@ -2,7 +2,9 @@
 
 This file records third-party material distributed by or referenced from this
 repository. A license listed here applies only to the paths named in its entry.
-It does not license Utopia's original material or the repository as a whole.
+Except for these path-scoped exclusions and material carrying its own notice,
+Utopia's original material is licensed under the Apache License 2.0 in the root
+`LICENSE` file.
 
 ## Catppuccin for Kitty
 
@@ -41,9 +43,9 @@ from this upstream revision.
 The submodule is a separate Git repository rather than vendored content. No
 license file was present in either the pinned submodule revision or the
 AstroNvim template when this inventory was performed. The submodule therefore
-is not covered by any future license for the Utopia repository. Its own
-provenance and licensing must be resolved in that repository before treating
-it as redistributable source.
+is not covered by Utopia's Apache-2.0 license. Its own provenance and licensing
+must be resolved in that repository before treating it as redistributable
+source.
 
 ## Removed material with unresolved provenance
 
