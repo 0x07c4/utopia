@@ -58,6 +58,45 @@ class HomeArtifactAuditTest(unittest.TestCase):
             self.assertEqual(status_name, "unsafe")
             self.assertEqual(changes[0]["status"], "symlink")
 
+    def test_file_ignores_declared_generated_block_content(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "source"
+            live = root / "live"
+            source.write_text("stable\n# begin\nfallback\n# end\ntail\n")
+            live.write_text("stable\n# begin\nruntime\n# end\ntail\n")
+            artifact = self._artifact("file")
+            artifact["generated_blocks"] = [
+                {"begin": "# begin", "end": "# end"}
+            ]
+
+            status_name, changes = audit._audit_file(source, live, artifact)
+
+            self.assertEqual(status_name, "match")
+            self.assertEqual(changes, [])
+
+            live.write_text("changed\n# begin\nruntime\n# end\ntail\n")
+            status_name, changes = audit._audit_file(source, live, artifact)
+            self.assertEqual(status_name, "drift")
+            self.assertEqual(changes[0]["status"], "modified")
+
+    def test_file_reports_drift_when_generated_markers_are_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "source"
+            live = root / "live"
+            source.write_text("# begin\nfallback\n# end\n")
+            live.write_text("runtime\n")
+            artifact = self._artifact("file")
+            artifact["generated_blocks"] = [
+                {"begin": "# begin", "end": "# end"}
+            ]
+
+            status_name, changes = audit._audit_file(source, live, artifact)
+
+            self.assertEqual(status_name, "drift")
+            self.assertEqual(changes[0]["status"], "modified")
+
     def test_tree_reports_drift_but_honors_excludes(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

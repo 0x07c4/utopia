@@ -43,6 +43,25 @@ def _change(path: str, status_name: str) -> dict[str, str]:
     return {"path": path, "status": status_name}
 
 
+def _comparable_file(
+    path: Path, generated_blocks: list[dict[str, str]]
+) -> bytes | None:
+    content = path.read_bytes()
+    for index, block in enumerate(generated_blocks):
+        begin = block["begin"].encode()
+        end = block["end"].encode()
+        if content.count(begin) != 1 or content.count(end) != 1:
+            return None
+        start = content.index(begin)
+        try:
+            finish = content.index(end, start) + len(end)
+        except ValueError:
+            return None
+        placeholder = f"\0utopia-generated-block-{index}\0".encode()
+        content = content[:start] + placeholder + content[finish:]
+    return content
+
+
 def _audit_file(
     source: Path, live: Path, artifact: dict[str, Any]
 ) -> tuple[str, list[dict[str, str]]]:
@@ -55,7 +74,14 @@ def _audit_file(
         return "unsafe", [_change(destination, "type-mismatch")]
 
     changes: list[dict[str, str]] = []
-    if not filecmp.cmp(source, live, shallow=False):
+    generated_blocks = artifact.get("generated_blocks", [])
+    if generated_blocks:
+        expected = _comparable_file(source, generated_blocks)
+        actual = _comparable_file(live, generated_blocks)
+        content_matches = expected is not None and expected == actual
+    else:
+        content_matches = filecmp.cmp(source, live, shallow=False)
+    if not content_matches:
         changes.append(_change(destination, "modified"))
     expected_mode = artifact.get("mode")
     if expected_mode is not None:

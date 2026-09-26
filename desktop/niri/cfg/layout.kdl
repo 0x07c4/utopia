@@ -4,6 +4,24 @@
 
         background-color "transparent" // <- needed for noctalia-shell to set wallpaper
 
+        // Deterministic fallback; Noctalia's optional include overrides these
+        // colors after it has resolved the active wallpaper palette.
+        focus-ring {
+            active-color "#8caaee"
+            inactive-color "#414559"
+            urgent-color "#e78284"
+        }
+
+        tab-indicator {
+            active-color "#8caaee"
+            inactive-color "#414559"
+            urgent-color "#e78284"
+        }
+
+        insert-hint {
+            color "#8caaee80"
+        }
+
         preset-column-widths {
             proportion 0.33333
             proportion 0.5

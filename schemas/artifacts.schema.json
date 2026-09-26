@@ -72,6 +72,19 @@
           "uniqueItems": true,
           "items": { "$ref": "#/$defs/relativePath" }
         },
+        "generated_blocks": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["begin", "end"],
+            "properties": {
+              "begin": { "type": "string", "pattern": "^[^\\r\\n]+$" },
+              "end": { "type": "string", "pattern": "^[^\\r\\n]+$" }
+            }
+          }
+        },
         "mode": {
           "type": "string",
           "pattern": "^0[0-7]{3}$"
