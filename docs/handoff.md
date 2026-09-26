@@ -38,9 +38,9 @@ session history in [`journal/`](journal/).
   The Fcitx theme with unverifiable redistribution permission was removed;
   Fcitx now names its packaged default themes. The separate Neovim submodule
   still needs its own license decision.
-- Utopia's original material does not yet have a project-wide license. Do not
-  infer one from a third-party dependency or license the complete tree without
-  a deliberate maintainer decision and path-level review.
+- Utopia's original material is licensed under Apache-2.0. Third-party paths
+  retain the licenses recorded in `THIRD_PARTY_NOTICES.md`, and the separate
+  `editor/nvim` submodule is explicitly outside Utopia's license scope.
 - The staged installer remains an unfinished Arch laptop prototype. It is not a
   CachyOS restore path.
 - Boot, storage, kernel, driver, and service management remain unmanaged until
@@ -81,12 +81,10 @@ The current repository is clean and both Python suites pass (33 profile/audit
 tests and 67 Arch-installer tests). Continue in this order, one focused change
 at a time:
 
-1. **Finish project licensing.** Choose and add the license for original Utopia
-   material, then make the path boundary explicit. Resolve the separate
-   `nvim-astro` repository's template provenance and license there. The
-   third-party inventory and license copies in this repository are complete for
-   the currently retained imported files; do not label the whole tree with a
-   permissive license without preserving the path-scoped GPL material.
+1. **Resolve the editor submodule license.** Utopia's original material is now
+   Apache-2.0 and the retained third-party paths are documented. Resolve the
+   separate `nvim-astro` repository's AstroNvim template provenance and license
+   there before treating that submodule as redistributable source.
 2. **Resolve audit drift by domain.** Run `python -m utopia audit arch-laptop`
    and `python -m utopia audit cachyos-desktop`; review shell, terminal, input,
    desktop, and monitoring separately. Do not recapture generated themes,

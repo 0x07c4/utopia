@@ -431,3 +431,16 @@ revision contained a license file, so that repository's licensing remains a
 separate unresolved task. Utopia's original material also remains unlicensed
 until the maintainer makes a project-wide license choice; third-party licenses
 must not be applied to the repository as a whole by inference.
+
+## Progress note — Utopia project license
+
+The maintainer selected the Apache License 2.0 for Utopia's original material.
+The unmodified license text now lives at the repository root. README and the
+third-party notice define the scope explicitly: Catppuccin for Kitty and Rime
+Ice retain their path-scoped upstream licenses, while the `editor/nvim`
+submodule remains a separate repository outside Utopia's Apache-2.0 grant.
+
+This choice makes the reviewed Utopia implementation permissively reusable
+with an explicit patent grant without attempting to relicense imported work.
+The unresolved AstroNvim template provenance remains local to the separate
+`nvim-astro` repository and is still the first licensing follow-up.
