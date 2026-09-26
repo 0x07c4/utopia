@@ -90,7 +90,7 @@ class ArtifactResolutionTest(unittest.TestCase):
             if artifact["domain"] == "input"
         ]
 
-        self.assertEqual(len(input_artifacts), 7)
+        self.assertEqual(len(input_artifacts), 6)
         self.assertTrue(
             all(artifact["source"].startswith("input/") for artifact in input_artifacts)
         )
@@ -102,14 +102,17 @@ class ArtifactResolutionTest(unittest.TestCase):
             ),
             "input/fcitx5/config",
         )
-        self.assertEqual(
-            next(
-                artifact["source"]
-                for artifact in input_artifacts
-                if artifact["id"] == "input.fcitx5-theme"
-            ),
-            "input/fcitx5/themes/catppuccin-mocha-green",
+        self.assertNotIn(
+            "input.fcitx5-theme",
+            {artifact["id"] for artifact in input_artifacts},
         )
+        classicui = (
+            profiles.REPO_ROOT / "input/fcitx5/config/conf/classicui.conf"
+        ).read_text()
+        self.assertIn("Theme=default\n", classicui)
+        self.assertIn("DarkTheme=default-dark\n", classicui)
+        self.assertNotIn("catppuccin-mocha-green", classicui)
+        self.assertFalse((profiles.REPO_ROOT / "input/fcitx5/themes").exists())
 
     def test_editor_gitlink_is_owned_by_the_editor_domain(self) -> None:
         result = workstation.resolve(profiles.REPO_ROOT, "arch-laptop")

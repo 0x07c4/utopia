@@ -33,6 +33,14 @@ session history in [`journal/`](journal/).
   Shell, terminal, input, editor, and reviewed development configuration are
   domain-owned. Several other home-relative artifacts still live at the
   repository root.
+- [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md) records the exact
+  Catppuccin for Kitty and Rime Ice revisions and their bundled license texts.
+  The Fcitx theme with unverifiable redistribution permission was removed;
+  Fcitx now names its packaged default themes. The separate Neovim submodule
+  still needs its own license decision.
+- Utopia's original material does not yet have a project-wide license. Do not
+  infer one from a third-party dependency or license the complete tree without
+  a deliberate maintainer decision and path-level review.
 - The staged installer remains an unfinished Arch laptop prototype. It is not a
   CachyOS restore path.
 - Boot, storage, kernel, driver, and service management remain unmanaged until
@@ -69,14 +77,16 @@ public commit.
 
 ## Immediate next work
 
-The current repository is clean and both Python suites pass (32 profile/audit
+The current repository is clean and both Python suites pass (33 profile/audit
 tests and 67 Arch-installer tests). Continue in this order, one focused change
 at a time:
 
-1. **Finish provenance and licensing.** Add a project license for original
-   Utopia code, add `THIRD_PARTY_NOTICES`, and record the GPL-3.0-only Rime Ice
-   material, MIT Catppuccin theme, AstroNvim submodule, and any remaining
-   imported assets. Do not label the whole tree MIT without path-level review.
+1. **Finish project licensing.** Choose and add the license for original Utopia
+   material, then make the path boundary explicit. Resolve the separate
+   `nvim-astro` repository's template provenance and license there. The
+   third-party inventory and license copies in this repository are complete for
+   the currently retained imported files; do not label the whole tree with a
+   permissive license without preserving the path-scoped GPL material.
 2. **Resolve audit drift by domain.** Run `python -m utopia audit arch-laptop`
    and `python -m utopia audit cachyos-desktop`; review shell, terminal, input,
    desktop, and monitoring separately. Do not recapture generated themes,

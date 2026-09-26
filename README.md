@@ -2,7 +2,7 @@
 
 This repository describes and versions the Utopia Linux workstation.
 
-Utopia is expanding from a dotfiles snapshot into an open-source Linux
+Utopia is expanding from a dotfiles snapshot into an intended open-source Linux
 workstation product whose desktop, rebuild process, and system engineering are
 readable by both people and agents. It is developed against real daily-use
 systems while keeping personal machine data outside the product model.
@@ -14,6 +14,10 @@ Cross-machine and cross-session work should continue from the rolling
 [`current handoff`](docs/handoff.md).
 Public-repository privacy boundaries are defined in
 [`docs/privacy.md`](docs/privacy.md).
+Third-party files and dependencies are recorded in
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md). Utopia's original material
+does not yet have a project-wide license; no license should be inferred from
+the licenses of the listed third-party material.
 
 The first [machine-readable workstation plan](profiles/README.md) can be
 inspected without changing the system:
