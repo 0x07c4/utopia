@@ -22,6 +22,10 @@ Arch laptop is useful for selecting individual CachyOS technologies without
 adopting the entire distribution. Neither machine should be forced to imitate
 the other before the behavior is understood.
 
+The current product sequence and accepted desktop foundation are maintained in
+[`roadmap.md`](roadmap.md). The vision defines why and what Utopia is; the
+roadmap defines which product capabilities are built next.
+
 ## Areas of the project
 
 ```text

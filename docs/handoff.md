@@ -3,7 +3,8 @@
 This is the short, rolling entry point for continuing Utopia on another machine
 or in a new agent session. Update it when the active baseline or immediate next
 work changes. Keep durable direction in [`vision.md`](vision.md), and keep
-session history in [`journal/`](journal/).
+the active product sequence in [`roadmap.md`](roadmap.md). Keep session history
+in [`journal/`](journal/).
 
 ## Trusted repository baseline
 
@@ -33,6 +34,10 @@ session history in [`journal/`](journal/).
   Shell, terminal, input, editor, and reviewed development configuration are
   domain-owned. Several other home-relative artifacts still live at the
   repository root.
+- Niri and Noctalia v5 are the accepted desktop foundation. The current laptop
+  runs Noctalia v5.1.0 and its live configuration validates. DMS remains a
+  reference rather than a migration target; revisit it only for a reproduced
+  Noctalia limitation.
 - [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md) records the exact
   Catppuccin for Kitty and Rime Ice revisions and their bundled license texts.
   The Fcitx theme with unverifiable redistribution permission was removed;
@@ -113,11 +118,11 @@ The current repository is clean and both Python suites pass (33 profile/audit
 tests and 67 Arch-installer tests). Continue in this order, one focused change
 at a time:
 
-1. **Define and build the first Utopia product milestone.** Start with the
-   coherent desktop experience: one wallpaper-derived theme source, explicit
-   visual tokens, and generated or validated palettes for Noctalia, Niri,
-   Kitty, Starship, Fcitx, and Neovim. Preserve a deterministic fallback when
-   no wallpaper is available.
+1. **Build Utopia Desktop v0.1.** Follow [`roadmap.md`](roadmap.md): use
+   Noctalia v5's wallpaper palette and template engine as the theme source,
+   define explicit visual tokens, and generate or validate palettes for Niri,
+   Kitty, Starship, Fcitx, Neovim, GTK, and Qt. Preserve a deterministic
+   fallback when no wallpaper is available.
 2. **Close the interaction and dependency gaps exposed by that milestone.** A
    key binding, font, cursor, application, editor integration, or background
    service must either have declared intent and validation or be removed from
