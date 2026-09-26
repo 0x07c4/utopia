@@ -6,8 +6,10 @@ Utopia is expanding from a dotfiles snapshot into an open-source Linux
 workstation product whose desktop, rebuild process, and system engineering are
 readable by both people and agents. It is developed against real daily-use
 systems while keeping personal machine data outside the product model.
-The durable direction is recorded in [`docs/vision.md`](docs/vision.md), while
-the CachyOS desktop migration and architecture discussion are preserved in the
+The durable direction is recorded in [`docs/vision.md`](docs/vision.md), and
+the active product sequence is defined in
+[`docs/roadmap.md`](docs/roadmap.md). The CachyOS desktop migration and
+architecture discussion are preserved in the
 [`2026-09-20 journal`](docs/journal/2026-09-20-cachyos-desktop-and-utopia-direction.md).
 Agents should begin with [`AGENTS.md`](AGENTS.md).
 Cross-machine and cross-session work should continue from the rolling
