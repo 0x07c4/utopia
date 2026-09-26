@@ -199,18 +199,6 @@ deploy = true
 validators = []
 
 [[artifacts]]
-id = "input.fcitx5-theme"
-layer = "workstation.utopia"
-domain = "input"
-source = "input/fcitx5/themes/catppuccin-mocha-green"
-destination = ".local/share/fcitx5/themes/catppuccin-mocha-green"
-kind = "tree"
-state = "managed"
-capture = true
-deploy = true
-validators = []
-
-[[artifacts]]
 id = "monitoring.bottom"
 layer = "workstation.utopia"
 domain = "monitoring"

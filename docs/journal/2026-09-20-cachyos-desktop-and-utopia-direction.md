@@ -405,3 +405,29 @@ debuginfod environment policy, and an empty Lazygit artifact were removed
 because they did not form complete active shared behavior. Lazygit package
 intent remains an independent profile decision; debugging policy can return as
 an explicit domain with network and cache behavior.
+
+## Progress note — third-party provenance review
+
+The retained imported files now have a path-scoped inventory in
+`THIRD_PARTY_NOTICES.md`. Kitty's Frappe theme was verified byte-for-byte
+against Catppuccin for Kitty revision
+`43098316202b84d6a71f71aaf8360f102f4d3f1a` and retains the upstream MIT
+license. `input/rime/rime_ice.dict.yaml` was verified byte-for-byte against
+Rime Ice revision `f3c796bb008a0ccc2bcd08aac66b82036120589e` and retains the
+upstream GPL-3.0-only license. Copies of both license texts are shipped under
+`LICENSES/`.
+
+No verifiable upstream or license was found for the temporary Catppuccin Fcitx
+theme. Its two PNG files, two SVG files, and configuration were removed rather
+than assuming redistribution permission. The managed Fcitx configuration now
+refers to the packaged `default` and `default-dark` themes, and the separate
+theme artifact was removed from the workstation plan. This is a provenance
+fallback, not the final visual design; a future wallpaper-aware generator must
+produce Utopia-owned output or carry an explicit upstream license.
+
+The `editor/nvim` gitlink remains pinned to the separate `nvim-astro`
+repository. Neither its pinned revision nor the reviewed AstroNvim template
+revision contained a license file, so that repository's licensing remains a
+separate unresolved task. Utopia's original material also remains unlicensed
+until the maintainer makes a project-wide license choice; third-party licenses
+must not be applied to the repository as a whole by inference.
