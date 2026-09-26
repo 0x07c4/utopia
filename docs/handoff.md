@@ -49,6 +49,38 @@ session history in [`journal/`](journal/).
   behavior through a small reviewed implementation or with explicit license and
   attribution information.
 
+## Current product gaps
+
+Utopia's safety and rebuild scaffolding is currently more mature than the
+workstation experience it is meant to support. The repository has reliable
+profile resolution, audit boundaries, and a heavily tested Arch installer, but
+the distinctive product is still mostly a collection of usable domain
+configurations rather than one coherent system.
+
+- The visual system has no shared source of truth. Noctalia uses Tokyo Night
+  and a Material-derived wallpaper scheme, Kitty and Starship use Catppuccin
+  Frappe, Neovim uses Tokyo Night Moon, and Fcitx currently falls back to its
+  packaged theme. Generated GTK/Qt remnants at the repository root are not an
+  intentional Utopia design.
+- Several declared interactions are not closed product loops. Niri binds a
+  browser that is absent from package intent, names a cursor theme that is not
+  declared, and hard-codes a localized screenshot directory. Editor features
+  reference external tools and a local model service without expressing their
+  package or capability requirements.
+- The laptop does not currently run the repository composition as declared.
+  Its read-only audit reports 7 matching, 7 drifted, and 2 missing artifacts;
+  notably, the modular Niri tree and laptop display overlay are not deployed.
+  Generated theme state and caches must still remain outside Git when this is
+  reconciled.
+- The performance-engineering north star is almost entirely unimplemented.
+  The BORE/LTO layer currently records a package name and an experimental label,
+  but there are no kernel provenance records, controlled baselines, benchmark
+  definitions, measurements, tuning overlays, or rollback evidence.
+- The separate `nvim-astro` repository still has unresolved template licensing
+  and public-history privacy issues. The maintainer explicitly deferred its
+  rebuild; do not let it block product work or rewrite that remote history
+  without fresh authorization.
+
 ## Resume on another machine
 
 If that machine has a clone created before the history rebuild, preserve it only
@@ -81,30 +113,30 @@ The current repository is clean and both Python suites pass (33 profile/audit
 tests and 67 Arch-installer tests). Continue in this order, one focused change
 at a time:
 
-1. **Resolve the editor submodule license.** Utopia's original material is now
-   Apache-2.0 and the retained third-party paths are documented. Resolve the
-   separate `nvim-astro` repository's AstroNvim template provenance and license
-   there before treating that submodule as redistributable source.
-2. **Resolve audit drift by domain.** Run `python -m utopia audit arch-laptop`
-   and `python -m utopia audit cachyos-desktop`; review shell, terminal, input,
-   desktop, and monitoring separately. Do not recapture generated themes,
-   absolute wallpaper paths, cache files, Rime runtime/build output, or the old
-   monolithic Niri tree. Keep expected host differences in host overlays.
-3. **Complete the artifact lifecycle.** Implement capture and deployment as
-   dry-run-first commands using the existing resolver and validators. Add a
-   last-deployment record and three-way conflict detection before either side
-   can be overwritten. Preserve backups and provide rollback instructions.
-4. **Unify installation with profiles.** Keep the existing Arch installer as a
-   tested prototype, then make bootstrap, configuration, recovery, and package
-   intent consume the same provenance-aware plan. Encryption remains optional;
-   Limine and systemd+sd-encrypt remain the supported encrypted path.
-5. **Rehearse the complete path in a fresh VM.** Validate plain and encrypted
-   Arch installs, package source separation, Noctalia Greeter, Rime deployment,
-   SSH permissions, recovery audit, and reboot behavior. Do not run an apply
-   path against the current host.
-6. **Release hygiene.** Add CI for both Python suites and profile validation,
-   document supported profiles and unmanaged boundaries, then create a first
-   versioned product release only after the VM rehearsal passes.
+1. **Define and build the first Utopia product milestone.** Start with the
+   coherent desktop experience: one wallpaper-derived theme source, explicit
+   visual tokens, and generated or validated palettes for Noctalia, Niri,
+   Kitty, Starship, Fcitx, and Neovim. Preserve a deterministic fallback when
+   no wallpaper is available.
+2. **Close the interaction and dependency gaps exposed by that milestone.** A
+   key binding, font, cursor, application, editor integration, or background
+   service must either have declared intent and validation or be removed from
+   the shared experience. Eliminate generated KDE/GTK snapshots and default
+   application configs that do not express Utopia behavior.
+3. **Use the laptop as integration evidence, not as an import source.** Review
+   its drift only for the active product milestone, choose the desired behavior
+   deliberately, back up live files before replacement, and never recapture
+   generated themes, absolute wallpaper paths, caches, or the old monolithic
+   Niri tree.
+4. **Build the first real performance experiment.** On one host, compare a
+   stable kernel baseline with `linux-cachyos-bore-lto` using a declared
+   workload, repeated latency measurements, complete environment metadata, and
+   a tested boot fallback. This should create the first useful content under
+   the kernel, scheduler, tuning, and benchmark domains.
+5. **Add supporting machinery only when a product slice requires it.** Capture,
+   deployment, installer/profile unification, VM rehearsal, and CI remain
+   important enabling work, but should be driven by a concrete desktop or
+   performance capability rather than treated as Utopia's product roadmap.
 
 Run the repository checks relevant to the changed domain. The current baseline
 checks are documented in `AGENTS.md`; at minimum, run both Python suites and

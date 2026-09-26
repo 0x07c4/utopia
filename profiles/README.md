@@ -99,7 +99,6 @@ shell/starship/starship.toml                       shared prompt configuration
 terminal/kitty/                                    shared terminal configuration
 input/fcitx5/config/                               shared Fcitx5 configuration
 input/fcitx5/environment.d/fcitx5.conf             input-method environment
-input/fcitx5/themes/                               reviewed candidate themes
 input/rime/                                        reviewed Rime customizations
 editor/nvim                                        pinned Neovim gitlink
 development/ssh/config                             shared SSH client policy
