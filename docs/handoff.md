@@ -38,13 +38,17 @@ in [`journal/`](journal/).
   runs Noctalia v5.1.0 and its live configuration validates. DMS remains a
   reference rather than a migration target; revisit it only for a reproduced
   Noctalia limitation.
-- The first Desktop v0.1 theme slice now makes Noctalia's wallpaper palette the
+- The first Desktop v0.1 theme slice makes Noctalia's wallpaper palette the
   source for Niri, Kitty, and Starship. Niri and Kitty use versioned Utopia
-  templates and retain explicit static fallbacks; Starship retains its prompt
-  policy while Noctalia owns only a marked palette block. Generated outputs are
-  excluded from static tree audit, while edits outside the Starship block still
-  count as drift. The slice is validated with Noctalia 5.1.0 and Niri 26.04;
-  it has not yet been deployed to the live laptop configuration.
+  templates and retain explicit static fallbacks; Noctalia owns only a marked
+  Starship palette block. Generated outputs are excluded from static tree audit,
+  while edits outside the Starship block still count as drift. The plumbing is
+  validated with Noctalia 5.1.0 and Niri 26.04, but its visual policy has not
+  completed review and it has not been deployed. The current wallpaper produces
+  a predominantly olive-green Material 3 palette; that behavior was examined,
+  not accepted or rejected. The repository Starship configuration did replace
+  the live prompt's established Powerline layout, and that layout regression
+  must not be deployed.
 - [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md) records the exact
   Catppuccin for Kitty and Rime Ice revisions and their bundled license texts.
   The Fcitx theme with unverifiable redistribution permission was removed;
@@ -69,12 +73,18 @@ profile resolution, audit boundaries, and a heavily tested Arch installer, but
 the distinctive product is still mostly a collection of usable domain
 configurations rather than one coherent system.
 
-- The visual system is only partially unified. Noctalia now defines the
-  wallpaper-derived source for Niri, Kitty, and Starship, with deterministic
-  fallbacks, but the live laptop has not adopted that composition. Neovim still
-  uses Tokyo Night Moon, Fcitx uses its packaged theme, and GTK/Qt integration
-  is not yet intentional. Generated GTK/Qt remnants at the repository root are
-  not an intentional Utopia design.
+- The visual system is only partially unified. The existing Noctalia templates
+  prove that wallpaper-derived values can reach Niri, Kitty, and Starship, but
+  they do not yet define an approved Utopia palette. Noctalia's built-in
+  schemes derive a complete role set from one selected seed, so a green seed can
+  make primary, secondary, tertiary, terminal, and surface roles feel uniformly
+  green. This is an algorithmic property, not yet a product verdict. Compare it
+  with more controlled wallpaper influence, such as stable surfaces and
+  semantic colors plus several hue-separated accent candidates, contrast
+  enforcement, and deterministic fallbacks. Neovim still uses Tokyo Night Moon,
+  Fcitx uses its packaged theme, and GTK/Qt integration is not yet intentional.
+  Generated GTK/Qt remnants at the repository root are not an intentional
+  Utopia design.
 - Several declared interactions are not closed product loops. Niri binds a
   browser that is absent from package intent, names a cursor theme that is not
   declared, and hard-codes a localized screenshot directory. Editor features
@@ -126,28 +136,47 @@ The current repository is clean and both Python suites pass (36 profile/audit
 tests and 67 Arch-installer tests). Continue in this order, one focused change
 at a time:
 
-1. **Continue Utopia Desktop v0.1 theme integration.** Reconcile the Niri,
-   Kitty, and Starship slice, already validated in an isolated home, on the
-   laptop with timestamped backups and a reviewable diff. Next, choose explicit
-   adapters for GTK/Qt, Fcitx, and Neovim instead of enabling every built-in or
-   network-fetched template. Preserve deterministic fallbacks and keep rendered
-   colors outside Git.
-2. **Close the interaction and dependency gaps exposed by that milestone.** A
+1. **Evaluate Utopia's dynamic palette policy before deployment.** Treat the
+   current Noctalia integration as working plumbing whose visual result still
+   needs review. Compare the built-in single-seed schemes with a controlled
+   multi-accent resolver; do not assume that the current green result is either
+   accepted or rejected. Any alternative should select hue-separated candidates,
+   reject unsuitable or near-duplicate colors, enforce text contrast, preserve
+   intentional surfaces and semantic status colors, and have a versioned
+   fallback. Its output must remain dynamic when the wallpaper changes; do not
+   hard-code colors sampled from the current wallpaper. Test several versioned,
+   redistribution-safe image fixtures and render reviewable comparisons before
+   changing live files.
+2. **Preserve the established Starship interaction design.** Keep the live
+   Powerline structure, separators, module order, and language/tool coverage;
+   only its palette should become generated. The layout is based on Starship's
+   `gruvbox-rainbow` preset, so record the upstream ISC provenance and license
+   before placing that implementation in Utopia. Do not retain the simplified
+   repository prompt merely because it is already committed.
+3. **Obtain visual approval, then reconcile one host at a time.** First show the
+   same unchanged component layouts under palettes generated from several
+   wallpapers. After approval, reconcile the Niri, Kitty, and Starship slice on
+   the active host with timestamped backups and a reviewable diff. Do not infer
+   that the laptop's wallpaper, display, or live configuration belongs on the
+   desktop. Choose explicit adapters for GTK/Qt, Fcitx, and Neovim later instead
+   of enabling every built-in or network-fetched template. Keep rendered colors
+   and transient wallpaper paths outside Git.
+4. **Close the interaction and dependency gaps exposed by that milestone.** A
    key binding, font, cursor, application, editor integration, or background
    service must either have declared intent and validation or be removed from
    the shared experience. Eliminate generated KDE/GTK snapshots and default
    application configs that do not express Utopia behavior.
-3. **Use the laptop as integration evidence, not as an import source.** Review
+5. **Use the laptop as integration evidence, not as an import source.** Review
    its drift only for the active product milestone, choose the desired behavior
    deliberately, back up live files before replacement, and never recapture
    generated themes, absolute wallpaper paths, caches, or the old monolithic
    Niri tree.
-4. **Build the first real performance experiment.** On one host, compare a
+6. **Build the first real performance experiment.** On one host, compare a
    stable kernel baseline with `linux-cachyos-bore-lto` using a declared
    workload, repeated latency measurements, complete environment metadata, and
    a tested boot fallback. This should create the first useful content under
    the kernel, scheduler, tuning, and benchmark domains.
-5. **Add supporting machinery only when a product slice requires it.** Capture,
+7. **Add supporting machinery only when a product slice requires it.** Capture,
    deployment, installer/profile unification, VM rehearsal, and CI remain
    important enabling work, but should be driven by a concrete desktop or
    performance capability rather than treated as Utopia's product roadmap.
