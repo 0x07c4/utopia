@@ -131,6 +131,155 @@ class ArtifactResolutionTest(unittest.TestCase):
                 'palette = "noctalia"',
             ],
         )
+        with (
+            profiles.REPO_ROOT / "shell/starship/starship.toml"
+        ).open("rb") as source:
+            starship_toml = tomllib.load(source)
+        self.assertEqual(starship_toml["palette"], "noctalia")
+        self.assertEqual(
+            set(starship_toml["palettes"]["noctalia"]),
+            {
+                "base",
+                "surface0",
+                "surface2",
+                "text",
+                "blue",
+                "cyan",
+                "sapphire",
+                "green",
+                "yellow",
+                "red",
+                "mauve",
+            },
+        )
+        powerline_order = (
+            "$os",
+            "$username",
+            "$directory",
+            "$git_branch",
+            "$git_status",
+            "$c",
+            "$cpp",
+            "$rust",
+            "$golang",
+            "$nodejs",
+            "$php",
+            "$java",
+            "$kotlin",
+            "$haskell",
+            "$python",
+            "$docker_context",
+            "$conda",
+            "$pixi",
+            "$time",
+            "$line_break",
+            "$character",
+        )
+        positions = [
+            starship_toml["format"].index(module)
+            for module in powerline_order
+        ]
+        self.assertEqual(positions, sorted(positions))
+        self.assertNotIn("$bun", starship_toml["format"])
+        self.assertEqual(
+            starship_config.count("# >>> NOCTALIA STARSHIP PALETTE >>>"), 1
+        )
+        self.assertEqual(
+            starship_config.count("# <<< NOCTALIA STARSHIP PALETTE <<<"), 1
+        )
+
+        notices = (profiles.REPO_ROOT / "THIRD_PARTY_NOTICES.md").read_text()
+        self.assertIn("Starship Gruvbox Rainbow preset", notices)
+        self.assertIn("fca92d8dcbd5981b0160af2f7ed7a430b6475a72", notices)
+        self.assertTrue(
+            (profiles.REPO_ROOT / "LICENSES/Starship-ISC.txt").is_file()
+        )
+
+    def test_noctalia_wallpaper_center_is_one_keyboard_first_entry(self) -> None:
+        noctalia_dir = profiles.REPO_ROOT / ".config/noctalia"
+        with (noctalia_dir / "plugins.toml").open("rb") as source:
+            plugins = tomllib.load(source)
+        with (noctalia_dir / "bar.toml").open("rb") as source:
+            bar = tomllib.load(source)
+
+        self.assertEqual(plugins["plugins"]["enabled"], ["utopia/wallpaper"])
+        wallpaper = plugins["plugin_settings"]["utopia/wallpaper"]
+        self.assertEqual(wallpaper["wallpaper_dir"], "~/Pictures/Wallpapers")
+        self.assertNotIn("api_key", wallpaper)
+
+        start = bar["bar"]["default"]["start"]
+        self.assertEqual(start.count("wallpaper"), 1)
+        self.assertNotIn("wallhaven-online", start)
+        self.assertEqual(
+            bar["widget"]["wallpaper"]["type"],
+            "utopia/wallpaper:wallpaper",
+        )
+
+        keybinds = (
+            profiles.REPO_ROOT / "desktop/niri/cfg/keybinds.kdl"
+        ).read_text()
+        self.assertIn(
+            'Mod+Shift+Return                    hotkey-overlay-title="Open Wallpaper Center: local and Wallhaven"',
+            keybinds,
+        )
+        self.assertNotRegex(
+            keybinds,
+            r"(?m)^\s*Mod\+Shift\+W\s+hotkey-overlay-title=",
+        )
+        self.assertNotIn("panel-toggle wallpaper", keybinds)
+        self.assertNotIn("noctalia/wallhaven:browser", keybinds)
+
+        plan = workstation.resolve(profiles.REPO_ROOT, "cachyos-desktop")
+        plugin = next(
+            artifact
+            for artifact in plan["artifacts"]
+            if artifact["id"] == "desktop.noctalia-wallpaper-plugin"
+        )
+        self.assertEqual(
+            plugin["destination"],
+            ".local/share/noctalia/plugins/utopia-wallpaper",
+        )
+
+        plugin_dir = profiles.REPO_ROOT / plugin["source"]
+        with (plugin_dir / "plugin.toml").open("rb") as source:
+            manifest = tomllib.load(source)
+        self.assertEqual(manifest["id"], "utopia/wallpaper")
+        self.assertEqual(manifest["plugin_api"], 13)
+        settings = {setting["key"]: setting for setting in manifest["setting"]}
+        self.assertEqual(settings["api_key"]["type"], "string")
+        self.assertEqual(settings["api_key"]["default"], "")
+        panel = manifest["panel"][0]
+        self.assertEqual(panel["id"], "center")
+        self.assertEqual(panel["keyboard_focus"], "exclusive")
+        for chord in (
+            "Left",
+            "Right",
+            "Up",
+            "Down",
+            "Return",
+            "ctrl+1",
+            "ctrl+2",
+            "ctrl+l",
+        ):
+            self.assertIn(chord, panel["capture_keys"])
+
+        panel_source = (plugin_dir / "panel.luau").read_text()
+        self.assertIn('local API_URL = "https://wallhaven.cc/api/v1/search"', panel_source)
+        self.assertIn('local sorts = { "relevance", "random", "date_added", "views", "favorites", "toplist", "hot" }', panel_source)
+        self.assertIn('local sortIndex = 2', panel_source)
+        self.assertIn('local topRanges = { "1d", "3d", "1w", "1M", "3M", "6M", "1y" }', panel_source)
+        self.assertNotIn('"atleast=3840x2160"', panel_source)
+        self.assertNotIn('"ratios=16x9"', panel_source)
+        self.assertIn('item.thumbs.large or item.thumbs.small', panel_source)
+        self.assertIn('"X-API-Key: " .. key', panel_source)
+        self.assertIn('noctalia.getConfig("api_key")', panel_source)
+        self.assertIn("function onIpc(event, payload)", panel_source)
+        self.assertIn("local localPage = 1", panel_source)
+        self.assertIn("local onlinePage = 1", panel_source)
+        self.assertIn("local onlineTotalPages = 1", panel_source)
+        self.assertNotIn("local totalPages = 1", panel_source)
+        self.assertIn("tonumber(meta.last_page)", panel_source)
+        self.assertTrue((plugin_dir / "translations/zh-Hans.json").is_file())
 
     def test_input_artifacts_are_owned_by_the_input_domain(self) -> None:
         result = workstation.resolve(profiles.REPO_ROOT, "arch-laptop")

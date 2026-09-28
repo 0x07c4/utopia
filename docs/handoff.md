@@ -6,6 +6,34 @@ work changes. Keep durable direction in [`vision.md`](vision.md), and keep
 the active product sequence in [`roadmap.md`](roadmap.md). Keep session history
 in [`journal/`](journal/).
 
+## Active pause point — 2026-09-28
+
+- Work is paused on `work/dynamic-palette-evaluation` with the reviewed
+  milestone committed and the working tree expected to be clean. Continue from
+  the branch published on the canonical remote rather than reconstructing the
+  desktop's former uncommitted state.
+- The `cachyos-desktop` live session is intentionally only partway through the
+  theme milestone. Noctalia is running wallpaper-driven `m3-content`, but the
+  generated Niri and Kitty files are still absent and the live Starship file is
+  unchanged. Do not describe this as a complete theme deployment.
+- The repository now contains the selected palette policy, offline comparison
+  tooling, the unified local/Wallhaven wallpaper center, and the restored full
+  Powerline Starship layout with exact ISC provenance. Starship's Noctalia
+  adapter was tested in isolation for body preservation, single markers,
+  idempotence, and successful rendering; it was not copied into the live home.
+- The pause occurred at the read-only inventory stage immediately before a
+  proposed full theme-slice deployment. No timestamped deployment backup was
+  created for that proposed operation because no apply step was started.
+- When continuing on `arch-laptop`, treat the branch as repository work only.
+  Re-run status, submodule, profile, and live/repository comparisons there; do
+  not deploy the desktop's display, wallpaper, generated colors, or runtime
+  state. The next live theme deployment remains scoped to `cachyos-desktop`
+  unless a separate laptop mapping and approval are provided.
+- At this pause, the repository tests pass: 48 profile/audit tests and 67
+  installer tests. Both profiles resolve, Niri and Noctalia live validation
+  pass, the wallpaper plugin lints with no findings, and both diff whitespace
+  checks pass.
+
 ## Trusted repository baseline
 
 - The canonical repository is `https://github.com/0x07c4/utopia`.
@@ -43,17 +71,66 @@ in [`journal/`](journal/).
   templates and retain explicit static fallbacks; Noctalia owns only a marked
   Starship palette block. Generated outputs are excluded from static tree audit,
   while edits outside the Starship block still count as drift. The plumbing is
-  validated with Noctalia 5.1.0 and Niri 26.04, but its visual policy has not
-  completed review and it has not been deployed. The current wallpaper produces
-  a predominantly olive-green Material 3 palette; that behavior was examined,
-  not accepted or rejected. The repository Starship configuration did replace
-  the live prompt's established Powerline layout, and that layout regression
-  must not be deployed.
+  validated with Noctalia 5.1.0 and Niri 26.04, but the generated Niri and Kitty
+  outputs have not been deployed. The repository Starship configuration now
+  preserves the established Powerline structure, separators, module order, and
+  language/tool coverage while leaving only its marked palette block under
+  Noctalia control. The layout's Starship `gruvbox-rainbow` origin and ISC
+  license are recorded at an exact upstream revision. An isolated double-apply
+  test confirmed that Noctalia changes only the palette, remains idempotent, and
+  leaves a renderable prompt. This repository version has not been deployed.
+- An offline evaluator under `desktop/theme/` now compares Noctalia's actual
+  `m3-content` and `vibrant` output with an experimental controlled-dark
+  policy. It uses three Utopia-owned synthetic wallpaper fixtures, keeps
+  surfaces and semantic colors stable, filters image candidates by population
+  and saturation, enforces hue separation and contrast, and uses a versioned
+  fallback when a wallpaper cannot supply three suitable accents. Generated
+  HTML, SVG, JSON, and rasterized fixtures stay outside Git. Initial simplified
+  fixture review ranked the directions `controlled > vibrant > m3-content`, but
+  that ranking did not survive a representative desktop layout. The evaluator
+  now accepts a local-only selected wallpaper without recording its path and
+  holds the declared Noctalia bar, Niri focus treatment, Kitty window, complete
+  Powerline stages, control-center card, and notification card fixed across all
+  palettes. On that layout the maintainer preferred both built-in schemes over
+  controlled. A subsequent live Noctalia-only A/B on a saturated multicolor
+  wallpaper selected `m3-content`: `vibrant` over-weighted a rose-colored region
+  and lost too much of the image's cyan, white, yellow, and green balance.
+  `m3-content` is therefore the leading baseline, `vibrant` remains a useful
+  stress case, and controlled is no longer the deployment candidate.
+  The evaluator can also reference Noctalia's installed MIT-licensed default
+  wallpaper without vendoring it, recording the package version and checksum in
+  local-only output. On that image the current controlled thresholds admit only
+  one candidate, which cannot form a three-way hue-separated set with the
+  fallback; the displayed controlled palette is therefore entirely fallback.
+  Treat its appearance and its lack of wallpaper influence as separate review
+  questions.
+- Utopia now owns a small Noctalia plugin, `utopia/wallpaper`, that presents
+  local files and Wallhaven discovery (SFW by default) as two pages of one
+  wallpaper center.
+  The bar and `Mod+Shift+Return` open that same panel; there is no separate
+  online shortcut or mouse-only path. Inside the panel, source switching,
+  selection, paging, search, and applying are keyboard-accessible. Wallhaven
+  downloads enter the same home-relative `~/Pictures/Wallpapers` directory as
+  the local page, while thumbnails and downloaded images remain outside Git.
+  The implementation uses Noctalia's public plugin API and Wallhaven's public
+  API; it bundles no code or assets from the official MIT-licensed Wallhaven
+  plugin, which was used only as an API-integration reference. The managed
+  plugin tree and the Noctalia/Niri entry changes were deployed to
+  `cachyos-desktop` on 2026-09-27 after a timestamped backup. Noctalia loaded the
+  plugin in Chinese, the unified panel opened successfully, and a live online
+  request populated its isolated thumbnail cache. The online browser defaults
+  to all categories, SFW, newest first, and no hidden aspect-ratio or resolution
+  restriction; it exposes all Wallhaven sort modes, sort direction, toplist
+  period, category, purity, ratio, resolution, and direct page controls, and
+  prefers large thumbnails. This online-browser correction was deployed to the
+  desktop on 2026-09-28 after a second timestamped backup. An optional API-key
+  setting exists for rate limits and NSFW access, but no API key is tracked or
+  currently configured.
 - [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md) records the exact
-  Catppuccin for Kitty and Rime Ice revisions and their bundled license texts.
-  The Fcitx theme with unverifiable redistribution permission was removed;
-  Fcitx now names its packaged default themes. The separate Neovim submodule
-  still needs its own license decision.
+  Starship, Catppuccin for Kitty, and Rime Ice revisions and their bundled
+  license texts. The Fcitx theme with unverifiable redistribution permission
+  was removed; Fcitx now names its packaged default themes. The separate Neovim
+  submodule still needs its own license decision.
 - Utopia's original material is licensed under Apache-2.0. Third-party paths
   retain the licenses recorded in `THIRD_PARTY_NOTICES.md`, and the separate
   `editor/nvim` submodule is explicitly outside Utopia's license scope.
@@ -132,35 +209,30 @@ public commit.
 
 ## Immediate next work
 
-The current repository is clean and both Python suites pass (36 profile/audit
+The current implementation passes both Python suites (48 profile/audit
 tests and 67 Arch-installer tests). Continue in this order, one focused change
 at a time:
 
-1. **Evaluate Utopia's dynamic palette policy before deployment.** Treat the
-   current Noctalia integration as working plumbing whose visual result still
-   needs review. Compare the built-in single-seed schemes with a controlled
-   multi-accent resolver; do not assume that the current green result is either
-   accepted or rejected. Any alternative should select hue-separated candidates,
-   reject unsuitable or near-duplicate colors, enforce text contrast, preserve
-   intentional surfaces and semantic status colors, and have a versioned
-   fallback. Its output must remain dynamic when the wallpaper changes; do not
-   hard-code colors sampled from the current wallpaper. Test several versioned,
-   redistribution-safe image fixtures and render reviewable comparisons before
-   changing live files.
-2. **Preserve the established Starship interaction design.** Keep the live
-   Powerline structure, separators, module order, and language/tool coverage;
-   only its palette should become generated. The layout is based on Starship's
-   `gruvbox-rainbow` preset, so record the upstream ISC provenance and license
-   before placing that implementation in Utopia. Do not retain the simplified
-   repository prompt merely because it is already committed.
-3. **Obtain visual approval, then reconcile one host at a time.** First show the
-   same unchanged component layouts under palettes generated from several
-   wallpapers. After approval, reconcile the Niri, Kitty, and Starship slice on
-   the active host with timestamped backups and a reviewable diff. Do not infer
-   that the laptop's wallpaper, display, or live configuration belongs on the
-   desktop. Choose explicit adapters for GTK/Qt, Fcitx, and Neovim later instead
-   of enabling every built-in or network-fetched template. Keep rendered colors
-   and transient wallpaper paths outside Git.
+1. **Treat `m3-content` as the accepted Noctalia baseline and preserve the A/B
+   evidence.** The active desktop is temporarily running wallpaper-driven
+   `m3-content`; before the A/B it was actually using built-in Tokyo Night, not
+   the configured-but-inactive wallpaper scheme. The A/B changed only
+   Noctalia: Starship remained byte-identical and the generated Niri/Kitty files
+   remained absent. Do not infer that the complete desktop theme slice is now
+   deployed, and do not commit wallpapers, extracted colors, rendered output,
+   runtime state, or the timestamped local A/B backups.
+2. **Review and deploy the complete dynamic-theme slice on the active desktop.**
+   The visual baseline and Starship structure are now selected. Compare the
+   repository Niri, Kitty, Starship, and Noctalia inputs with their live
+   counterparts, make a timestamped backup, present the exact deployment diff,
+   and apply only after approval. Validate that `m3-content` reaches all three
+   consumers and that a wallpaper change regenerates them without altering the
+   Starship body. Keep rendered colors and transient wallpaper paths outside
+   Git.
+3. **Reconcile other visual adapters one at a time.** Do not infer that the
+   laptop's wallpaper, display, or live configuration belongs on the desktop.
+   Choose explicit adapters for GTK/Qt, Fcitx, and Neovim instead of enabling
+   every built-in or network-fetched template.
 4. **Close the interaction and dependency gaps exposed by that milestone.** A
    key binding, font, cursor, application, editor integration, or background
    service must either have declared intent and validation or be removed from

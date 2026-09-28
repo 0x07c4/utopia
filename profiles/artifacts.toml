@@ -117,6 +117,18 @@ deploy = true
 validators = ["noctalia-config"]
 
 [[artifacts]]
+id = "desktop.noctalia-wallpaper-plugin"
+layer = "workstation.utopia"
+domain = "desktop"
+source = "desktop/noctalia/plugins/utopia-wallpaper"
+destination = ".local/share/noctalia/plugins/utopia-wallpaper"
+kind = "tree"
+state = "managed"
+capture = true
+deploy = true
+validators = []
+
+[[artifacts]]
 id = "terminal.kitty"
 layer = "workstation.utopia"
 domain = "terminal"
