@@ -6,8 +6,11 @@ local API_URL = "https://wallhaven.cc/api/v1/search"
 local COLUMNS = 4
 local PAGE_SIZE = 12
 local THUMB_CONCURRENCY = 6
+local LOCAL_THUMB_CONCURRENCY = 2
 local TILE_WIDTH = 205
 local TILE_HEIGHT = 116
+local LOCAL_THUMB_WIDTH = TILE_WIDTH * 2
+local LOCAL_THUMB_HEIGHT = TILE_HEIGHT * 2
 
 local tab = "local"
 local selected = 1
@@ -51,9 +54,23 @@ local thumbPaths = {}
 local thumbPending = {}
 local thumbQueue = {}
 local thumbActive = 0
+local localThumbPaths = {}
+local localThumbPending = {}
+local localThumbQueued = {}
+local localThumbFailed = {}
+local localThumbQueue = {}
+local localThumbActive = 0
+local localThumbnailer = nil
+if noctalia.commandExists("magick") then
+  localThumbnailer = "magick"
+elseif noctalia.commandExists("ffmpeg") then
+  localThumbnailer = "ffmpeg"
+end
+local localThumbnailerWarningLogged = false
 
 local render
 local fetchOnline
+local queueLocalThumbs
 
 local function tr(key, values)
   return noctalia.tr(key, values)
@@ -157,6 +174,17 @@ local function joinPath(parent, child)
   return parent .. "/" .. child
 end
 
+-- Keep local paths out of cache filenames while invalidating a thumbnail when
+-- either the file size or modification time changes. This intentionally uses
+-- arithmetic below 2^53 so the result is stable in Luau's number type.
+local function stableCacheKey(value)
+  local hash = 5381
+  for index = 1, #value do
+    hash = (hash * 131 + string.byte(value, index)) % 2147483647
+  end
+  return string.format("%08x", hash)
+end
+
 local function scanDirectory(directory, depth, output)
   if depth > 2 or #output >= 500 then
     return
@@ -175,7 +203,13 @@ local function scanDirectory(directory, depth, output)
     if info ~= nil and info.isDir then
       scanDirectory(path, depth + 1, output)
     elseif info ~= nil and isImage(path) then
-      table.insert(output, { id = path, path = path, label = name })
+      local signature = path .. "|" .. tostring(info.size) .. "|" .. tostring(info.mtime)
+      table.insert(output, {
+        id = path,
+        path = path,
+        label = name,
+        cacheKey = stableCacheKey(signature),
+      })
     end
   end
 end
@@ -187,6 +221,7 @@ local function loadLocal()
   scanDirectory(directory, 0, localFiles)
   localPage = 1
   selected = math.min(math.max(1, selected), math.max(1, #localFiles))
+  queueLocalThumbs()
 end
 
 local function localTotalPages()
@@ -343,6 +378,121 @@ local function applySelected()
   end
 end
 
+local function localThumbCachePath(cacheKey)
+  local dataDir = noctalia.pluginDataDir()
+  if type(dataDir) ~= "string" then
+    return nil
+  end
+  return joinPath(dataDir, "local-thumbs/" .. cacheKey .. ".jpg")
+end
+
+local function localThumbCommand(item, destination)
+  local geometry = tostring(LOCAL_THUMB_WIDTH) .. "x" .. tostring(LOCAL_THUMB_HEIGHT)
+  if localThumbnailer == "magick" then
+    return {
+      "magick",
+      item.path,
+      "-auto-orient",
+      "-thumbnail",
+      geometry .. "^",
+      "-gravity",
+      "center",
+      "-extent",
+      geometry,
+      "-strip",
+      "-quality",
+      "82",
+      destination,
+    }
+  end
+  return {
+    "ffmpeg",
+    "-nostdin",
+    "-hide_banner",
+    "-loglevel",
+    "error",
+    "-y",
+    "-i",
+    item.path,
+    "-vf",
+    "scale=" .. tostring(LOCAL_THUMB_WIDTH) .. ":" .. tostring(LOCAL_THUMB_HEIGHT)
+      .. ":force_original_aspect_ratio=increase,crop=" .. tostring(LOCAL_THUMB_WIDTH)
+      .. ":" .. tostring(LOCAL_THUMB_HEIGHT),
+    "-frames:v",
+    "1",
+    "-q:v",
+    "3",
+    destination,
+  }
+end
+
+local function pumpLocalThumbQueue()
+  while localThumbActive < LOCAL_THUMB_CONCURRENCY and #localThumbQueue > 0 do
+    local item = table.remove(localThumbQueue, 1)
+    local cacheKey = item.cacheKey
+    localThumbQueued[cacheKey] = nil
+    if localThumbPaths[cacheKey] == nil
+      and not localThumbPending[cacheKey]
+      and not localThumbFailed[cacheKey]
+    then
+      local destination = localThumbCachePath(cacheKey)
+      if destination ~= nil then
+        localThumbPending[cacheKey] = true
+        localThumbActive += 1
+        local started = noctalia.runAsync(localThumbCommand(item, destination), function(result)
+          localThumbActive -= 1
+          localThumbPending[cacheKey] = nil
+          if result.exitCode == 0 and noctalia.fileExists(destination) then
+            localThumbPaths[cacheKey] = destination
+          else
+            localThumbFailed[cacheKey] = true
+            noctalia.log("local thumbnail generation failed: " .. tostring(result.stderr))
+          end
+          if tab == "local" then
+            render()
+          end
+          pumpLocalThumbQueue()
+        end)
+        if not started then
+          localThumbActive -= 1
+          localThumbPending[cacheKey] = nil
+          localThumbFailed[cacheKey] = true
+          noctalia.log("could not start local thumbnail generation with " .. tostring(localThumbnailer))
+        end
+      end
+    end
+  end
+end
+
+queueLocalThumbs = function()
+  if localThumbnailer == nil then
+    if not localThumbnailerWarningLogged then
+      noctalia.log("ImageMagick and FFmpeg are unavailable; local previews will use original images")
+      localThumbnailerWarningLogged = true
+    end
+    return
+  end
+  local dataDir = noctalia.pluginDataDir()
+  if type(dataDir) ~= "string" then
+    return
+  end
+  noctalia.mkdirAll(joinPath(dataDir, "local-thumbs"))
+  for _, item in ipairs(localFiles) do
+    local cacheKey = item.cacheKey
+    local cached = localThumbCachePath(cacheKey)
+    if cached ~= nil and noctalia.fileExists(cached) then
+      localThumbPaths[cacheKey] = cached
+    elseif not localThumbPending[cacheKey]
+      and not localThumbQueued[cacheKey]
+      and not localThumbFailed[cacheKey]
+    then
+      localThumbQueued[cacheKey] = true
+      table.insert(localThumbQueue, item)
+    end
+  end
+  pumpLocalThumbQueue()
+end
+
 local function thumbCachePath(id)
   local dataDir = noctalia.pluginDataDir()
   if type(dataDir) ~= "string" then
@@ -497,7 +647,11 @@ end
 local function tile(item, absoluteIndex, visibleIndex)
   local isSelected = absoluteIndex == selected
   local imagePath = item.path
-  if tab == "online" then
+  if tab == "local" and localThumbnailer ~= nil and not localThumbFailed[item.cacheKey] then
+    -- A placeholder is cheaper than decoding the full-resolution source while
+    -- its persistent thumbnail is being generated in the background.
+    imagePath = localThumbPaths[item.cacheKey]
+  elseif tab == "online" then
     imagePath = thumbPaths[item.id]
   end
   local preview
@@ -578,7 +732,8 @@ end
 local function tabButton(text, target, shortcut)
   return ui.button({
     key = "tab-" .. target,
-    text = text .. "  " .. shortcut,
+    text = text,
+    tooltip = shortcut,
     selected = tab == target,
     variant = tab == target and "primary" or "ghost",
     onClick = function()
@@ -598,10 +753,7 @@ local function filterButton(text, active, callback, enabled)
 end
 
 local function onlineToolbar()
-  if tab ~= "online" then
-    return ui.row({ visible = false }, {})
-  end
-  return ui.column({ gap = 8, align = "stretch" }, {
+  return ui.column({ key = "online-toolbar", gap = 8, align = "stretch" }, {
     ui.row({ gap = 8, align = "center" }, {
       ui.input({
         key = "search-" .. tostring(searchFocusSerial),
@@ -712,21 +864,30 @@ render = function()
   if applying then
     status = tr("downloading")
   end
-  panel.render(ui.column({ flexGrow = 1, gap = 12, align = "stretch" }, {
-    ui.row({ align = "center", gap = 8 }, {
+  local children = {
+    ui.row({ key = "panel-header", align = "center", gap = 8 }, {
       ui.label({ text = tr("title"), fontSize = 16, fontWeight = "bold", flexGrow = 1 }),
-      ui.label({ text = tr("keyboard_hint"), fontSize = 11, color = "on_surface_variant" }),
       ui.button({ glyph = "close", variant = "ghost", onClick = "onClose" }),
     }),
-    ui.row({ gap = 8, align = "center" }, {
+    ui.row({ key = "source-tabs", gap = 8, align = "center" }, {
       tabButton(tr("local_tab"), "local", "Ctrl+1"),
       tabButton(tr("online_tab"), "online", "Ctrl+2"),
       ui.spacer({ flexGrow = 1 }),
       ui.button({ glyph = "refresh", text = tr("refresh"), variant = "ghost", onClick = "onRefresh" }),
     }),
-    onlineToolbar(),
-    ui.scroll({ flexGrow = 1, gap = 12 }, { grid() }),
-    ui.row({ align = "center", justify = "space_between" }, {
+  }
+  if tab == "online" then
+    table.insert(children, onlineToolbar())
+  end
+  table.insert(children,
+    -- Allow the grid to shrink below its content's preferred height so the
+    -- footer remains visible when the online filters consume more space. Keep
+    -- one scroll identity across sources so returning to local wallpapers can
+    -- reuse the host's decoded-image cache instead of rebuilding the surface.
+    ui.scroll({ key = "wallpaper-grid", flexGrow = 1, minHeight = 0, gap = 12 }, { grid() })
+  )
+  table.insert(children,
+    ui.row({ key = "panel-footer", align = "center", justify = "space_between" }, {
       ui.label({ text = tr("selection_status", { index = selectedVisibleIndex(), count = #visibleItems() }), color = "on_surface_variant" }),
       ui.row({ gap = 8, align = "center" }, {
         ui.button({ glyph = "chevron-left", onClick = "onPreviousPage", enabled = not loading and activePage > 1 }),
@@ -744,9 +905,10 @@ render = function()
         }) or ui.label({ text = status, width = 120, textAlign = "center" }),
         ui.button({ glyph = "chevron-right", onClick = "onNextPage", enabled = not loading and activePage < activeTotalPages }),
       }),
-      ui.button({ text = tab == "local" and tr("apply") or tr("download_apply"), glyph = "check", variant = "primary", onClick = "onApply", enabled = not loading and not applying and #currentItems() > 0 }),
-    }),
-  }))
+      ui.button({ text = tr("apply"), glyph = "check", variant = "primary", onClick = "onApply", enabled = not loading and not applying and #currentItems() > 0 }),
+    })
+  )
+  panel.render(ui.column({ flexGrow = 1, gap = 12, align = "stretch" }, children))
 end
 
 function onOpen(_context)
