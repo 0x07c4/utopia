@@ -8,31 +8,34 @@ in [`journal/`](journal/).
 
 ## Active pause point — 2026-09-28
 
-- Work is paused on `work/dynamic-palette-evaluation` with the reviewed
-  milestone committed and the working tree expected to be clean. Continue from
-  the branch published on the canonical remote rather than reconstructing the
-  desktop's former uncommitted state.
+- The wallpaper-driven theme workflow was merged by PR #9. The trusted
+  repository baseline is `main`; do not reconstruct the desktop's former
+  uncommitted state or continue from the deleted topic branch.
 - The `cachyos-desktop` live session is intentionally only partway through the
   theme milestone. Noctalia is running wallpaper-driven `m3-content`, but the
   generated Niri and Kitty files are still absent and the live Starship file is
   unchanged. Do not describe this as a complete theme deployment.
-- The repository now contains the selected palette policy, offline comparison
-  tooling, the unified local/Wallhaven wallpaper center, and the restored full
-  Powerline Starship layout with exact ISC provenance. Starship's Noctalia
-  adapter was tested in isolation for body preservation, single markers,
-  idempotence, and successful rendering; it was not copied into the live home.
-- The pause occurred at the read-only inventory stage immediately before a
-  proposed full theme-slice deployment. No timestamped deployment backup was
-  created for that proposed operation because no apply step was started.
-- When continuing on `arch-laptop`, treat the branch as repository work only.
-  Re-run status, submodule, profile, and live/repository comparisons there; do
-  not deploy the desktop's display, wallpaper, generated colors, or runtime
-  state. The next live theme deployment remains scoped to `cachyos-desktop`
-  unless a separate laptop mapping and approval are provided.
-- At this pause, the repository tests pass: 48 profile/audit tests and 67
-  installer tests. Both profiles resolve, Niri and Noctalia live validation
-  pass, the wallpaper plugin lints with no findings, and both diff whitespace
-  checks pass.
+- The `arch-laptop` received a separately reviewed, timestamp-backed-up theme
+  deployment on 2026-09-28. Noctalia, Starship, and the Utopia wallpaper plugin
+  now match the repository. Kitty uses the repository configuration and
+  generated palette but retains an unreferenced old `current-theme.conf`, so
+  audit reports only that extra file as drift. The Utopia wallpaper plugin is
+  enabled and the former official Wallhaven plugin is disabled.
+- The laptop's monolithic Niri body was deliberately preserved. Deployment
+  added only the optional generated `noctalia.kdl` include and its rendered
+  palette. A full modular-tree replacement would currently regress the working
+  browser binding, select an unavailable cursor, and use a host-inappropriate
+  screenshot path. The audit therefore still reports Niri drift; do not call
+  that a failed theme deployment or overwrite it merely to make audit green.
+- The laptop deployment validated Noctalia configuration and plugin lint with
+  no findings, Niri, Kitty, and Starship parsing, and idempotent template
+  rendering. A controlled wallpaper switch changed all three generated Niri,
+  Kitty, and Starship outputs; restoring the original wallpaper restored every
+  output exactly, while the Starship body remained byte-identical throughout.
+- The repository tests pass: 48 profile/audit tests and 67 installer tests.
+  Both profiles resolve and both diff whitespace checks pass. The offline
+  comparison CLI still requires ImageMagick, which is not installed on the
+  laptop; its pure policy tests pass, and it was exercised on the desktop.
 
 ## Trusted repository baseline
 
@@ -211,15 +214,7 @@ The current implementation passes both Python suites (48 profile/audit
 tests and 67 Arch-installer tests). Continue in this order, one focused change
 at a time:
 
-1. **Treat `m3-content` as the accepted Noctalia baseline and preserve the A/B
-   evidence.** The active desktop is temporarily running wallpaper-driven
-   `m3-content`; before the A/B it was actually using built-in Tokyo Night, not
-   the configured-but-inactive wallpaper scheme. The A/B changed only
-   Noctalia: Starship remained byte-identical and the generated Niri/Kitty files
-   remained absent. Do not infer that the complete desktop theme slice is now
-   deployed, and do not commit wallpapers, extracted colors, rendered output,
-   runtime state, or the timestamped local A/B backups.
-2. **Review and deploy the complete dynamic-theme slice on the active desktop.**
+1. **Review and deploy the complete dynamic-theme slice on the active desktop.**
    The visual baseline and Starship structure are now selected. Compare the
    repository Niri, Kitty, Starship, and Noctalia inputs with their live
    counterparts, make a timestamped backup, present the exact deployment diff,
@@ -227,6 +222,12 @@ at a time:
    consumers and that a wallpaper change regenerates them without altering the
    Starship body. Keep rendered colors and transient wallpaper paths outside
    Git.
+2. **Close the laptop's modular Niri gap deliberately.** Replace shared
+   assumptions about Firefox, the Capitaine cursor, and a localized screenshot
+   directory with declared package intent or explicit host mappings. Only then
+   replace the laptop's preserved monolithic body and display overlay with the
+   complete repository tree. Keep the working minimal theme include until that
+   review is complete.
 3. **Reconcile other visual adapters one at a time.** Do not infer that the
    laptop's wallpaper, display, or live configuration belongs on the desktop.
    Choose explicit adapters for GTK/Qt, Fcitx, and Neovim instead of enabling
