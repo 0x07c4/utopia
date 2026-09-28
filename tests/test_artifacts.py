@@ -94,16 +94,40 @@ class ArtifactResolutionTest(unittest.TestCase):
 
         self.assertEqual(config["theme"]["source"], "wallpaper")
         templates = config["theme"]["templates"]
-        self.assertEqual(templates["builtin_ids"], ["starship"])
+        self.assertFalse(templates["enable_builtin_templates"])
+        self.assertEqual(templates["builtin_ids"], [])
         self.assertFalse(templates["enable_community_templates"])
         self.assertEqual(
-            set(templates["user"]), {"utopia-kitty", "utopia-niri"}
+            set(templates["user"]),
+            {"utopia-kitty", "utopia-niri", "utopia-starship"},
         )
         for template in templates["user"].values():
             path = template["input_path"]
             self.assertTrue(
                 (profiles.REPO_ROOT / ".config/noctalia" / path).is_file()
             )
+        starship_template = templates["user"]["utopia-starship"]
+        self.assertEqual(
+            starship_template["output_path"],
+            "$XDG_CACHE_HOME/noctalia/starship-palette.toml",
+        )
+        self.assertEqual(
+            starship_template["post_hook"],
+            "bash /usr/share/noctalia/assets/templates/starship/apply.sh",
+        )
+        starship_palette_template = (
+            profiles.REPO_ROOT
+            / ".config/noctalia/templates/utopia/starship-palette.toml"
+        ).read_text()
+        self.assertIn(
+            'primary = "{{colors.primary.default.hex}}"',
+            starship_palette_template,
+        )
+        self.assertIn(
+            'tertiary = "{{colors.tertiary.default.hex}}"',
+            starship_palette_template,
+        )
+        self.assertNotIn("terminal_normal_blue", starship_palette_template)
 
         plan = workstation.resolve(profiles.REPO_ROOT, "arch-laptop")
         niri = next(
@@ -139,13 +163,16 @@ class ArtifactResolutionTest(unittest.TestCase):
         self.assertEqual(
             set(starship_toml["palettes"]["noctalia"]),
             {
-                "base",
-                "surface0",
+                "primary",
+                "on_primary",
+                "secondary",
+                "on_secondary",
+                "accent",
+                "on_accent",
+                "tertiary",
+                "on_tertiary",
                 "surface2",
                 "text",
-                "blue",
-                "cyan",
-                "sapphire",
                 "green",
                 "yellow",
                 "red",
@@ -181,6 +208,8 @@ class ArtifactResolutionTest(unittest.TestCase):
         ]
         self.assertEqual(positions, sorted(positions))
         self.assertNotIn("$bun", starship_toml["format"])
+        self.assertIn("[](primary)", starship_toml["format"])
+        self.assertNotIn("[](blue)", starship_toml["format"])
         self.assertEqual(
             starship_config.count("# >>> NOCTALIA STARSHIP PALETTE >>>"), 1
         )
@@ -194,6 +223,21 @@ class ArtifactResolutionTest(unittest.TestCase):
         self.assertTrue(
             (profiles.REPO_ROOT / "LICENSES/Starship-ISC.txt").is_file()
         )
+
+        kitty_template = (
+            profiles.REPO_ROOT
+            / ".config/noctalia/templates/utopia/kitty.conf"
+        ).read_text()
+        self.assertIn(
+            "color4 {{colors.primary.default.hex}}", kitty_template
+        )
+        self.assertIn(
+            "color12 {{colors.primary_fixed.default.hex}}", kitty_template
+        )
+        self.assertIn(
+            "color5 {{colors.tertiary.default.hex}}", kitty_template
+        )
+        self.assertNotIn("terminal_normal_blue", kitty_template)
 
     def test_noctalia_wallpaper_center_is_one_keyboard_first_entry(self) -> None:
         noctalia_dir = profiles.REPO_ROOT / ".config/noctalia"

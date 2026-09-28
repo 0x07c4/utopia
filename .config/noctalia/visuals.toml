@@ -11,11 +11,12 @@ source = "wallpaper"
 builtin = "Tokyo-Night"
 wallpaper_scheme = "m3-content"
 
-# Only Starship needs Noctalia's mutation-aware built-in integration. Kitty
-# and Niri use Utopia-owned templates so their base configuration stays static.
+# Utopia-owned adapters use explicit Material roles instead of inheriting the
+# terminal palette's historical color names. The Starship post-hook reuses
+# Noctalia's mutation-safe marked-block applicator.
 [theme.templates]
-enable_builtin_templates = true
-builtin_ids = ["starship"]
+enable_builtin_templates = false
+builtin_ids = []
 enable_community_templates = false
 community_ids = []
 
@@ -27,6 +28,11 @@ post_hook = "sh -c 'pkill -USR1 -x kitty >/dev/null 2>&1 || true'"
 [theme.templates.user.utopia-niri]
 input_path = "templates/utopia/niri.kdl"
 output_path = "$XDG_CONFIG_HOME/niri/noctalia.kdl"
+
+[theme.templates.user.utopia-starship]
+input_path = "templates/utopia/starship-palette.toml"
+output_path = "$XDG_CACHE_HOME/noctalia/starship-palette.toml"
+post_hook = "bash /usr/share/noctalia/assets/templates/starship/apply.sh"
 
 [wallpaper]
 directory = ""

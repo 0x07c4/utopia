@@ -2,18 +2,18 @@
 palette = "noctalia"
 
 # Powerline structure adapted from Starship's gruvbox-rainbow preset at
-# v1.26.0. Utopia preserves the established module order while Noctalia owns
-# only the marked palette block at the end of this file.
+# v1.26.0. Utopia preserves the established module order and assigns explicit
+# Material roles while Noctalia owns only the marked palette block below.
 format = """
-[](blue)\
+[](primary)\
 $os\
 $username\
-[](bg:yellow fg:blue)\
+[](bg:secondary fg:primary)\
 $directory\
-[](fg:yellow bg:green)\
+[](fg:secondary bg:accent)\
 $git_branch\
 $git_status\
-[](fg:green bg:sapphire)\
+[](fg:accent bg:tertiary)\
 $c\
 $cpp\
 $rust\
@@ -24,7 +24,7 @@ $java\
 $kotlin\
 $haskell\
 $python\
-[](fg:sapphire bg:surface2)\
+[](fg:tertiary bg:surface2)\
 $docker_context\
 $conda\
 $pixi\
@@ -34,7 +34,7 @@ $line_break$character"""
 
 [os]
 disabled = false
-style = "bg:blue fg:base"
+style = "bg:primary fg:on_primary"
 
 [os.symbols]
 Windows = "󰍲"
@@ -62,12 +62,12 @@ Pop = ""
 
 [username]
 show_always = true
-style_user = "bg:blue fg:base"
-style_root = "bg:blue fg:base"
+style_user = "bg:primary fg:on_primary"
+style_root = "bg:primary fg:on_primary"
 format = "[ $user ]($style)"
 
 [directory]
-style = "fg:base bg:yellow"
+style = "fg:on_secondary bg:secondary"
 format = "[ $path ]($style)"
 truncation_length = 3
 truncation_symbol = "…/"
@@ -81,62 +81,62 @@ Developer = "󰲋 "
 
 [git_branch]
 symbol = ""
-style = "bg:green"
-format = "[[ $symbol $branch ](fg:base bg:green)]($style)"
+style = "bg:accent"
+format = "[[ $symbol $branch ](fg:on_accent bg:accent)]($style)"
 
 [git_status]
-style = "bg:green"
-format = "[[($all_status$ahead_behind )](fg:base bg:green)]($style)"
+style = "bg:accent"
+format = "[[($all_status$ahead_behind )](fg:on_accent bg:accent)]($style)"
 
 [nodejs]
 symbol = ""
-style = "bg:sapphire"
-format = "[[ $symbol( $version) ](fg:base bg:sapphire)]($style)"
+style = "bg:tertiary"
+format = "[[ $symbol( $version) ](fg:on_tertiary bg:tertiary)]($style)"
 
 [c]
 symbol = " "
-style = "bg:sapphire"
-format = "[[ $symbol( $version) ](fg:base bg:sapphire)]($style)"
+style = "bg:tertiary"
+format = "[[ $symbol( $version) ](fg:on_tertiary bg:tertiary)]($style)"
 
 [cpp]
 symbol = " "
-style = "bg:sapphire"
-format = "[[ $symbol( $version) ](fg:base bg:sapphire)]($style)"
+style = "bg:tertiary"
+format = "[[ $symbol( $version) ](fg:on_tertiary bg:tertiary)]($style)"
 
 [rust]
 symbol = ""
-style = "bg:sapphire"
-format = "[[ $symbol( $version) ](fg:base bg:sapphire)]($style)"
+style = "bg:tertiary"
+format = "[[ $symbol( $version) ](fg:on_tertiary bg:tertiary)]($style)"
 
 [golang]
 symbol = ""
-style = "bg:sapphire"
-format = "[[ $symbol( $version) ](fg:base bg:sapphire)]($style)"
+style = "bg:tertiary"
+format = "[[ $symbol( $version) ](fg:on_tertiary bg:tertiary)]($style)"
 
 [php]
 symbol = ""
-style = "bg:sapphire"
-format = "[[ $symbol( $version) ](fg:base bg:sapphire)]($style)"
+style = "bg:tertiary"
+format = "[[ $symbol( $version) ](fg:on_tertiary bg:tertiary)]($style)"
 
 [java]
 symbol = ""
-style = "bg:sapphire"
-format = "[[ $symbol( $version) ](fg:base bg:sapphire)]($style)"
+style = "bg:tertiary"
+format = "[[ $symbol( $version) ](fg:on_tertiary bg:tertiary)]($style)"
 
 [kotlin]
 symbol = ""
-style = "bg:sapphire"
-format = "[[ $symbol( $version) ](fg:base bg:sapphire)]($style)"
+style = "bg:tertiary"
+format = "[[ $symbol( $version) ](fg:on_tertiary bg:tertiary)]($style)"
 
 [haskell]
 symbol = ""
-style = "bg:sapphire"
-format = "[[ $symbol( $version) ](fg:base bg:sapphire)]($style)"
+style = "bg:tertiary"
+format = "[[ $symbol( $version) ](fg:on_tertiary bg:tertiary)]($style)"
 
 [python]
 symbol = ""
-style = "bg:sapphire"
-format = "[[ $symbol( $version) ](fg:base bg:sapphire)]($style)"
+style = "bg:tertiary"
+format = "[[ $symbol( $version) ](fg:on_tertiary bg:tertiary)]($style)"
 
 [docker_context]
 symbol = ""
@@ -172,13 +172,16 @@ vimcmd_visual_symbol = "[](bold fg:yellow)"
 # >>> NOCTALIA STARSHIP PALETTE >>>
 # Deterministic Catppuccin Frappe fallback. Noctalia owns this marked block.
 [palettes.noctalia]
-base = "#303446"
-surface0 = "#414559"
+primary = "#8caaee"
+on_primary = "#303446"
+secondary = "#e5c890"
+on_secondary = "#303446"
+accent = "#81c8be"
+on_accent = "#303446"
+tertiary = "#ca9ee6"
+on_tertiary = "#303446"
 surface2 = "#626880"
 text = "#c6d0f5"
-blue = "#8caaee"
-cyan = "#81c8be"
-sapphire = "#85c1dc"
 green = "#a6d189"
 yellow = "#e5c890"
 red = "#e78284"
