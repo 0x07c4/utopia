@@ -8,13 +8,25 @@ in [`journal/`](journal/).
 
 ## Active pause point — 2026-09-29
 
-- The wallpaper-driven theme workflow was merged by PR #9. The trusted
-  repository baseline is `main`; do not reconstruct the desktop's former
-  uncommitted state or continue from the deleted topic branch.
-- The `cachyos-desktop` live session is intentionally only partway through the
-  theme milestone. Noctalia is running wallpaper-driven `m3-content`, but the
-  generated Niri and Kitty files are still absent and the live Starship file is
-  unchanged. Do not describe this as a complete theme deployment.
+- The wallpaper-driven theme workflow was merged by PR #9. The accepted
+  follow-up role mapping is published on `work/theme-role-mapping`, based on the
+  latest `main`; review and merge that focused branch instead of reconstructing
+  an earlier topic branch.
+- The complete theme slice was deployed to `cachyos-desktop` on 2026-09-29
+  after timestamped backups. Noctalia 5.1.0 now drives generated Niri, Kitty,
+  and Starship outputs with wallpaper `m3-content`; the v0.4.0 Utopia wallpaper
+  plugin is enabled. Static config, generated-output parsing, plugin lint, and
+  the preserved Starship body all validated. Audit improved from 10 matching
+  and 7 drifted artifacts to 12 matching and 5 drifted artifacts; the remaining
+  drift is unrelated or deliberately preserved runtime state.
+- A blue-dominant wallpaper exposed a role-adapter defect: Noctalia's terminal
+  `blue` was the Material tertiary color, so a derived pale pink dominated the
+  Starship identity segment and directory listings. The accepted mapping keeps
+  palette generation dynamic but gives high-frequency surfaces explicit
+  `primary`, `secondary`, and primary-derived `accent` roles; tertiary remains
+  a low-frequency language or magenta accent. Utopia now owns the Starship
+  palette template and reuses Noctalia's marked-block applicator. The desktop
+  live result was visually approved.
 - The `arch-laptop` received a separately reviewed, timestamp-backed-up theme
   deployment on 2026-09-28. Noctalia, Starship, and the Utopia wallpaper plugin
   now match the repository. Kitty uses the repository configuration and
@@ -40,7 +52,8 @@ in [`journal/`](journal/).
   rendering. A controlled wallpaper switch changed all three generated Niri,
   Kitty, and Starship outputs; restoring the original wallpaper restored every
   output exactly, while the Starship body remained byte-identical throughout.
-- The repository tests pass: 48 profile/audit tests and 67 installer tests.
+- The repository tests pass with the accepted role mapping: 48 profile/audit
+  tests and 67 installer tests.
   Both profiles resolve and both diff whitespace checks pass. The offline
   comparison CLI still requires ImageMagick, which is not installed on the
   laptop; its pure policy tests pass, and it was exercised on the desktop.
@@ -78,20 +91,23 @@ in [`journal/`](journal/).
   reference rather than a migration target; revisit it only for a reproduced
   Noctalia limitation.
 - The first Desktop v0.1 theme slice makes Noctalia's wallpaper palette the
-  source for Niri, Kitty, and Starship. Niri and Kitty use versioned Utopia
-  templates and retain explicit static fallbacks; Noctalia owns only a marked
-  Starship palette block. Generated outputs are excluded from static tree audit,
+  source for Niri, Kitty, and Starship. All three consumers use versioned
+  Utopia templates and retain explicit static fallbacks; the Starship adapter
+  reuses Noctalia's applicator so generated values remain confined to one
+  marked palette block. Generated outputs are excluded from static tree audit,
   while edits outside the Starship block still count as drift. The plumbing was
   initially validated with Noctalia 5.1.0 and Niri 26.04, then deployed and
-  live-tested on the laptop with Noctalia 5.2.0. The desktop deployment remains
-  incomplete as described above. The repository Starship configuration now
-  preserves the established Powerline structure, separators, module order, and
-  language/tool coverage while leaving only its marked palette block under
-  Noctalia control. The layout's Starship `gruvbox-rainbow` origin and ISC
-  license are recorded at an exact upstream revision. An isolated double-apply
-  test confirmed that Noctalia changes only the palette, remains idempotent, and
-  leaves a renderable prompt. The laptop uses this body with a live generated
-  palette; the desktop still uses its earlier Starship file.
+  live-tested on the laptop with Noctalia 5.2.0 and on the desktop with
+  Noctalia 5.1.0. The Starship configuration preserves the established
+  Powerline structure, separators, module order, and language/tool coverage.
+  High-frequency stages use explicit Material `primary`, `secondary`, and
+  primary-derived `accent` roles; `tertiary` is deliberately low frequency.
+  Kitty likewise maps ANSI blue to `primary` and magenta to `tertiary`, avoiding
+  the misleading terminal-role alias that made a blue wallpaper appear pink.
+  The layout's Starship `gruvbox-rainbow` origin and ISC license are recorded at
+  an exact upstream revision. Isolated and live tests confirmed that template
+  application changes only the palette, remains idempotent, and leaves a
+  renderable prompt.
 - An offline evaluator under `desktop/theme/` now compares Noctalia's actual
   `m3-content` and `vibrant` output with an experimental controlled-dark
   policy. It uses three Utopia-owned synthetic wallpaper fixtures, keeps
@@ -168,12 +184,11 @@ profile resolution, audit boundaries, and a heavily tested Arch installer, but
 the distinctive product is still mostly a collection of usable domain
 configurations rather than one coherent system.
 
-- The visual system is only partially unified. A representative layout review
-  and a live Noctalia-only A/B selected the built-in `m3-content` scheme as the
-  Desktop v0.1 baseline; its single-seed behavior, including a predominantly
-  green result for a green seed, is accepted rather than treated as a defect.
-  The remaining gap is deployment and verification across Niri, Kitty, and the
-  preserved Starship Powerline layout. Neovim still uses Tokyo Night Moon,
+- The first visual slice is unified across Noctalia, Niri, Kitty, and the
+  preserved Starship Powerline layout. A representative layout review and live
+  A/B selected `m3-content` as the Desktop v0.1 baseline; its single-seed
+  behavior is accepted, while explicit adapter roles prevent a derived tertiary
+  color from dominating high-frequency UI. Neovim still uses Tokyo Night Moon,
   Fcitx uses its packaged theme, and GTK/Qt integration is not yet intentional.
   Generated GTK/Qt remnants at the repository root are not an intentional
   Utopia design. Keep the controlled and `vibrant` evaluator paths as comparison
@@ -229,14 +244,11 @@ The current implementation passes both Python suites (48 profile/audit
 tests and 67 Arch-installer tests). Continue in this order, one focused change
 at a time:
 
-1. **Review and deploy the complete dynamic-theme slice on the active desktop.**
-   The visual baseline and Starship structure are now selected. Compare the
-   repository Niri, Kitty, Starship, and Noctalia inputs with their live
-   counterparts, make a timestamped backup, present the exact deployment diff,
-   and apply only after approval. Validate that `m3-content` reaches all three
-   consumers and that a wallpaper change regenerates them without altering the
-   Starship body. Keep rendered colors and transient wallpaper paths outside
-   Git.
+1. **Merge the accepted explicit role mapping.** The focused
+   `work/theme-role-mapping` branch is committed and published; review and merge
+   it through a PR only when explicitly requested. Do not commit rendered
+   palettes, the selected wallpaper, runtime state, or deployment backups. After
+   merging, the desktop theme milestone is complete.
 2. **Close the laptop's modular Niri gap deliberately.** Replace shared
    assumptions about Firefox, the Capitaine cursor, and a localized screenshot
    directory with declared package intent or explicit host mappings. Only then
