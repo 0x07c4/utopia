@@ -44,10 +44,46 @@ The command reports matching, drifted, missing, and unsafe artifacts. A drifted
 audit exits with status 1 so it can also serve as a read-only CI or migration
 check.
 
+## Wallpaper-driven desktop themes
+
+Utopia's first complete desktop feature is a keyboard-first wallpaper and
+dynamic-theme workflow. `Mod+Shift+Return` opens the Utopia Wallpaper Center,
+where local files and Wallhaven discovery share one browser, one set of
+controls, and one “Set wallpaper” action. Online selections join the same local
+library before they are applied; search, ranking period, categories, purity,
+resolution, and pagination remain visible user choices.
+
+Changing the wallpaper drives the rest of the desktop:
+
+```text
+local library ─┐
+               ├─ Wallpaper Center → Noctalia Material palette ─┬─ Niri focus
+Wallhaven ─────┘                                                ├─ Kitty colors
+                                                               └─ Starship prompt
+```
+
+Noctalia derives a dark `m3-content` palette from the selected image. Utopia's
+own templates then map explicit Material roles into Niri, Kitty, and the full
+Powerline Starship prompt, so prominent UI elements follow the wallpaper
+without confusing a tertiary accent with the desktop's primary color. The
+running desktop updates through the normal Noctalia template hooks.
+
+The declared configuration, semantic role mapping, plugin implementation, and
+regression tests are versioned. Downloaded wallpapers, thumbnails, generated
+palettes, and Noctalia runtime state stay outside Git. This slice is deployed
+and validated on `cachyos-desktop`; adoption on another host still requires an
+explicit host review.
+
+Implementation details live in the
+[`Wallpaper Center` documentation](desktop/noctalia/plugins/utopia-wallpaper/README.md),
+the [Noctalia visual policy](.config/noctalia/visuals.toml), and the
+[offline palette evaluator](desktop/theme/README.md).
+
 ## Current stack
 
 - modular niri configuration with shared behavior and host-specific output data
-- Noctalia v5 for wallpaper, theme, bar, lock screen, idle, launcher, and notifications
+- Noctalia v5 with Utopia's unified wallpaper browser and semantic theme adapters
+- Noctalia bar, lock screen, idle, launcher, and notifications
 - Zsh with Zim and Starship
 - AstroNvim in the `.config/nvim` submodule
 - Fcitx5 with Rime
