@@ -8,10 +8,9 @@ in [`journal/`](journal/).
 
 ## Active pause point — 2026-09-29
 
-- The wallpaper-driven theme workflow was merged by PR #9. The accepted
-  follow-up role mapping is published on `work/theme-role-mapping`, based on the
-  latest `main`; review and merge that focused branch instead of reconstructing
-  an earlier topic branch.
+- The wallpaper-driven theme workflow was merged by PR #9, and its accepted
+  semantic role mapping was merged by PR #12. The desktop theme milestone is
+  complete on `main`; do not reconstruct either earlier topic branch.
 - The complete theme slice was deployed to `cachyos-desktop` on 2026-09-29
   after timestamped backups. Noctalia 5.1.0 now drives generated Niri, Kitty,
   and Starship outputs with wallpaper `m3-content`; the v0.4.0 Utopia wallpaper
@@ -244,37 +243,32 @@ The current implementation passes both Python suites (48 profile/audit
 tests and 67 Arch-installer tests). Continue in this order, one focused change
 at a time:
 
-1. **Merge the accepted explicit role mapping.** The focused
-   `work/theme-role-mapping` branch is committed and published; review and merge
-   it through a PR only when explicitly requested. Do not commit rendered
-   palettes, the selected wallpaper, runtime state, or deployment backups. After
-   merging, the desktop theme milestone is complete.
-2. **Close the laptop's modular Niri gap deliberately.** Replace shared
+1. **Close the laptop's modular Niri gap deliberately.** Replace shared
    assumptions about Firefox, the Capitaine cursor, and a localized screenshot
    directory with declared package intent or explicit host mappings. Only then
    replace the laptop's preserved monolithic body and display overlay with the
    complete repository tree. Keep the working minimal theme include until that
    review is complete.
-3. **Reconcile other visual adapters one at a time.** Do not infer that the
+2. **Reconcile other visual adapters one at a time.** Do not infer that the
    laptop's wallpaper, display, or live configuration belongs on the desktop.
    Choose explicit adapters for GTK/Qt, Fcitx, and Neovim instead of enabling
    every built-in or network-fetched template.
-4. **Close the interaction and dependency gaps exposed by that milestone.** A
+3. **Close the interaction and dependency gaps exposed by that milestone.** A
    key binding, font, cursor, application, editor integration, or background
    service must either have declared intent and validation or be removed from
    the shared experience. Eliminate generated KDE/GTK snapshots and default
    application configs that do not express Utopia behavior.
-5. **Use the laptop as integration evidence, not as an import source.** Review
+4. **Use the laptop as integration evidence, not as an import source.** Review
    its drift only for the active product milestone, choose the desired behavior
    deliberately, back up live files before replacement, and never recapture
    generated themes, absolute wallpaper paths, caches, or the old monolithic
    Niri tree.
-6. **Build the first real performance experiment.** On one host, compare a
+5. **Build the first real performance experiment.** On one host, compare a
    stable kernel baseline with `linux-cachyos-bore-lto` using a declared
    workload, repeated latency measurements, complete environment metadata, and
    a tested boot fallback. This should create the first useful content under
    the kernel, scheduler, tuning, and benchmark domains.
-7. **Add supporting machinery only when a product slice requires it.** Capture,
+6. **Add supporting machinery only when a product slice requires it.** Capture,
    deployment, installer/profile unification, VM rehearsal, and CI remain
    important enabling work, but should be driven by a concrete desktop or
    performance capability rather than treated as Utopia's product roadmap.
