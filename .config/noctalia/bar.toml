@@ -21,3 +21,7 @@ end = [
     "control-center",
     "session"
 ]
+
+# The only wallpaper entry opens Utopia's unified local and online browser.
+[widget.wallpaper]
+type = "utopia/wallpaper:wallpaper"

@@ -6,6 +6,21 @@ Except for these path-scoped exclusions and material carrying its own notice,
 Utopia's original material is licensed under the Apache License 2.0 in the root
 `LICENSE` file.
 
+## Starship Gruvbox Rainbow preset
+
+- Path: `shell/starship/starship.toml`
+- Project: Starship
+- Upstream: <https://github.com/starship/starship>
+- Preset source: `docs/public/presets/toml/gruvbox-rainbow.toml`
+- Verified revision: `fca92d8dcbd5981b0160af2f7ed7a430b6475a72` (`v1.26.0`)
+- License: ISC
+- License copy: `LICENSES/Starship-ISC.txt`
+
+Utopia's configuration preserves the preset's Powerline structure and module
+ordering, but replaces its Gruvbox palette with Noctalia-managed semantic color
+roles, retains the workstation's established module coverage, and adds a
+deterministic fallback. It is modified material, not a byte-for-byte copy.
+
 ## Catppuccin for Kitty
 
 - Path: `terminal/kitty/themes/frappe.conf`

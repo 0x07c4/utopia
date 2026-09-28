@@ -1,0 +1,35 @@
+schema_version = 1
+
+[policy]
+id = "utopia-controlled-dark-v1"
+status = "experimental"
+description = "Stable dark surfaces and semantic colors with wallpaper-selected, hue-separated accents."
+candidate_colors = 16
+minimum_population = 0.02
+# Muted wallpaper accents remain eligible when they have enough population.
+# A 0.20 floor retained a liked wallpaper's sky blue without admitting gray.
+minimum_saturation = 0.20
+minimum_lightness = 0.16
+maximum_lightness = 0.82
+minimum_hue_distance = 52.0
+minimum_accent_contrast = 3.0
+
+# These values are an evaluation baseline, not an approved visual identity.
+# They intentionally stay fixed while wallpaper-derived accents change.
+[stable]
+surface = "#171922"
+surface_variant = "#292c38"
+surface_container = "#20232e"
+surface_container_high = "#303442"
+on_surface = "#e7e9f2"
+on_surface_variant = "#c4c8d5"
+outline = "#8d93a5"
+error = "#ff7b86"
+warning = "#edc45f"
+success = "#79d69d"
+
+# Used when an image does not expose three suitable, separated candidates.
+[fallback]
+primary = "#91b4ff"
+secondary = "#79d69d"
+tertiary = "#d9a4ff"

@@ -1,0 +1,56 @@
+id = "utopia/wallpaper"
+name = "Utopia Wallpaper Center"
+version = "0.2.0"
+plugin_api = 13
+author = "Utopia"
+license = "Apache-2.0"
+dependencies = []
+tags = ["wallpaper"]
+icon = "photo"
+description = "A keyboard-first local and Wallhaven wallpaper browser."
+
+[[setting]]
+key = "wallpaper_dir"
+type = "folder"
+label_key = "settings.wallpaper_dir.label"
+description_key = "settings.wallpaper_dir.description"
+default = "~/Pictures/Wallpapers"
+
+[[setting]]
+key = "api_key"
+type = "string"
+label_key = "settings.api_key.label"
+description_key = "settings.api_key.description"
+default = ""
+
+[[panel]]
+id = "center"
+entry = "panel.luau"
+width = 940
+height = 790
+placement = "attached"
+position = "auto"
+keyboard_focus = "exclusive"
+capture_keys = [
+  "Left",
+  "Right",
+  "Up",
+  "Down",
+  "Return",
+  "Page_Up",
+  "Page_Down",
+  "ctrl+1",
+  "ctrl+2",
+  "ctrl+l",
+  "ctrl+r",
+]
+
+[[widget]]
+id = "wallpaper"
+entry = "widget.luau"
+
+  [[widget.setting]]
+  key = "glyph"
+  type = "glyph"
+  label_key = "settings.glyph.label"
+  default = "photo"

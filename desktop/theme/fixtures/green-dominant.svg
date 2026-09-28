@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <metadata>Utopia-owned synthetic wallpaper fixture; Apache-2.0.</metadata>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#15261f"/>
+      <stop offset="1" stop-color="#526b39"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#sky)"/>
+  <circle cx="1020" cy="150" r="115" fill="#e1b95d"/>
+  <path d="M0 610 L260 330 L510 610 Z" fill="#2c665b"/>
+  <path d="M330 720 L760 235 L1160 720 Z" fill="#687f3f"/>
+  <path d="M820 720 L1090 430 L1280 630 L1280 720 Z" fill="#c8674e"/>
+</svg>
