@@ -6,7 +6,7 @@ work changes. Keep durable direction in [`vision.md`](vision.md), and keep
 the active product sequence in [`roadmap.md`](roadmap.md). Keep session history
 in [`journal/`](journal/).
 
-## Active pause point — 2026-09-28
+## Active pause point — 2026-09-29
 
 - The wallpaper-driven theme workflow was merged by PR #9. The trusted
   repository baseline is `main`; do not reconstruct the desktop's former
@@ -22,11 +22,19 @@ in [`journal/`](journal/).
   audit reports only that extra file as drift. The Utopia wallpaper plugin is
   enabled and the former official Wallhaven plugin is disabled.
 - The laptop's monolithic Niri body was deliberately preserved. Deployment
-  added only the optional generated `noctalia.kdl` include and its rendered
-  palette. A full modular-tree replacement would currently regress the working
+  added the optional generated `noctalia.kdl` include and its rendered palette,
+  then the single reviewed `Mod+Shift+Return` binding for Utopia's wallpaper
+  center. A full modular-tree replacement would currently regress the working
   browser binding, select an unavailable cursor, and use a host-inappropriate
   screenshot path. The audit therefore still reports Niri drift; do not call
   that a failed theme deployment or overwrite it merely to make audit green.
+- Laptop follow-up review standardized the Noctalia shell on Maple Mono NF CN
+  and Simplified Chinese, preserved distinct Starship path, Git, and time
+  stages, and refined the wallpaper center for the laptop's 800-logical-pixel
+  output. The plugin now keeps its footer reachable, presents concise source
+  and action labels, and caches local previews outside Git instead of decoding
+  full-resolution wallpapers on every source switch. These changes were
+  deployed with timestamped backups and reviewed in the live session.
 - The laptop deployment validated Noctalia configuration and plugin lint with
   no findings, Niri, Kitty, and Starship parsing, and idempotent template
   rendering. A controlled wallpaper switch changed all three generated Niri,
@@ -66,22 +74,24 @@ in [`journal/`](journal/).
   domain-owned. Several other home-relative artifacts still live at the
   repository root.
 - Niri and Noctalia v5 are the accepted desktop foundation. The current laptop
-  runs Noctalia v5.1.0 and its live configuration validates. DMS remains a
+  runs Noctalia v5.2.0 and its live configuration validates. DMS remains a
   reference rather than a migration target; revisit it only for a reproduced
   Noctalia limitation.
 - The first Desktop v0.1 theme slice makes Noctalia's wallpaper palette the
   source for Niri, Kitty, and Starship. Niri and Kitty use versioned Utopia
   templates and retain explicit static fallbacks; Noctalia owns only a marked
   Starship palette block. Generated outputs are excluded from static tree audit,
-  while edits outside the Starship block still count as drift. The plumbing is
-  validated with Noctalia 5.1.0 and Niri 26.04, but the generated Niri and Kitty
-  outputs have not been deployed. The repository Starship configuration now
+  while edits outside the Starship block still count as drift. The plumbing was
+  initially validated with Noctalia 5.1.0 and Niri 26.04, then deployed and
+  live-tested on the laptop with Noctalia 5.2.0. The desktop deployment remains
+  incomplete as described above. The repository Starship configuration now
   preserves the established Powerline structure, separators, module order, and
   language/tool coverage while leaving only its marked palette block under
   Noctalia control. The layout's Starship `gruvbox-rainbow` origin and ISC
   license are recorded at an exact upstream revision. An isolated double-apply
   test confirmed that Noctalia changes only the palette, remains idempotent, and
-  leaves a renderable prompt. This repository version has not been deployed.
+  leaves a renderable prompt. The laptop uses this body with a live generated
+  palette; the desktop still uses its earlier Starship file.
 - An offline evaluator under `desktop/theme/` now compares Noctalia's actual
   `m3-content` and `vibrant` output with an experimental controlled-dark
   policy. It uses three Utopia-owned synthetic wallpaper fixtures, keeps
@@ -128,7 +138,12 @@ in [`journal/`](journal/).
   prefers large thumbnails. This online-browser correction was deployed to the
   desktop on 2026-09-28 after a second timestamped backup. An optional API-key
   setting exists for rate limits and NSFW access, but no API key is tracked or
-  currently configured.
+  currently configured. Laptop review then produced plugin v0.4.0: it uses a
+  stable scroll/footer layout, a 640-pixel attached panel, and persistent local
+  preview thumbnails generated asynchronously with ImageMagick or FFmpeg. The
+  source path, size, and modification time invalidate the cache without putting
+  a local path in its filename; missing thumbnail tools degrade to original
+  images. Both tools are declared in the Arch package intent.
 - [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md) records the exact
   Starship, Catppuccin for Kitty, and Rime Ice revisions and their bundled
   license texts. The Fcitx theme with unverifiable redistribution permission
@@ -169,7 +184,7 @@ configurations rather than one coherent system.
   reference external tools and a local model service without expressing their
   package or capability requirements.
 - The laptop does not currently run the repository composition as declared.
-  Its read-only audit reports 7 matching, 7 drifted, and 2 missing artifacts;
+  Its read-only audit reports 10 matching, 5 drifted, and 2 missing artifacts;
   notably, the modular Niri tree and laptop display overlay are not deployed.
   Generated theme state and caches must still remain outside Git when this is
   reconciled.
