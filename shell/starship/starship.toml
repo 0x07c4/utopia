@@ -10,10 +10,10 @@ $os\
 $username\
 [](bg:yellow fg:blue)\
 $directory\
-[](fg:yellow bg:cyan)\
+[](fg:yellow bg:green)\
 $git_branch\
 $git_status\
-[](fg:cyan bg:sapphire)\
+[](fg:green bg:sapphire)\
 $c\
 $cpp\
 $rust\
@@ -28,9 +28,8 @@ $python\
 $docker_context\
 $conda\
 $pixi\
-[](fg:surface2 bg:surface0)\
 $time\
-[ ](fg:surface0)\
+[ ](fg:surface2)\
 $line_break$character"""
 
 [os]
@@ -82,12 +81,12 @@ Developer = "󰲋 "
 
 [git_branch]
 symbol = ""
-style = "bg:cyan"
-format = "[[ $symbol $branch ](fg:base bg:cyan)]($style)"
+style = "bg:green"
+format = "[[ $symbol $branch ](fg:base bg:green)]($style)"
 
 [git_status]
-style = "bg:cyan"
-format = "[[($all_status$ahead_behind )](fg:base bg:cyan)]($style)"
+style = "bg:green"
+format = "[[($all_status$ahead_behind )](fg:base bg:green)]($style)"
 
 [nodejs]
 symbol = ""
@@ -155,8 +154,8 @@ format = "[[ $symbol( $version)( $environment) ](fg:text bg:surface2)]($style)"
 [time]
 disabled = false
 time_format = "%R"
-style = "bg:surface0"
-format = "[[  $time ](fg:text bg:surface0)]($style)"
+style = "bg:surface2"
+format = "[[  $time ](fg:text bg:surface2)]($style)"
 
 [line_break]
 disabled = false

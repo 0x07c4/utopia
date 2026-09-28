@@ -244,12 +244,13 @@ class ArtifactResolutionTest(unittest.TestCase):
         with (plugin_dir / "plugin.toml").open("rb") as source:
             manifest = tomllib.load(source)
         self.assertEqual(manifest["id"], "utopia/wallpaper")
-        self.assertEqual(manifest["plugin_api"], 13)
+        self.assertEqual(manifest["plugin_api"], 24)
         settings = {setting["key"]: setting for setting in manifest["setting"]}
         self.assertEqual(settings["api_key"]["type"], "string")
         self.assertEqual(settings["api_key"]["default"], "")
         panel = manifest["panel"][0]
         self.assertEqual(panel["id"], "center")
+        self.assertEqual(panel["height"], 640)
         self.assertEqual(panel["keyboard_focus"], "exclusive")
         for chord in (
             "Left",
@@ -279,6 +280,19 @@ class ArtifactResolutionTest(unittest.TestCase):
         self.assertIn("local onlineTotalPages = 1", panel_source)
         self.assertNotIn("local totalPages = 1", panel_source)
         self.assertIn("tonumber(meta.last_page)", panel_source)
+        self.assertIn('key = "wallpaper-grid"', panel_source)
+        self.assertNotIn('key = "wallpaper-grid-" .. tab', panel_source)
+        self.assertIn('key = "panel-footer"', panel_source)
+        self.assertNotIn('ui.row({ visible = false }, {})', panel_source)
+        self.assertIn("tooltip = shortcut", panel_source)
+        self.assertNotIn('text = text .. "  " .. shortcut', panel_source)
+        self.assertNotIn('tr("keyboard_hint")', panel_source)
+        self.assertNotIn('tr("download_apply")', panel_source)
+        self.assertIn('noctalia.commandExists("magick")', panel_source)
+        self.assertIn('noctalia.commandExists("ffmpeg")', panel_source)
+        self.assertIn('noctalia.runAsync(localThumbCommand(item, destination)', panel_source)
+        self.assertIn('"local-thumbs/" .. cacheKey .. ".jpg"', panel_source)
+        self.assertIn('path .. "|" .. tostring(info.size) .. "|" .. tostring(info.mtime)', panel_source)
         self.assertTrue((plugin_dir / "translations/zh-Hans.json").is_file())
 
     def test_input_artifacts_are_owned_by_the_input_domain(self) -> None:

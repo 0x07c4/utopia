@@ -27,7 +27,31 @@ Keyboard controls inside the panel are `Ctrl+1`/`Ctrl+2` for source tabs,
 arrow keys for selection, `Enter` to apply or submit the focused search/filter,
 `PageUp`/`PageDown` for pages, `Ctrl+L` for online search, and `Ctrl+R` to
 refresh. The online page number is directly editable. `Escape` remains owned
-by Noctalia and closes the panel.
+by Noctalia and closes the panel. Source-tab shortcuts live in tooltips rather
+than permanent labels, and both sources present the same goal-oriented “Set
+wallpaper” action; an online selection is downloaded as an implementation
+detail before it is applied.
+
+The attached panel is 640 logical pixels tall. This keeps the footer and Apply
+action away from the screen edge on 800-pixel-tall outputs after Noctalia
+reserves the top bar; the thumbnail grid scrolls when filters or additional
+rows need more room. Its zero minimum height lets the online filter toolbar
+consume space without pushing the pagination and Apply footer out of view.
+Local and Wallhaven share a stable keyed scroll node, while the online toolbar
+is conditionally present and the footer keeps its own stable identity. This
+avoids stale layout geometry without forcing the image surface to be recreated
+on every source switch.
+
+Local previews use ImageMagick, with FFmpeg as a fallback, to build 410×232
+JPEG thumbnails asynchronously under Noctalia's persistent plugin data
+directory. Cache keys include the source path, size, and modification time, so
+changing an image invalidates its preview without exposing the local path in a
+cache filename. Cached previews avoid decoding full-resolution wallpapers
+every time the source tab changes; the first load shows lightweight
+placeholders while missing thumbnails are generated. If neither thumbnailer
+is available, the plugin remains functional and logs that it is falling back
+to the original images. Both tools are part of Utopia's declared Arch package
+intent.
 
 For runtime validation, an already-open panel accepts `source local`,
 `source online`, and `refresh` through Noctalia's plugin IPC. These events call

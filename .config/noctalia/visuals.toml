@@ -1,6 +1,10 @@
 # Declarative visual baseline for Noctalia v5.
 # An empty directory follows the host's XDG Pictures directory.
 
+[shell]
+font_family = "Maple Mono NF CN"
+lang = "zh-Hans"
+
 [theme]
 mode = "dark"
 source = "wallpaper"

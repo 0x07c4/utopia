@@ -1,7 +1,7 @@
 id = "utopia/wallpaper"
 name = "Utopia Wallpaper Center"
-version = "0.2.0"
-plugin_api = 13
+version = "0.4.0"
+plugin_api = 24
 author = "Utopia"
 license = "Apache-2.0"
 dependencies = []
@@ -27,7 +27,9 @@ default = ""
 id = "center"
 entry = "panel.luau"
 width = 940
-height = 790
+# Keep an attached panel compact on 800px-tall logical outputs. The grid
+# scrolls internally when filters or additional rows need more room.
+height = 640
 placement = "attached"
 position = "auto"
 keyboard_focus = "exclusive"

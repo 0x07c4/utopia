@@ -28,6 +28,7 @@ fcitx5-configtool
 fcitx5-gtk
 fcitx5-qt
 fcitx5-rime
+ffmpeg
 ffmpegthumbnailer
 gnome-keyring
 greetd
