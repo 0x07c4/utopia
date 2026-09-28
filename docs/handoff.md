@@ -150,18 +150,16 @@ profile resolution, audit boundaries, and a heavily tested Arch installer, but
 the distinctive product is still mostly a collection of usable domain
 configurations rather than one coherent system.
 
-- The visual system is only partially unified. The existing Noctalia templates
-  prove that wallpaper-derived values can reach Niri, Kitty, and Starship, but
-  they do not yet define an approved Utopia palette. Noctalia's built-in
-  schemes derive a complete role set from one selected seed, so a green seed can
-  make primary, secondary, tertiary, terminal, and surface roles feel uniformly
-  green. This is an algorithmic property, not yet a product verdict. Compare it
-  with more controlled wallpaper influence, such as stable surfaces and
-  semantic colors plus several hue-separated accent candidates, contrast
-  enforcement, and deterministic fallbacks. Neovim still uses Tokyo Night Moon,
+- The visual system is only partially unified. A representative layout review
+  and a live Noctalia-only A/B selected the built-in `m3-content` scheme as the
+  Desktop v0.1 baseline; its single-seed behavior, including a predominantly
+  green result for a green seed, is accepted rather than treated as a defect.
+  The remaining gap is deployment and verification across Niri, Kitty, and the
+  preserved Starship Powerline layout. Neovim still uses Tokyo Night Moon,
   Fcitx uses its packaged theme, and GTK/Qt integration is not yet intentional.
   Generated GTK/Qt remnants at the repository root are not an intentional
-  Utopia design.
+  Utopia design. Keep the controlled and `vibrant` evaluator paths as comparison
+  evidence and regression stress cases, not as competing deployment candidates.
 - Several declared interactions are not closed product loops. Niri binds a
   browser that is absent from package intent, names a cursor theme that is not
   declared, and hard-codes a localized screenshot directory. Editor features
