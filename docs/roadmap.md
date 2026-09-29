@@ -56,7 +56,8 @@ Use Noctalia v5's palette and template engine as the theme source:
 ```text
 wallpaper or fallback palette
   -> Noctalia color tokens
-  -> Niri, Kitty, Starship, Fcitx, Neovim, GTK, and Qt
+  -> Utopia-owned surfaces: Niri, Kitty, Starship, and Fcitx
+  -> optional adapters: Neovim, GTK, and Qt (only after consumer evidence)
 ```
 
 Version the Utopia-owned palette policy, templates, mappings, and deterministic
@@ -64,7 +65,10 @@ fallback. Keep the selected wallpaper path, extracted per-wallpaper colors,
 rendered output, GUI overrides, and caches outside Git.
 
 The theme must remain usable when no wallpaper exists, when palette extraction
-fails, and before optional application templates have been installed.
+fails, and before optional application templates have been installed. GTK and Qt
+are external integration surfaces: a stable, readable system fallback is
+acceptable for Desktop v0.1, and a wallpaper-driven adapter is not required
+without a concrete consumer, provenance, reload boundary, and rollback plan.
 
 ### Interaction contract
 
@@ -103,8 +107,10 @@ Desktop v0.1 is complete when:
 - all core shortcuts launch declared and available capabilities;
 - one wallpaper change updates the supported application palette coherently;
 - the fallback palette produces a complete usable session;
-- Fcitx, terminal, shell, editor, GTK, and Qt no longer look like unrelated
-  theme snapshots;
+- Fcitx, terminal, shell, and any promoted editor adapter have an accepted
+  palette path or documented static fallback;
+- GTK and Qt applications remain readable under their stable system defaults;
+  dynamic GTK/Qt adapters are optional rather than a v0.1 gate;
 - a short manual acceptance checklist covers login through session exit;
 - remaining host differences are explicit overlays rather than copied trees.
 

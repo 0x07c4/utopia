@@ -47,6 +47,21 @@ The distributed file is byte-for-byte identical to
 `input/rime/` are Utopia-specific configuration and are not claimed to come
 from this upstream revision.
 
+## Catppuccin for Fcitx5
+
+- Path: `input/fcitx5/themes/catppuccin-mocha-green/`
+- Project: Catppuccin for Fcitx5
+- Upstream: <https://github.com/catppuccin/fcitx5>
+- Verified revision: `393845cf3ed0e0000bfe57fe1b9ad75748e2547f`
+- License: MIT
+- License copy: `LICENSES/Catppuccin-Fcitx5-MIT.txt`
+
+The image and SVG assets are byte-for-byte identical to the upstream
+`catppuccin-mocha-green` directory at the verified revision. Utopia's
+`theme.conf` enables the upstream rounded-corner assets; those two uncommented
+`Image` lines are the only modification. The Fcitx configuration selects this
+fixed, attributed theme until a wallpaper-driven Fcitx adapter is designed.
+
 ## Neovim configuration submodule
 
 - Gitlink path: `editor/nvim`
@@ -61,11 +76,3 @@ AstroNvim template when this inventory was performed. The submodule therefore
 is not covered by Utopia's Apache-2.0 license. Its own provenance and licensing
 must be resolved in that repository before treating it as redistributable
 source.
-
-## Removed material with unresolved provenance
-
-The former `input/fcitx5/themes/catppuccin-mocha-green/` theme named authors
-but provided no license or verifiable upstream. Its image and SVG assets were
-removed instead of assuming redistribution permission. Fcitx now refers to its
-packaged `default` and `default-dark` themes. A future generated theme must have
-an explicit Utopia-owned implementation or a recorded upstream license.

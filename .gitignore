@@ -13,6 +13,10 @@
 .config/Thunar/accels.scm
 .config/gtk-3.0/bookmarks
 .config/QtProject.conf
+.config/gtkrc
+.config/gtkrc-2.0
+.gtkrc-2.0
+.fonts.conf
 .config/autostart/Snipaste.desktop
 .nvidia-settings-rc
 

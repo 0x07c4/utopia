@@ -2,3 +2,5 @@
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Miscellaneous#spawn-sh-at-startup
 
     spawn-at-startup "noctalia"
+    // Keep the input method available in the Niri session.
+    spawn-at-startup "fcitx5" "-d"

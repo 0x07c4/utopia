@@ -1,6 +1,6 @@
     prefer-no-csd
-    // Adapt the Utopia screenshot path to this install's localized XDG directory.
-    screenshot-path "~/图片/截图/Screenshot from %Y-%m-%d %H-%M-%S.png"
+    // Use the portable XDG-style pictures directory on every host.
+    screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
     environment {
         ELECTRON_OZONE_PLATFORM_HINT "auto"
@@ -12,7 +12,7 @@
     }
 
     cursor {
-        xcursor-theme "capitaine-cursors"
+        xcursor-theme "Adwaita"
         xcursor-size 24
     }
 
