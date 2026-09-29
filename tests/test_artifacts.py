@@ -99,7 +99,12 @@ class ArtifactResolutionTest(unittest.TestCase):
         self.assertFalse(templates["enable_community_templates"])
         self.assertEqual(
             set(templates["user"]),
-            {"utopia-kitty", "utopia-niri", "utopia-starship"},
+            {
+                "utopia-fcitx5",
+                "utopia-kitty",
+                "utopia-niri",
+                "utopia-starship",
+            },
         )
         for template in templates["user"].values():
             path = template["input_path"]
@@ -115,6 +120,29 @@ class ArtifactResolutionTest(unittest.TestCase):
             starship_template["post_hook"],
             "bash /usr/share/noctalia/assets/templates/starship/apply.sh",
         )
+        fcitx_template = templates["user"]["utopia-fcitx5"]
+        self.assertEqual(
+            fcitx_template["output_path"],
+            "$XDG_DATA_HOME/fcitx5/themes/utopia-wallpaper/theme.conf",
+        )
+        self.assertIn(
+            "templates/utopia/fcitx5/apply.sh",
+            fcitx_template["post_hook"],
+        )
+        fcitx_theme = (
+            profiles.REPO_ROOT
+            / ".config/noctalia/templates/utopia/fcitx5/theme.conf"
+        ).read_text()
+        self.assertIn("{{colors.primary.default.hex}}", fcitx_theme)
+        self.assertIn("Image=panel.svg", fcitx_theme)
+        fcitx_hook = (
+            profiles.REPO_ROOT
+            / ".config/noctalia/templates/utopia/fcitx5/apply.sh"
+        )
+        self.assertTrue(fcitx_hook.stat().st_mode & 0o111)
+        fcitx_hook_text = fcitx_hook.read_text()
+        self.assertIn("enable-fcitx-wallpaper", fcitx_hook_text)
+        self.assertIn("ReloadAddonConfig s classicui", fcitx_hook_text)
         starship_palette_template = (
             profiles.REPO_ROOT
             / ".config/noctalia/templates/utopia/starship-palette.toml"
@@ -347,7 +375,7 @@ class ArtifactResolutionTest(unittest.TestCase):
             if artifact["domain"] == "input"
         ]
 
-        self.assertEqual(len(input_artifacts), 6)
+        self.assertEqual(len(input_artifacts), 7)
         self.assertTrue(
             all(artifact["source"].startswith("input/") for artifact in input_artifacts)
         )
@@ -359,17 +387,21 @@ class ArtifactResolutionTest(unittest.TestCase):
             ),
             "input/fcitx5/config",
         )
-        self.assertNotIn(
-            "input.fcitx5-theme",
+        self.assertIn(
+            "input.fcitx5-theme-catppuccin-mocha-green",
             {artifact["id"] for artifact in input_artifacts},
         )
         classicui = (
             profiles.REPO_ROOT / "input/fcitx5/config/conf/classicui.conf"
         ).read_text()
-        self.assertIn("Theme=default\n", classicui)
-        self.assertIn("DarkTheme=default-dark\n", classicui)
-        self.assertNotIn("catppuccin-mocha-green", classicui)
-        self.assertFalse((profiles.REPO_ROOT / "input/fcitx5/themes").exists())
+        self.assertIn("Theme=catppuccin-mocha-green\n", classicui)
+        self.assertIn("DarkTheme=catppuccin-mocha-green\n", classicui)
+        theme_dir = (
+            profiles.REPO_ROOT
+            / "input/fcitx5/themes/catppuccin-mocha-green"
+        )
+        self.assertTrue(theme_dir.is_dir())
+        self.assertTrue((theme_dir / "theme.conf").is_file())
 
     def test_editor_gitlink_is_owned_by_the_editor_domain(self) -> None:
         result = workstation.resolve(profiles.REPO_ROOT, "arch-laptop")

@@ -34,6 +34,15 @@ input_path = "templates/utopia/starship-palette.toml"
 output_path = "$XDG_CACHE_HOME/noctalia/starship-palette.toml"
 post_hook = "bash /usr/share/noctalia/assets/templates/starship/apply.sh"
 
+# Opt-in Fcitx adapter. Create ~/.config/utopia/enable-fcitx-wallpaper and
+# select `utopia-wallpaper` in classicui.conf before enabling this experiment.
+# The hook owns the guard because Noctalia's user-template schema does not
+# support `requires_path` in the installed v5 validator.
+[theme.templates.user.utopia-fcitx5]
+input_path = "templates/utopia/fcitx5/theme.conf"
+output_path = "$XDG_DATA_HOME/fcitx5/themes/utopia-wallpaper/theme.conf"
+post_hook = "bash '{{ config_dir }}/templates/utopia/fcitx5/apply.sh'"
+
 [wallpaper]
 directory = ""
 

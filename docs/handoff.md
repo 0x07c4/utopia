@@ -6,7 +6,7 @@ work changes. Keep durable direction in [`vision.md`](vision.md), and keep
 the active product sequence in [`roadmap.md`](roadmap.md). Keep session history
 in [`journal/`](journal/).
 
-## Active pause point — 2026-09-29
+## Active pause point — 2026-09-30
 
 - The wallpaper-driven theme workflow was merged by PR #9, and its accepted
   semantic role mapping was merged by PR #12. The desktop theme milestone is
@@ -32,13 +32,44 @@ in [`journal/`](journal/).
   generated palette but retains an unreferenced old `current-theme.conf`, so
   audit reports only that extra file as drift. The Utopia wallpaper plugin is
   enabled and the former official Wallhaven plugin is disabled.
-- The laptop's monolithic Niri body was deliberately preserved. Deployment
-  added the optional generated `noctalia.kdl` include and its rendered palette,
-  then the single reviewed `Mod+Shift+Return` binding for Utopia's wallpaper
-  center. A full modular-tree replacement would currently regress the working
-  browser binding, select an unavailable cursor, and use a host-inappropriate
-  screenshot path. The audit therefore still reports Niri drift; do not call
-  that a failed theme deployment or overwrite it merely to make audit green.
+- On 2026-09-29, after reviewing the browser, cursor, screenshot, and input
+  method assumptions, the laptop received the modular Niri tree and its
+  `arch-laptop` display overlay. The deployment preserved the generated
+  `noctalia.kdl` include, added the Fcitx startup entry, binds `Mod+B` to the
+  declared Google Chrome AUR package, uses the declared Adwaita cursor, and
+  saves screenshots under `~/Pictures/Screenshots`. The overlay now declares
+  the observed `2560x1600@120.000` panel mode at scale 2. Niri validation and
+  live reload passed; timestamped backups are under
+  `~/.local/state/utopia/deployments/`. The laptop audit was 12 matching,
+  4 drifted, and 1 missing artifact before the Fcitx follow-up.
+- A temporary Fcitx default-theme deployment was rolled back after review
+  because it was an unapproved intermediate visual choice. The existing
+  Catppuccin theme was then verified against the official
+  `catppuccin/fcitx5` MIT-licensed revision, recorded under `input/` with its
+  license, and redeployed without changing the visual result. The timestamped
+  backup is under `~/.local/state/utopia/deployments/`; the audit is now 13
+  matching, 4 drifted, and 1 missing artifact. The remaining Fcitx drift is
+  generated `cached_layouts` state and the separately unresolved environment
+  variable policy, not the theme. A wallpaper-driven Fcitx adapter is now
+  implemented in the repository as an explicit opt-in Noctalia user template.
+  It renders semantic wallpaper roles into a runtime `utopia-wallpaper` theme,
+  reuses the reviewed Catppuccin icon assets, validates generated colors, and
+  reloads only Classic UI through `ReloadAddonConfig(classicui)`. The hook exits
+  without touching runtime assets unless
+  `~/.config/utopia/enable-fcitx-wallpaper` exists. Noctalia 5.2.0 config
+  validation, direct template rendering, and isolated enabled/disabled hook
+  tests pass. On 2026-09-30 the template was deployed to the laptop and a
+  timestamp-backed temporary A/B was started; a blue-to-green wallpaper switch
+  changed the generated Fcitx colors and SVG timestamps, and the maintainer
+  accepted the visual result. The laptop may keep this explicit experiment
+  enabled, while the repository still keeps Catppuccin as its tracked fallback
+  and does not silently enable the feature on other hosts. The upstream
+  Noctalia Fcitx5 template documents the same narrower reload path. An isolated
+  rebuild/rollback rehearsal also passed: stage the fixed theme first, render
+  the dynamic theme, switch only after its SVG assets exist, and restore the
+  fixed config while removing generated experiment state. Details and open
+  design questions remain in
+  [`ideas/2026-09-29-wallpaper-driven-fcitx-theme.md`](../ideas/2026-09-29-wallpaper-driven-fcitx-theme.md).
 - Laptop follow-up review standardized the Noctalia shell on Maple Mono NF CN
   and Simplified Chinese, preserved distinct Starship path, Git, and time
   stages, and refined the wallpaper center for the laptop's 800-logical-pixel
@@ -46,6 +77,42 @@ in [`journal/`](journal/).
   and action labels, and caches local previews outside Git instead of decoding
   full-resolution wallpapers on every source switch. These changes were
   deployed with timestamped backups and reviewed in the live session.
+- On 2026-09-30, GTK3/GTK4 were tested only in an isolated temporary HOME:
+  Noctalia 5.2.0 rendered both official templates for dark and light palettes,
+  the official hook created one idempotent `noctalia.css` import per GTK
+  version, and fake `gsettings`/`dconf` logging showed only the expected
+  `prefer-dark/light` appearance calls. The test environment had no
+  `adw-gtk3`, so no GTK theme name was changed; the laptop's GTK/dconf state
+  was untouched. This validates the rendering boundary, not a product
+  decision to enable GTK templates. The declared GTK consumer is Nautilus,
+  which uses GTK4/libadwaita; no GTK3 or Qt consumer is currently declared.
+  Review Nautilus visually before mapping `gtk4` to a host/profile, and do not
+  enable `gtk3` or `qt` merely for symmetry.
+- A reversible laptop-only GTK4/Nautilus A/B was staged and rolled back: a
+  timestamped backup was created, the current wallpaper was rendered into a temporary
+  `gtk-4.0/noctalia.css`, and one `gtk.css` import was added manually. A
+  Nautilus window was launched through Niri for visual review. Restarting it
+  after blue and green renders changed its surfaces and text, while folder
+  icons stayed static Adwaita blue; existing processes did not hot-reload the
+  CSS. The experiment did not enable Noctalia's GTK template or write dconf,
+  and was rolled back after the comparison, with generated files retained in
+  the timestamped backup. GTK4 therefore remains experimental until static
+  icon behavior and the application-restart boundary are explicitly accepted.
+- On 2026-09-30, the maintainer decided that GTK/Qt dynamic theming is not a
+  current Utopia product gate. Keep their templates disabled and accept the
+  stable, readable system fallback (dark Adwaita/default Qt) rather than
+  carrying a half-integrated wallpaper adapter. Reopen this only for a
+  concrete daily-workflow problem, with a named consumer, provenance, reload
+  boundary, and rollback plan; the Nautilus A/B remains evidence, not a
+  deployed feature.
+- Before the modular Niri deployment, after PR #12, the laptop received the
+  updated explicit Material role mapping on 2026-09-29, with timestamped
+  backups. Noctalia now applies Utopia's
+  Starship palette template and the updated Kitty blue/magenta mapping. The
+  Noctalia config, generated Kitty config, Niri config, and Starship prompt
+  validate; audit is back to 10 matching, 5 drifted, and 2 missing artifacts.
+  The updated prompt colors were visually reviewed during the subsequent laptop
+  session; the later modular deployment and Fcitx follow-up are recorded above.
 - The laptop deployment validated Noctalia configuration and plugin lint with
   no findings, Niri, Kitty, and Starship parsing, and idempotent template
   rendering. A controlled wallpaper switch changed all three generated Niri,
@@ -160,10 +227,9 @@ in [`journal/`](journal/).
   a local path in its filename; missing thumbnail tools degrade to original
   images. Both tools are declared in the Arch package intent.
 - [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md) records the exact
-  Starship, Catppuccin for Kitty, and Rime Ice revisions and their bundled
-  license texts. The Fcitx theme with unverifiable redistribution permission
-  was removed; Fcitx now names its packaged default themes. The separate Neovim
-  submodule still needs its own license decision.
+  Starship, Catppuccin for Kitty, Catppuccin for Fcitx5, and Rime Ice revisions
+  and their bundled license texts. The separate Neovim submodule still needs
+  its own license decision.
 - Utopia's original material is licensed under Apache-2.0. Third-party paths
   retain the licenses recorded in `THIRD_PARTY_NOTICES.md`, and the separate
   `editor/nvim` submodule is explicitly outside Utopia's license scope.
@@ -188,20 +254,31 @@ configurations rather than one coherent system.
   A/B selected `m3-content` as the Desktop v0.1 baseline; its single-seed
   behavior is accepted, while explicit adapter roles prevent a derived tertiary
   color from dominating high-frequency UI. Neovim still uses Tokyo Night Moon,
-  Fcitx uses its packaged theme, and GTK/Qt integration is not yet intentional.
-  Generated GTK/Qt remnants at the repository root are not an intentional
-  Utopia design. Keep the controlled and `vibrant` evaluator paths as comparison
-  evidence and regression stress cases, not as competing deployment candidates.
-- Several declared interactions are not closed product loops. Niri binds a
-  browser that is absent from package intent, names a cursor theme that is not
-  declared, and hard-codes a localized screenshot directory. Editor features
-  reference external tools and a local model service without expressing their
-  package or capability requirements.
-- The laptop does not currently run the repository composition as declared.
-  Its read-only audit reports 10 matching, 5 drifted, and 2 missing artifacts;
-  notably, the modular Niri tree and laptop display overlay are not deployed.
-  Generated theme state and caches must still remain outside Git when this is
-  reconciled.
+  Fcitx has an accepted wallpaper-driven laptop experiment with a
+  provenance-tracked Catppuccin fallback, and GTK/Qt dynamic integration is
+  intentionally deferred. Their stable system defaults are the documented
+  fallback; the old root `.config/Trolltech.conf` snapshot was removed after
+  confirming that the live laptop has no matching GTK/Qt configuration and no
+  Utopia behavior depended on it. Keep the controlled and `vibrant` evaluator
+  paths as comparison evidence and regression stress cases, not as competing
+  deployment candidates.
+- Several declared interactions are not closed product loops. The laptop's
+  browser, cursor, screenshot path, input-method startup, and display overlay
+  are now explicit and validated; Chrome remains an AUR dependency in
+  `packages/aur.txt`, while official packages stay in `packages/arch.txt`.
+  The editor capability audit found that `latexmk` and the three common TeX
+  engines exist, while `zathura`, `texlab`, and the LM Studio command/service do
+  not; the active Neovim config still references those optional paths. Its
+  Mason/LSP example files are mostly explicitly disabled. LaTeX and local AI
+  now have written capability contracts: both remain optional, neither changes
+  package intent yet, and each names its provider, validation, and graceful
+  missing-capability path. Do not install or promise those features from config
+  presence alone. Generated theme state, Mason caches, and model/runtime state
+  must remain outside Git. Details are in
+  [`ideas/2026-09-30-editor-capability-contracts.md`](../ideas/2026-09-30-editor-capability-contracts.md).
+- The laptop now runs the repository's modular Niri composition as declared.
+  Its remaining audit findings are deliberate or unrelated to this milestone;
+  do not recapture the live generated theme include or runtime caches.
 - The performance-engineering north star is almost entirely unimplemented.
   The BORE/LTO layer currently records a package name and an experimental label,
   but there are no kernel provenance records, controlled baselines, benchmark
@@ -243,21 +320,29 @@ The current implementation passes both Python suites (48 profile/audit
 tests and 67 Arch-installer tests). Continue in this order, one focused change
 at a time:
 
-1. **Close the laptop's modular Niri gap deliberately.** Replace shared
-   assumptions about Firefox, the Capitaine cursor, and a localized screenshot
-   directory with declared package intent or explicit host mappings. Only then
-   replace the laptop's preserved monolithic body and display overlay with the
-   complete repository tree. Keep the working minimal theme include until that
-   review is complete.
-2. **Reconcile other visual adapters one at a time.** Do not infer that the
-   laptop's wallpaper, display, or live configuration belongs on the desktop.
-   Choose explicit adapters for GTK/Qt, Fcitx, and Neovim instead of enabling
-   every built-in or network-fetched template.
-3. **Close the interaction and dependency gaps exposed by that milestone.** A
-   key binding, font, cursor, application, editor integration, or background
-   service must either have declared intent and validation or be removed from
-   the shared experience. Eliminate generated KDE/GTK snapshots and default
-   application configs that do not express Utopia behavior.
+1. **Keep the accepted Fcitx adapter as a laptop-only experiment for now.** The
+   laptop A/B is visually accepted and backed up, but the repository remains
+   opt-in with a fixed Catppuccin fallback. The current profile/artifact planner
+   cannot yet express the required generate-then-switch ordering and exact
+   host-specific replacement without risking the desktop. Do not promote it to
+   a profile default until that deployment boundary has a dry-run, rollback
+   record, and explicit host mapping. Reconcile GTK/Qt and Neovim only as
+   separate, reviewed adapters.
+2. **Choose the next core visual adapter deliberately.** GTK/Qt dynamic
+   integration is deferred behind the stable system fallback; do not reopen it
+   for symmetry. Neovim remains on its static Tokyo Night Moon theme. If the
+   next slice targets Neovim or another core consumer, verify package and
+   upstream provenance, preserve a static fallback, and validate it on the
+   laptop before considering desktop deployment.
+3. **Close the interaction and dependency gaps exposed by that milestone.**
+   The LaTeX and local-AI capability contracts are now recorded; both remain
+   optional until a concrete daily workflow selects one. The next implementation
+   step is a separately reviewed capability bundle only after that choice, with
+   package provenance, validation, and a graceful missing-capability path. A key
+   binding, font, cursor, application, editor integration, or background service
+   must have the same declared intent and validation or be removed from the shared
+   experience. Eliminate generated KDE/GTK snapshots and default application
+   configs that do not express Utopia behavior.
 4. **Use the laptop as integration evidence, not as an import source.** Review
    its drift only for the active product milestone, choose the desired behavior
    deliberately, back up live files before replacement, and never recapture

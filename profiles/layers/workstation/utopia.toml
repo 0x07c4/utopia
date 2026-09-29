@@ -15,15 +15,18 @@ terminal = "kitty"
 
 [values.packages]
 required = [
+  "adwaita-cursors",
   "curl",
   "eza",
   "fcitx5",
   "fcitx5-rime",
   "fastfetch",
   "git",
+  "google-chrome",
   "kitty",
   "lazygit",
   "mpv",
+  "nautilus",
   "neovim",
   "niri",
   "noctalia",

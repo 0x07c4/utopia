@@ -22,12 +22,6 @@
         default-column-width {}
     }
 
-    // Restored from Utopia: open Firefox picture-in-picture as a floating window.
-    window-rule {
-        match app-id=r#"firefox$"# title="^Picture-in-Picture$"
-        open-floating true
-    }
-
     // Floating Noctalia settings window.
     window-rule {
         match app-id="dev.noctalia.Noctalia"

@@ -11,5 +11,5 @@ id = "arch-laptop"
 
 [values.display]
 connector = "eDP-1"
-mode = "1920x1080@120.000"
+mode = "2560x1600@120.000"
 scale = 2.0
