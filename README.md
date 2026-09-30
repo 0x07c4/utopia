@@ -59,14 +59,16 @@ Changing the wallpaper drives the rest of the desktop:
 local library ─┐
                ├─ Wallpaper Center → Noctalia Material palette ─┬─ Niri focus
 Wallhaven ─────┘                                                ├─ Kitty colors
-                                                               └─ Starship prompt
+                                                               ├─ Starship prompt
+                                                               └─ Fcitx panel (opt-in)
 ```
 
 Noctalia derives a dark `m3-content` palette from the selected image. Utopia's
-own templates then map explicit Material roles into Niri, Kitty, and the full
-Powerline Starship prompt, so prominent UI elements follow the wallpaper
-without confusing a tertiary accent with the desktop's primary color. The
-running desktop updates through the normal Noctalia template hooks.
+own templates then map explicit Material roles into Niri, Kitty, the full
+Powerline Starship prompt, and—when a host explicitly opts in—the Fcitx panel.
+Prominent UI elements follow the wallpaper without confusing a tertiary accent
+with the desktop's primary color. The running desktop updates through the
+normal Noctalia template hooks.
 
 The declared configuration, semantic role mapping, plugin implementation, and
 regression tests are versioned. Downloaded wallpapers, thumbnails, generated
