@@ -61,14 +61,17 @@ in [`journal/`](journal/).
   tests pass. On 2026-09-30 the template was deployed to the laptop and a
   timestamp-backed temporary A/B was started; a blue-to-green wallpaper switch
   changed the generated Fcitx colors and SVG timestamps, and the maintainer
-  accepted the visual result. The laptop may keep this explicit experiment
-  enabled, while the repository still keeps Catppuccin as its tracked fallback
-  and does not silently enable the feature on other hosts. The upstream
-  Noctalia Fcitx5 template documents the same narrower reload path. An isolated
-  rebuild/rollback rehearsal also passed: stage the fixed theme first, render
-  the dynamic theme, switch only after its SVG assets exist, and restore the
-  fixed config while removing generated experiment state. Details and open
-  design questions remain in
+  accepted the visual result. On 2026-10-01 the same explicit experiment was
+  enabled on `cachyos-desktop`; the current wallpaper generated a warm dynamic
+  theme, Classic UI reloaded through session D-Bus, and the maintainer accepted
+  that result too. Both hosts may keep this local opt-in, while the repository
+  still keeps Catppuccin as its tracked fallback and does not silently enable
+  the feature on unreviewed hosts. The upstream Noctalia Fcitx5 template
+  documents the same narrower reload path. An isolated rebuild/rollback
+  rehearsal also passed: stage the fixed theme first, render the dynamic theme,
+  switch only after its SVG assets exist, and restore the fixed config while
+  removing generated experiment state. Details and open design questions remain
+  in
   [`ideas/2026-09-29-wallpaper-driven-fcitx-theme.md`](../ideas/2026-09-29-wallpaper-driven-fcitx-theme.md).
 - Laptop follow-up review standardized the Noctalia shell on Maple Mono NF CN
   and Simplified Chinese, preserved distinct Starship path, Git, and time
@@ -254,9 +257,9 @@ configurations rather than one coherent system.
   A/B selected `m3-content` as the Desktop v0.1 baseline; its single-seed
   behavior is accepted, while explicit adapter roles prevent a derived tertiary
   color from dominating high-frequency UI. Neovim still uses Tokyo Night Moon,
-  Fcitx has an accepted wallpaper-driven laptop experiment with a
-  provenance-tracked Catppuccin fallback, and GTK/Qt dynamic integration is
-  intentionally deferred. Their stable system defaults are the documented
+  Fcitx has an accepted wallpaper-driven host-scoped experiment on the laptop
+  and desktop with a provenance-tracked Catppuccin fallback, and GTK/Qt dynamic
+  integration is intentionally deferred. Their stable system defaults are the documented
   fallback; the old root `.config/Trolltech.conf` snapshot was removed after
   confirming that the live laptop has no matching GTK/Qt configuration and no
   Utopia behavior depended on it. Keep the controlled and `vibrant` evaluator
@@ -320,14 +323,14 @@ The current implementation passes both Python suites (48 profile/audit
 tests and 67 Arch-installer tests). Continue in this order, one focused change
 at a time:
 
-1. **Keep the accepted Fcitx adapter as a laptop-only experiment for now.** The
-   laptop A/B is visually accepted and backed up, but the repository remains
-   opt-in with a fixed Catppuccin fallback. The current profile/artifact planner
-   cannot yet express the required generate-then-switch ordering and exact
-   host-specific replacement without risking the desktop. Do not promote it to
-   a profile default until that deployment boundary has a dry-run, rollback
-   record, and explicit host mapping. Reconcile GTK/Qt and Neovim only as
-   separate, reviewed adapters.
+1. **Keep the accepted Fcitx adapter host-scoped and opt-in for now.** The
+   laptop and desktop A/B results are visually accepted, but the repository
+   remains opt-in with a fixed Catppuccin fallback. The current profile/artifact
+   planner cannot yet express the required generate-then-switch ordering and
+   exact host-specific replacement safely. Do not promote it to a profile
+   default until that deployment boundary has a dry-run, rollback record, and
+   explicit host mapping. Reconcile GTK/Qt and Neovim only as separate,
+   reviewed adapters.
 2. **Choose the next core visual adapter deliberately.** GTK/Qt dynamic
    integration is deferred behind the stable system fallback; do not reopen it
    for symmetry. Neovim remains on its static Tokyo Night Moon theme. If the
