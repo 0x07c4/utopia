@@ -13,6 +13,9 @@ input_method = "fcitx5-rime"
 shell = "zsh"
 terminal = "kitty"
 
+[values.features]
+fcitx_wallpaper_theme = "fallback"
+
 [values.packages]
 required = [
   "adwaita-cursors",

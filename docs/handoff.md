@@ -6,7 +6,7 @@ work changes. Keep durable direction in [`vision.md`](vision.md), and keep
 the active product sequence in [`roadmap.md`](roadmap.md). Keep session history
 in [`journal/`](journal/).
 
-## Active pause point — 2026-09-30
+## Active pause point — 2026-10-01
 
 - The wallpaper-driven theme workflow was merged by PR #9, and its accepted
   semantic role mapping was merged by PR #12. The desktop theme milestone is
@@ -73,6 +73,14 @@ in [`journal/`](journal/).
   removing generated experiment state. Details and open design questions remain
   in
   [`ideas/2026-09-29-wallpaper-driven-fcitx-theme.md`](../ideas/2026-09-29-wallpaper-driven-fcitx-theme.md).
+- On 2026-10-01, the accepted Fcitx experiment gained a host-scoped deployment
+  boundary without touching either live home. `profiles/features.toml` and the
+  host profile values now record the experimental state and artifact
+  provenance; `python -m utopia plan <profile> fcitx-wallpaper-theme` emits a
+  human- or JSON-readable dry-run with backup, render, generated-asset
+  validation, atomic selector switch, Classic UI reload, and rollback stages.
+  The plan never reads or writes the live home; an apply command remains
+  intentionally unimplemented and requires an explicit confirmation design.
 - Laptop follow-up review standardized the Noctalia shell on Maple Mono NF CN
   and Simplified Chinese, preserved distinct Starship path, Git, and time
   stages, and refined the wallpaper center for the laptop's 800-logical-pixel
@@ -121,8 +129,8 @@ in [`journal/`](journal/).
   rendering. A controlled wallpaper switch changed all three generated Niri,
   Kitty, and Starship outputs; restoring the original wallpaper restored every
   output exactly, while the Starship body remained byte-identical throughout.
-- The repository tests pass with the accepted role mapping: 48 profile/audit
-  tests and 67 installer tests.
+- The repository tests pass with the accepted role mapping: 52
+  profile/audit/deployment-plan tests and 67 installer tests.
   Both profiles resolve and both diff whitespace checks pass. The offline
   comparison CLI still requires ImageMagick, which is not installed on the
   laptop; its pure policy tests pass, and it was exercised on the desktop.
@@ -149,8 +157,10 @@ in [`journal/`](journal/).
 - Profile resolution, artifact mapping, and repository-to-home audit are
   read-only. `python -m utopia audit <profile>` reports matching, drifted,
   missing, and unsafe artifacts without following symbolic links or exposing an
-  absolute home path. Capture, deployment, and last-deployment-aware recovery
-  are not working commands yet.
+  absolute home path. `python -m utopia plan <profile> <feature>` now resolves
+  host-scoped dry-run deployment stages with provenance and rollback details;
+  capture, apply, and last-deployment-aware recovery are not working commands
+  yet.
 - Niri has shared domain-owned configuration plus output-only host overlays.
   Shell, terminal, input, editor, and reviewed development configuration are
   domain-owned. Several other home-relative artifacts still live at the
@@ -319,18 +329,19 @@ public commit.
 
 ## Immediate next work
 
-The current implementation passes both Python suites (48 profile/audit
-tests and 67 Arch-installer tests). Continue in this order, one focused change
-at a time:
+The current implementation passes both Python suites (52 profile/audit/
+deployment-plan tests and 67 Arch-installer tests). Continue in this order, one
+focused change at a time:
 
 1. **Keep the accepted Fcitx adapter host-scoped and opt-in for now.** The
-   laptop and desktop A/B results are visually accepted, but the repository
-   remains opt-in with a fixed Catppuccin fallback. The current profile/artifact
-   planner cannot yet express the required generate-then-switch ordering and
-   exact host-specific replacement safely. Do not promote it to a profile
-   default until that deployment boundary has a dry-run, rollback record, and
-   explicit host mapping. Reconcile GTK/Qt and Neovim only as separate,
-   reviewed adapters.
+   laptop and desktop A/B results are visually accepted, and the repository
+   remains opt-in with a fixed Catppuccin fallback. The deployment boundary now
+   expresses the required generate-then-switch ordering, provenance, and
+   rollback as a dry-run plan, but it still has no apply path or deployment
+   record. Do not promote it to a general profile default; any future apply
+   implementation must add explicit confirmation, idempotence, conflict checks,
+   and timestamped recovery records. Reconcile GTK/Qt and Neovim only as
+   separate, reviewed adapters.
 2. **Choose the next core visual adapter deliberately.** GTK/Qt dynamic
    integration is deferred behind the stable system fallback; do not reopen it
    for symmetry. Neovim remains on its static Tokyo Night Moon theme. If the

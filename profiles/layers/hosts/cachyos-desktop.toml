@@ -4,7 +4,7 @@ schema_version = 1
 id = "host.cachyos-desktop"
 kind = "host"
 description = "Desired desktop display identity observed during the CachyOS migration."
-overrides = []
+overrides = ["features.fcitx_wallpaper_theme"]
 
 [values.host]
 id = "cachyos-desktop"
@@ -13,3 +13,6 @@ id = "cachyos-desktop"
 connector = "DP-3"
 mode = "3840x2160@59.997"
 scale = 2.0
+
+[values.features]
+fcitx_wallpaper_theme = "experimental"

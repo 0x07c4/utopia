@@ -14,6 +14,10 @@ class ProfileResolutionTest(unittest.TestCase):
         self.assertEqual(result["values"]["host"]["id"], "cachyos-desktop")
         self.assertEqual(result["values"]["display"]["connector"], "DP-3")
         self.assertEqual(result["values"]["workstation"]["terminal"], "kitty")
+        self.assertEqual(
+            result["values"]["features"]["fcitx_wallpaper_theme"],
+            "experimental",
+        )
         self.assertIn("eza", result["values"]["packages"]["required"])
         self.assertIn("rime-ice-git", result["values"]["packages"]["required"])
         self.assertIn("wezterm", result["values"]["packages"]["disabled"])
@@ -33,6 +37,10 @@ class ProfileResolutionTest(unittest.TestCase):
         )
         self.assertEqual(
             result["provenance"]["kernel.package"]["kind"], "experiment"
+        )
+        self.assertEqual(
+            result["values"]["features"]["fcitx_wallpaper_theme"],
+            "experimental",
         )
 
     def _write_repo(
@@ -136,7 +144,11 @@ disabled = ["wezterm"]
                 profiles.resolve_profile(root, "test")
 
     def test_schema_documents_are_valid_json(self) -> None:
-        for name in ("profile.schema.json", "layer.schema.json"):
+        for name in (
+            "profile.schema.json",
+            "layer.schema.json",
+            "features.schema.json",
+        ):
             schema = json.loads((profiles.REPO_ROOT / "schemas" / name).read_text())
             self.assertEqual(schema["$schema"], "https://json-schema.org/draft/2020-12/schema")
 
