@@ -9,6 +9,7 @@ Resolve either current host model with:
 ```sh
 python -m utopia profile arch-laptop
 python -m utopia profile cachyos-desktop --json
+python -m utopia plan cachyos-desktop fcitx-wallpaper-theme
 ```
 
 Compare the resolved artifact plan with a live home directory without changing
@@ -92,6 +93,19 @@ The initial catalog is intentionally descriptive. `capture = true` and
 `deploy = true` state future intent; there is no command that performs either
 operation yet. `python -m utopia profile ...` prints the resulting plan, while
 `python -m utopia audit ...` only reads the mapped live paths and reports drift.
+
+Host-scoped features have a separate dry-run plan. For example, the Fcitx
+wallpaper adapter resolves its profile state and provenance, then describes the
+required backup, render, generated-asset validation, Classic UI switch, D-Bus
+reload, and rollback order:
+
+```sh
+python -m utopia plan cachyos-desktop fcitx-wallpaper-theme --json
+```
+
+The command never reads or writes the live home. Applying the plan remains an
+explicit future operation; a feature marked `experimental` is not an implicit
+deployment permission.
 
 Git author identity is deliberately absent from the artifact catalog. A future
 Git mapping should deploy only shared behavior through an include file, leaving

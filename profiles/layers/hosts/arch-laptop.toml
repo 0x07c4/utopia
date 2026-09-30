@@ -4,7 +4,7 @@ schema_version = 1
 id = "host.arch-laptop"
 kind = "host"
 description = "Desired laptop-specific display identity retained from the previous Arch setup."
-overrides = []
+overrides = ["features.fcitx_wallpaper_theme"]
 
 [values.host]
 id = "arch-laptop"
@@ -13,3 +13,6 @@ id = "arch-laptop"
 connector = "eDP-1"
 mode = "2560x1600@120.000"
 scale = 2.0
+
+[values.features]
+fcitx_wallpaper_theme = "experimental"

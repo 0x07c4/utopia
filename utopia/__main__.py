@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 import sys
 
-from utopia import artifacts, audit, profiles, workstation
+from utopia import artifacts, audit, deployment, profiles, workstation
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -26,6 +26,15 @@ def build_parser() -> argparse.ArgumentParser:
     audit_command.add_argument("--json", action="store_true", dest="as_json")
     audit_command.add_argument("--home", type=Path, default=Path.home())
     audit_command.add_argument(
+        "--repo-root", type=Path, default=profiles.REPO_ROOT, help=argparse.SUPPRESS
+    )
+    plan = subcommands.add_parser(
+        "plan", help="resolve an explicit host-scoped deployment plan"
+    )
+    plan.add_argument("profile_id")
+    plan.add_argument("feature_id")
+    plan.add_argument("--json", action="store_true", dest="as_json")
+    plan.add_argument(
         "--repo-root", type=Path, default=profiles.REPO_ROOT, help=argparse.SUPPRESS
     )
     return parser
@@ -48,7 +57,21 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 print(audit.format_audit(result))
             return 1 if audit.has_drift(result) else 0
-    except (profiles.ProfileError, artifacts.ArtifactError, audit.AuditError) as error:
+        if args.command == "plan":
+            result = deployment.resolve(
+                args.repo_root, args.profile_id, args.feature_id
+            )
+            if args.as_json:
+                print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+            else:
+                print(deployment.format_plan(result))
+            return 0
+    except (
+        profiles.ProfileError,
+        artifacts.ArtifactError,
+        audit.AuditError,
+        deployment.DeploymentError,
+    ) as error:
         print(f"Error: {error}", file=sys.stderr)
         return 2
     return 2
