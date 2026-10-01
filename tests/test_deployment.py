@@ -43,13 +43,16 @@ class DeploymentPlanTest(unittest.TestCase):
             result["stages"][3]["from"], "catppuccin-mocha-green"
         )
         self.assertEqual(result["stages"][3]["to"], "utopia-wallpaper")
+        self.assertEqual(result["stages"][3]["opt_in_destination"],
+                         ".config/utopia/enable-fcitx-wallpaper")
         self.assertEqual(
             result["rollback"]["steps"][0]["destination"],
             ".config/fcitx5/conf/classicui.conf",
         )
         self.assertEqual(
             result["rollback"]["steps"][1]["paths"],
-            [".local/share/fcitx5/themes/utopia-wallpaper"],
+            [".local/share/fcitx5/themes/utopia-wallpaper",
+             ".config/utopia/enable-fcitx-wallpaper"],
         )
         self.assertEqual(
             result["provenance"]["required_artifacts"][0]["id"],

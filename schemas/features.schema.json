@@ -33,6 +33,7 @@
         "generated_directory",
         "generated_theme",
         "selector_destination",
+        "opt_in_destination",
         "fallback_theme",
         "dynamic_theme",
         "backup_destinations",
@@ -55,6 +56,7 @@
         "generated_directory": { "$ref": "#/$defs/relativePath" },
         "generated_theme": { "$ref": "#/$defs/relativePath" },
         "selector_destination": { "$ref": "#/$defs/relativePath" },
+        "opt_in_destination": { "$ref": "#/$defs/relativePath" },
         "fallback_theme": { "type": "string", "minLength": 1 },
         "dynamic_theme": { "type": "string", "minLength": 1 },
         "backup_destinations": {

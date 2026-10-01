@@ -79,8 +79,21 @@ in [`journal/`](journal/).
   provenance; `python -m utopia plan <profile> fcitx-wallpaper-theme` emits a
   human- or JSON-readable dry-run with backup, render, generated-asset
   validation, atomic selector switch, Classic UI reload, and rollback stages.
-  The plan never reads or writes the live home; an apply command remains
-  intentionally unimplemented and requires an explicit confirmation design.
+  The plan never reads or writes the live home. A narrow Fcitx `deploy` and
+  `rollback` implementation now consumes this resolver: default dry-run,
+  explicit apply/host confirmation, isolated render and validation, policy
+  conflict detection, timestamped backup/records, repeat detection, and recovery
+  after publication failures or process interruption. Both host profiles passed
+  real Noctalia render/apply/repeat/rollback rehearsals in temporary homes.
+  The desktop then received the new hook after a backup and completed a live
+  CLI deployment with its existing wallpaper. First adoption now establishes
+  a backup and deployment record even when the manually deployed theme already
+  matches. Selector, generated theme, and opt-in snapshots remained identical;
+  only the hook update and local deployment records were new. Classic UI reload
+  succeeded, a repeated deployment reported `unchanged`, backup integrity and
+  rollback dry-run passed, Fcitx remained active, and live Noctalia validation
+  passed. Actual CLI rollback was rehearsed in temporary homes only.
+  Usage and limits are documented in [`profiles/README.md`](../profiles/README.md).
 - Laptop follow-up review standardized the Noctalia shell on Maple Mono NF CN
   and Simplified Chinese, preserved distinct Starship path, Git, and time
   stages, and refined the wallpaper center for the laptop's 800-logical-pixel
@@ -129,7 +142,7 @@ in [`journal/`](journal/).
   rendering. A controlled wallpaper switch changed all three generated Niri,
   Kitty, and Starship outputs; restoring the original wallpaper restored every
   output exactly, while the Starship body remained byte-identical throughout.
-- The repository tests pass with the accepted role mapping: 52
+- The repository tests pass with the accepted role mapping: 71
   profile/audit/deployment-plan tests and 67 installer tests.
   Both profiles resolve and both diff whitespace checks pass. The offline
   comparison CLI still requires ImageMagick, which is not installed on the
@@ -158,9 +171,10 @@ in [`journal/`](journal/).
   read-only. `python -m utopia audit <profile>` reports matching, drifted,
   missing, and unsafe artifacts without following symbolic links or exposing an
   absolute home path. `python -m utopia plan <profile> <feature>` now resolves
-  host-scoped dry-run deployment stages with provenance and rollback details;
-  capture, apply, and last-deployment-aware recovery are not working commands
-  yet.
+  host-scoped dry-run deployment stages with provenance and rollback details.
+  `deploy` and `rollback` support only the reviewed Fcitx wallpaper feature;
+  general capture, artifact deployment, and installer integration remain future
+  work.
 - Niri has shared domain-owned configuration plus output-only host overlays.
   Shell, terminal, input, editor, and reviewed development configuration are
   domain-owned. Several other home-relative artifacts still live at the
@@ -329,7 +343,7 @@ public commit.
 
 ## Immediate next work
 
-The current implementation passes both Python suites (52 profile/audit/
+The current implementation passes both Python suites (71 profile/audit/
 deployment-plan tests and 67 Arch-installer tests). Continue in this order, one
 focused change at a time:
 
@@ -337,10 +351,13 @@ focused change at a time:
    laptop and desktop A/B results are visually accepted, and the repository
    remains opt-in with a fixed Catppuccin fallback. The deployment boundary now
    expresses the required generate-then-switch ordering, provenance, and
-   rollback as a dry-run plan, but it still has no apply path or deployment
-   record. Do not promote it to a general profile default; any future apply
-   implementation must add explicit confirmation, idempotence, conflict checks,
-   and timestamped recovery records. Reconcile GTK/Qt and Neovim only as
+   rollback as a dry-run plan. Its narrow apply/recovery implementation is
+   tested in isolated homes and records backups outside Git; the desktop also
+   passed live CLI adoption and repeat/rollback-preview checks. A later laptop
+   session may adopt the command after refreshing its static prerequisites with
+   a backup. Avoid wallpaper changes during apply;
+   custom XDG roots and general artifact deployment remain unsupported. Do not
+   promote it to a general profile default. Reconcile GTK/Qt and Neovim only as
    separate, reviewed adapters.
 2. **Choose the next core visual adapter deliberately.** GTK/Qt dynamic
    integration is deferred behind the stable system fallback; do not reopen it
