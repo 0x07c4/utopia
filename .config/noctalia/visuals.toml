@@ -34,8 +34,8 @@ input_path = "templates/utopia/starship-palette.toml"
 output_path = "$XDG_CACHE_HOME/noctalia/starship-palette.toml"
 post_hook = "bash /usr/share/noctalia/assets/templates/starship/apply.sh"
 
-# Opt-in Fcitx adapter. Create ~/.config/utopia/enable-fcitx-wallpaper and
-# select `utopia-wallpaper` in classicui.conf before enabling this experiment.
+# Opt-in Fcitx adapter. The host-scoped `utopia deploy` command validates the
+# generated theme before selecting it and creating the local opt-in marker.
 # The hook owns the guard because Noctalia's user-template schema does not
 # support `requires_path` in the installed v5 validator.
 [theme.templates.user.utopia-fcitx5]

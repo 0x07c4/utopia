@@ -89,9 +89,11 @@ Noctalia can refresh its palette without turning every wallpaper change into
 configuration drift. Tree `excludes` similarly omit separate generated theme
 files such as Kitty's `themes/noctalia.conf` and Niri's `noctalia.kdl`.
 
-The initial catalog is intentionally descriptive. `capture = true` and
-`deploy = true` state future intent; there is no command that performs either
-operation yet. `python -m utopia profile ...` prints the resulting plan, while
+The artifact catalog is intentionally descriptive. `capture = true` and
+`deploy = true` state future intent; general artifact capture/deployment is not
+implemented. The feature-specific Fcitx adapter below is the first narrow
+deployment operation. `python -m utopia profile ...` prints the artifact plan,
+while
 `python -m utopia audit ...` only reads the mapped live paths and reports drift.
 
 Host-scoped features have a separate dry-run plan. For example, the Fcitx
@@ -103,9 +105,73 @@ reload, and rollback order:
 python -m utopia plan cachyos-desktop fcitx-wallpaper-theme --json
 ```
 
-The command never reads or writes the live home. Applying the plan remains an
-explicit future operation; a feature marked `experimental` is not an implicit
-deployment permission.
+The `plan` command never reads or writes the live home. A feature marked
+`experimental` is not an implicit deployment permission.
+
+## Fcitx feature deployment and recovery
+
+The Fcitx adapter consumes that same resolver. Preview live prerequisites and
+policy conflicts without writing files:
+
+```sh
+python -m utopia deploy cachyos-desktop fcitx-wallpaper-theme
+```
+
+The reviewed static Fcitx selector, fallback icons, Noctalia Fcitx template,
+hook, and wallpaper settings must already be deployed. First deployment accepts
+the fixed selector or the accepted dynamic selector only when all other selector
+content matches the repository. Later deployments check selector and opt-in
+hashes against the last successful deployment and refuse unreviewed repository
+selector changes. Generated colors may legitimately change with the wallpaper.
+There is no force-overwrite option.
+
+Apply explicitly, selecting both the host and a local image:
+
+```sh
+python -m utopia deploy cachyos-desktop fcitx-wallpaper-theme \
+  --wallpaper "$HOME/Pictures/Wallpapers/selected.png" \
+  --apply --confirm-host cachyos-desktop
+```
+
+The adapter renders the repository template with Noctalia's accepted dark
+`m3-content` policy in an isolated staging home, uses the repository asset hook
+without a session reload, validates the complete generated bundle, preserves a
+timestamped backup, publishes the theme, atomically replaces `classicui.conf`,
+creates the opt-in marker if missing, and reloads only Classic UI. Other Classic
+UI settings are preserved. Filesystem publication is ordered; the whole set is
+not one atomic operation. Stop switching wallpapers or editing these files
+during deployment. The deployment lock serializes Utopia commands only.
+
+The command prints a record ID. Records and verified backups live outside Git
+under `~/.local/state/utopia/deployments/fcitx-wallpaper-theme/`. They record the
+repository commit, input checksums, wallpaper checksum (without its path),
+before/after snapshots, and transaction status. First adoption records the
+baseline even if an existing manual deployment already matches. A repeated
+identical recorded deployment reports `unchanged`. Failures after publication
+restore the backup; interrupted
+transactions block new deployment until explicit recovery. This provides
+process-interruption recovery, not a power-loss durability guarantee.
+
+Preview recovery, then restore using the printed record ID:
+
+```sh
+python -m utopia rollback cachyos-desktop <record-id>
+python -m utopia rollback cachyos-desktop <record-id> \
+  --apply --confirm-host cachyos-desktop
+```
+
+Rollback verifies backup integrity and refuses to overwrite later live changes
+after a successful deployment. Roll back the latest active record first; repeat
+the command safely if recovery itself was interrupted. An incomplete
+transaction is restored from its pre-change snapshot. A later wallpaper change
+counts as a live change for rollback, even though deployment treats generated
+colors as runtime state.
+
+For isolated rehearsal, both commands accept `--home <temporary-home>`; deploy
+also requires `--no-reload` so it cannot change the real session. The live HOME
+requires Classic UI reload. Custom XDG roots are currently unsupported. This
+adapter does not install packages, deploy general artifacts, or change Fcitx/Rime
+runtime databases.
 
 Git author identity is deliberately absent from the artifact catalog. A future
 Git mapping should deploy only shared behavior through an include file, leaving

@@ -36,6 +36,7 @@ FEATURE_KEYS = {
     "generated_directory",
     "generated_theme",
     "selector_destination",
+    "opt_in_destination",
     "fallback_theme",
     "dynamic_theme",
     "backup_destinations",
@@ -127,6 +128,7 @@ def _load_features(repo_root: Path) -> dict[str, dict[str, Any]]:
             "generated_directory",
             "generated_theme",
             "selector_destination",
+            "opt_in_destination",
         ):
             _relative(_string(feature, key, context), f"{context}.{key}")
         for key in ("backup_destinations", "rollback_destinations"):
@@ -166,6 +168,7 @@ def _load_features(repo_root: Path) -> dict[str, dict[str, Any]]:
             for required_destination in (
                 feature["selector_destination"],
                 feature["generated_directory"],
+                feature["opt_in_destination"],
             ):
                 if required_destination not in destinations:
                     raise DeploymentError(
@@ -313,6 +316,7 @@ def resolve(repo_root: Path, profile_id: str, feature_id: str) -> dict[str, Any]
                 "kind": "atomic-switch",
                 "mutates": True,
                 "destination": feature["selector_destination"],
+                "opt_in_destination": feature["opt_in_destination"],
                 "from": feature["fallback_theme"],
                 "to": feature["dynamic_theme"],
                 "requires": ["validate-generated-assets"],
@@ -371,6 +375,8 @@ def format_plan(result: dict[str, Any]) -> str:
         detail = stage["kind"]
         if "destination" in stage:
             detail += f" -> {stage['destination']}"
+            if "opt_in_destination" in stage:
+                detail += f"; opt-in -> {stage['opt_in_destination']}"
         elif "paths" in stage:
             detail += f" ({', '.join(stage['paths'])})"
         lines.append(f"  [{index:02d}] {stage['id']}: {detail}")

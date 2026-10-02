@@ -68,7 +68,7 @@ done
 
 # Reload only Classic UI. If Fcitx or the session bus is unavailable, the
 # generated files remain valid and will be picked up on the next start.
-if busctl --user status org.fcitx.Fcitx5 >/dev/null 2>&1; then
+if [[ "${UTOPIA_FCITX_SKIP_RELOAD:-0}" != 1 ]] && busctl --user status org.fcitx.Fcitx5 >/dev/null 2>&1; then
   busctl --user call \
     org.fcitx.Fcitx5 \
     /controller \

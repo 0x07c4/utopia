@@ -15,15 +15,18 @@ hook_source = ".config/noctalia/templates/utopia/fcitx5/apply.sh"
 generated_directory = ".local/share/fcitx5/themes/utopia-wallpaper"
 generated_theme = ".local/share/fcitx5/themes/utopia-wallpaper/theme.conf"
 selector_destination = ".config/fcitx5/conf/classicui.conf"
+opt_in_destination = ".config/utopia/enable-fcitx-wallpaper"
 fallback_theme = "catppuccin-mocha-green"
 dynamic_theme = "utopia-wallpaper"
 backup_destinations = [
   ".config/fcitx5/conf/classicui.conf",
   ".local/share/fcitx5/themes/utopia-wallpaper",
+  ".config/utopia/enable-fcitx-wallpaper",
 ]
 rollback_destinations = [
   ".config/fcitx5/conf/classicui.conf",
   ".local/share/fcitx5/themes/utopia-wallpaper",
+  ".config/utopia/enable-fcitx-wallpaper",
 ]
 
 [features."fcitx-wallpaper-theme".reload]
