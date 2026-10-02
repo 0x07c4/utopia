@@ -6,7 +6,7 @@ work changes. Keep durable direction in [`vision.md`](vision.md), and keep
 the active product sequence in [`roadmap.md`](roadmap.md). Keep session history
 in [`journal/`](journal/).
 
-## Active pause point — 2026-10-01
+## Active pause point — 2026-10-03
 
 - The wallpaper-driven theme workflow was merged by PR #9, and its accepted
   semantic role mapping was merged by PR #12. The desktop theme milestone is
@@ -94,6 +94,20 @@ in [`journal/`](journal/).
   rollback dry-run passed, Fcitx remained active, and live Noctalia validation
   passed. Actual CLI rollback was rehearsed in temporary homes only.
   Usage and limits are documented in [`profiles/README.md`](../profiles/README.md).
+- On 2026-10-03, `arch-laptop` completed the same live CLI adoption from
+  `f917019`. After verifying the static prerequisites, the outdated Noctalia
+  hook gained the isolated-render reload guard and the stale opt-in comments
+  were refreshed, with a verified timestamped backup. An isolated render with
+  the current wallpaper matched all five live theme assets, including file
+  modes. The first CLI deployment created its backup and record and reloaded
+  Classic UI; the identical repeat reported `unchanged`. Selector, generated
+  theme, and opt-in snapshots remained identical before and after adoption.
+  Backup integrity and rollback preview passed, live Noctalia configuration
+  validated, and Rime remained active. No wallpaper was changed and no actual
+  live rollback was performed. This record's rollback would restore the
+  already-enabled manual dynamic theme, not disable the experiment or select
+  the fixed fallback. Both hosts have now completed CLI adoption; retain the
+  host-scoped experimental policy and tracked Catppuccin fallback.
 - Laptop follow-up review standardized the Noctalia shell on Maple Mono NF CN
   and Simplified Chinese, preserved distinct Starship path, Git, and time
   stages, and refined the wallpaper center for the laptop's 800-logical-pixel
@@ -352,10 +366,11 @@ focused change at a time:
    remains opt-in with a fixed Catppuccin fallback. The deployment boundary now
    expresses the required generate-then-switch ordering, provenance, and
    rollback as a dry-run plan. Its narrow apply/recovery implementation is
-   tested in isolated homes and records backups outside Git; the desktop also
-   passed live CLI adoption and repeat/rollback-preview checks. A later laptop
-   session may adopt the command after refreshing its static prerequisites with
-   a backup. Avoid wallpaper changes during apply;
+   tested in isolated homes and records backups outside Git; both hosts have
+   passed live CLI adoption, identical-repeat, backup-integrity, and
+   rollback-preview checks. The CLI adoption follow-up is complete, so do not
+   repeat deployment or broaden the tooling without a concrete need.
+   Avoid wallpaper changes during apply;
    custom XDG roots and general artifact deployment remain unsupported. Do not
    promote it to a general profile default. Reconcile GTK/Qt and Neovim only as
    separate, reviewed adapters.
