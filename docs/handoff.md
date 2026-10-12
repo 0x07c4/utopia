@@ -35,10 +35,18 @@ in [`journal/`](journal/).
   in a fresh separate prefix also showed the startup-logo/high-CPU behavior.
   Debug attachment exposed a WoW64 execution-access exception, but its role in
   the original stall is unproven. The installer's MD5 matches the official CDN.
-  A backed-up virtual-desktop trial was requested, but session locking prevented
-  interface verification; it remains unclassified. Trial processes were stopped
-  and both prefixes retained. Resume after unlock; the manager dependency and
-  GUI checks do not need repeating. Client login and game compatibility are still
+  The first virtual-desktop attempt was interrupted by session locking. After
+  unlock, the backed-up traditional prefix with a 1280x720 virtual desktop and
+  Windows `Z:` installer path reached the complete installation configuration.
+  Its bootstrap log confirmed it was waiting for user configuration; sustained
+  high CPU alone is not evidence of a stall. Prefix-local Noto CJK font links
+  restored Chinese text after a font copy/replacement-only attempt failed.
+  The startup checkbox was disabled, client installation completed, and the
+  China client reached the readable NetEase login/registration and consent page.
+  The client remains open for the maintainer; agreement acceptance, account
+  linking, and authentication must be performed by the user. Both prefixes and
+  backups are retained. The manager dependency and
+  GUI checks do not need repeating. Authenticated login and game compatibility are still
   unverified. The experiment's source,
   account boundary, validation stages, and recovery path are documented in
   [`desktop/gaming/hearthstone-cn.md`](../desktop/gaming/hearthstone-cn.md).

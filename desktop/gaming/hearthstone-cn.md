@@ -88,11 +88,32 @@ also reached the Agent/startup logo without installing the launcher and showed
 high CPU; changing Wine execution mode alone did not solve the observed issue.
 The China installer's MD5 matched its official CDN response.
 
-A backed-up Wine virtual-desktop trial was requested, but session locking
-interrupted the interface check. Its result is not accepted or classified as a
-failed workaround. Trial processes were stopped and both prefixes retained.
-Resume after session unlock; do not repeat the already-passed manager dependency
-work, implicitly disable session locking, or promote either runner as working.
+A first virtual-desktop attempt was interrupted by session locking and remained
+unclassified. After unlock, the backed-up traditional prefix was launched with
+`wine explorer /desktop=BattleNetCN,1280x720` and the installer's Windows `Z:`
+path. The complete installation configuration appeared, and the bootstrap log
+confirmed it was waiting for user configuration. High CPU alone therefore does
+not prove that the bootstrap is stuck. This successful combined trial does not
+isolate virtual-desktop geometry from the corrected launch path as the cause.
+
+Chinese text initially appeared as boxes. Copying the already-installed Noto
+Sans CJK Regular collection into this prefix and adding a Microsoft YaHei Wine
+replacement alone did not resolve it. Prefix-local `FontLink\\SystemLink`
+entries for Tahoma, Arial, Segoe UI, Microsoft Sans Serif, and Microsoft YaHei,
+pointing to `NotoSansCJK-Regular.ttc,Noto Sans CJK SC`, restored readable Chinese
+after restarting the prefix. This follows Wine's
+[font-link mechanism](https://www.winehq.org/pipermail/wine-devel/2010-February/081576.html);
+no fonts or registry settings were changed for other applications.
+
+The installer then proceeded beyond configuration after disabling its startup
+checkbox and selecting Continue. The Battle.net launcher files were installed,
+and the China client displayed its readable NetEase login/registration and
+license/privacy-consent page. Consent and authentication were not performed by
+the agent; account login and game acceptance remain unverified. Leave this
+client available for the maintainer's next action. Both prefixes and their
+backups are retained.
+Do not repeat the already-passed manager dependency work, implicitly disable
+session locking, or promote either runner as a working Hearthstone environment.
 
 Do not disable
 signature validation, update the system implicitly, or claim launcher/game
