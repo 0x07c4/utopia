@@ -43,6 +43,13 @@ in [`journal/`](journal/).
   restored Chinese text after a font copy/replacement-only attempt failed.
   The startup checkbox was disabled, client installation completed, and the
   China client reached the readable NetEase login/registration and consent page.
+  The installation virtual desktop subsequently showed black margins when its
+  outer window was tiled larger. Direct launch of the installed Battle.net.exe
+  removed that virtual desktop and produced an independent floating login
+  window. A timestamp-backed prefix-only DPI change from 96 to 192 adapted it
+  to the desktop's scale-2 output; a complete 362x597 logical-pixel login window
+  was verified by screenshot. Do not copy this host-specific trial DPI to the
+  laptop or use the installation virtual desktop for normal client startup.
   The client remains open for the maintainer; agreement acceptance, account
   linking, and authentication must be performed by the user. Both prefixes and
   backups are retained. The manager dependency and

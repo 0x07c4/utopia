@@ -112,6 +112,19 @@ license/privacy-consent page. Consent and authentication were not performed by
 the agent; account login and game acceptance remain unverified. Leave this
 client available for the maintainer's next action. Both prefixes and their
 backups are retained.
+
+The installation virtual desktop is not the accepted everyday launch method:
+Niri tiling enlarged its outer window without enlarging its 1280x720 content,
+leaving large black margins. After stopping only this prefix, launching the
+installed `C:\\Program Files (x86)\\Battle.net\\Battle.net.exe` directly produced
+an independent, floating login window without that virtual desktop. Its default
+96 DPI was too small on the desktop's scale-2 output. After a timestamped registry
+backup, setting this prefix's `HKCU\\Control Panel\\Desktop` `LogPixels` DWORD to
+192 and restarting produced a complete, readable 362x597 logical-pixel login
+window. This DPI is a `cachyos-desktop` trial setting, not shared policy or an
+instruction to change laptop scaling. To undo it, stop only this prefix and
+restore the backed-up registry, or restore the prior DPI value before restarting.
+The screenshot check covers the login window, not the post-login launcher or game.
 Do not repeat the already-passed manager dependency work, implicitly disable
 session locking, or promote either runner as a working Hearthstone environment.
 
