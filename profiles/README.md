@@ -73,6 +73,9 @@ resolved `packages` table must classify every listed package into exactly one of
 - `disabled`: explicitly not wanted even if old configuration exists.
 
 The current workstation marks WezTerm disabled and Kitty required.
+Steam and Lutris are optional; the desktop-first provider, validation, and
+recovery boundary
+are documented in [`desktop/gaming/README.md`](../desktop/gaming/README.md).
 
 ## Home artifacts
 
