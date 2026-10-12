@@ -43,6 +43,12 @@
        open-focused false
     }
 
+    // The native game needs a landscape viewport at startup, not a half column.
+    window-rule {
+        match app-id=r#"^Stardew Valley$"#
+        open-fullscreen true
+    }
+
     layer-rule {
         match namespace="^noctalia-wallpaper"
         place-within-backdrop true

@@ -6,7 +6,72 @@ work changes. Keep durable direction in [`vision.md`](vision.md), and keep
 the active product sequence in [`roadmap.md`](roadmap.md). Keep session history
 in [`journal/`](journal/).
 
-## Active pause point — 2026-10-03
+## Active pause point — 2026-10-12
+
+- The maintainer deferred game-session idle inhibition and selected Hearthstone
+  China as the next gaming slice. The official China Battle.net installer
+  endpoint was verified, including its `Battle.net-Setup-CN.exe` redirect;
+  Lutris's standard international recipe is only a reference, not a verified
+  China installer. `lutris` is now declared optional. Its 46-package transaction
+  failed first on stale-index 404s and then on the CachyOS `python-pycurl`
+  signature; those failed transactions installed no packages. The retry with the
+  preconfigured Arch `extra/python-pycurl` standard build passed normal signature
+  validation and installed all 46 packages after administrator authentication.
+  Lutris 0.5.22-2 and python-pycurl 7.47.0-1 pass packaged-file checks, and
+  `lutris --version` succeeds. It reports missing optional `python-protobuf` for
+  Battle.net source integration and missing `vulkaninfo` for diagnostics; do not
+  interpret the latter as missing Vulkan drivers. No system Wine, kernel, or
+  driver package was in the transaction. A checksummed Wine Staging 11.19 WoW64
+  runner is installed
+  in user data and passes its version check. A new independent prefix installed
+  Mono and reached the China bootstrap/Agent, but the installer stalled at its
+  startup logo with high CPU use before installing the actual launcher. Only
+  that prefix's processes were stopped, preserving its data. Next investigate
+  Lutris's Battle.net integration dependency and the prefix/runtime before
+  another installer test; client login and game compatibility are still
+  unverified. The experiment's source,
+  account boundary, validation stages, and recovery path are documented in
+  [`desktop/gaming/hearthstone-cn.md`](../desktop/gaming/hearthstone-cn.md).
+
+- The active product focus has moved to gaming on `cachyos-desktop`. Steam is
+  now declared optional in the shared workstation profile, with provider,
+  acceptance, privacy, and recovery boundaries under
+  [`desktop/gaming/README.md`](../desktop/gaming/README.md). The maintainer
+  authorized installation of the distribution's multilib `steam` package.
+  The first package transaction failed during retrieval because the cached
+  multilib index referenced versions missing from current mirrors; pacman made
+  no package changes. The two remaining downloads were retrieved, with their
+  signatures, from the official Arch Linux Archive at versions matching the
+  installed 64-bit libraries. Installation has been retried using that cache
+  with normal pacman verification. On 2026-10-11 system authentication completed
+  and the original 30-package transaction succeeded. `steam` 1.0.0.87-3 is
+  installed; its packaged files validate with no missing files, and the package
+  transaction lock is released. Launching Steam through Niri started its first
+  upstream client download/update. The maintainer subsequently confirmed that
+  Stardew Valley was installed. Its local manifest and native launcher were
+  verified, and it launched through Steam with app ID `Stardew Valley`, loading
+  NVIDIA OpenGL. Desktop/game focus switching and fullscreen dimensions passed;
+  its own audio client had an uncorked, unmuted stream and unmuted output.
+  Screenshots exposed a clipped menu in the default half-width tile. A precise
+  `open-fullscreen true`
+  startup rule now parses in both host compositions and was deployed to the
+  desktop after a backup, preserving its unrelated live rules. Session locking
+  interrupted the first restart check. After unlock, a fresh launch produced a
+  complete title/menu in both window and actual-screen captures at the intended
+  fullscreen size. Waiting for focus/resize animation and game redraw removed
+  the misleading partial images seen in immediate transition captures; do not
+  describe those as a proven persistent renderer defect. Mouse hover correctly
+  highlighted the Co-op button without clicking or touching saves. Native
+  startup/menu acceptance is now complete; actual gameplay and sustained idle
+  acceptance remain open.
+  Existing Niri Steam rules, fullscreen/escape shortcuts, Xwayland support, and
+  the desktop's graphics prerequisites were inspected; no live desktop policy
+  was changed by package installation; the later backed-up Stardew window-rule
+  trial is described above. Start actual game acceptance with Stardew Valley.
+  GTA Online
+  remains in the existing Windows environment; Hearthstone/Battle.net needs a
+  separate compatibility review. Do not deploy optional gaming packages to the
+  laptop from the shared profile declaration alone.
 
 - The wallpaper-driven theme workflow was merged by PR #9, and its accepted
   semantic role mapping was merged by PR #12. The desktop theme milestone is
@@ -360,6 +425,14 @@ public commit.
 The current implementation passes both Python suites (71 profile/audit/
 deployment-plan tests and 67 Arch-installer tests). Continue in this order, one
 focused change at a time:
+
+The current selected slice is the optional desktop gaming baseline: the Steam
+installation and Stardew native startup/menu slice is validated on the desktop.
+Game-session idle inhibition is explicitly deferred. The active next task is
+the Hearthstone China compatibility trial; do not repeat Steam installation or
+the resolved Stardew fullscreen/menu check. The visual and performance
+follow-ups
+below remain deferred while this slice is active.
 
 1. **Keep the accepted Fcitx adapter host-scoped and opt-in for now.** The
    laptop and desktop A/B results are visually accepted, and the repository
