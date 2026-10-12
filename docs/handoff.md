@@ -18,17 +18,27 @@ in [`journal/`](journal/).
   preconfigured Arch `extra/python-pycurl` standard build passed normal signature
   validation and installed all 46 packages after administrator authentication.
   Lutris 0.5.22-2 and python-pycurl 7.47.0-1 pass packaged-file checks, and
-  `lutris --version` succeeds. It reports missing optional `python-protobuf` for
-  Battle.net source integration and missing `vulkaninfo` for diagnostics; do not
+  `lutris --version` succeeds. Its initial missing `python-protobuf` dependency
+  has now been declared optional and installed: packaged-file validation and
+  Battle.net service import using normal GTK3 initialization pass, and the
+  missing-module warning is gone. The Lutris GUI opens. It still reports missing
+  `vulkaninfo` for diagnostics; do not
   interpret the latter as missing Vulkan drivers. No system Wine, kernel, or
   driver package was in the transaction. A checksummed Wine Staging 11.19 WoW64
   runner is installed
   in user data and passes its version check. A new independent prefix installed
   Mono and reached the China bootstrap/Agent, but the installer stalled at its
   startup logo with high CPU use before installing the actual launcher. Only
-  that prefix's processes were stopped, preserving its data. Next investigate
-  Lutris's Battle.net integration dependency and the prefix/runtime before
-  another installer test; client login and game compatibility are still
+  that prefix's processes were stopped, preserving its data. A backed-up
+  process-local `locationapi` disable trial still stalled; the installer is
+  already floating. A same-version, checksummed traditional Wine amd64 runner
+  in a fresh separate prefix also showed the startup-logo/high-CPU behavior.
+  Debug attachment exposed a WoW64 execution-access exception, but its role in
+  the original stall is unproven. The installer's MD5 matches the official CDN.
+  A backed-up virtual-desktop trial was requested, but session locking prevented
+  interface verification; it remains unclassified. Trial processes were stopped
+  and both prefixes retained. Resume after unlock; the manager dependency and
+  GUI checks do not need repeating. Client login and game compatibility are still
   unverified. The experiment's source,
   account boundary, validation stages, and recovery path are documented in
   [`desktop/gaming/hearthstone-cn.md`](../desktop/gaming/hearthstone-cn.md).

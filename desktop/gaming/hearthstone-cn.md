@@ -62,10 +62,39 @@ same 46-package boundary, and succeeded after administrator authentication.
 Lutris 0.5.22-2 and python-pycurl 7.47.0-1 have no missing packaged files, and
 `lutris --version` reports 0.5.22. Its diagnostics report missing optional
 `python-protobuf` for Battle.net source integration and missing `vulkaninfo`;
-those capabilities are not declared or installed by this trial yet.
+the first diagnostic preceded the follow-up dependency installation below.
+The optional `vulkaninfo` diagnostic CLI remains absent.
 
-Next validate Lutris's GUI and review the Battle.net integration dependency
-before integrating this runner/prefix or retrying the China client. Do not disable
+### Follow-up dependency and runtime checks
+
+`python-protobuf` 36.1-1.1 is now declared optional and installed on the desktop.
+Its packaged-file check passes, Python reports protobuf 7.36.1, and importing
+Lutris's Battle.net service with the normal GTK3 initialization succeeds. The
+missing-module warning is gone. Lutris's GUI opens successfully; this verifies
+the manager and source dependency, not the Windows client or Hearthstone.
+
+After backing up the retained WoW64 prefix, a process-local
+`WINEDLLOVERRIDES=locationapi=d` trial, following the upstream installer setting,
+still showed the same startup logo and high CPU. The installer is already
+floating, so generic tiling is not established as the cause. Debug attachment
+reported a WoW64 execution-access exception involving ntdll; attachment itself
+could have contributed, so this is not a proven cause of the original stall.
+
+A same-version traditional Staging amd64 build was separately downloaded and
+matched upstream SHA-256
+`f70f17f7da3e8c936193e3c089e4a85615d4c1fe3e42f4a276f4160f3601a1b5`.
+Its i386 Unix modules and version check were verified. A fresh separate prefix
+also reached the Agent/startup logo without installing the launcher and showed
+high CPU; changing Wine execution mode alone did not solve the observed issue.
+The China installer's MD5 matched its official CDN response.
+
+A backed-up Wine virtual-desktop trial was requested, but session locking
+interrupted the interface check. Its result is not accepted or classified as a
+failed workaround. Trial processes were stopped and both prefixes retained.
+Resume after session unlock; do not repeat the already-passed manager dependency
+work, implicitly disable session locking, or promote either runner as working.
+
+Do not disable
 signature validation, update the system implicitly, or claim launcher/game
 compatibility from the initial Wine bootstrap result.
 
