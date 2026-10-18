@@ -26,8 +26,10 @@ in [`journal/`](journal/).
   working volume-slider control, then rebooted and confirmed both still work.
   Post-reboot inspection verified the Speaker profile, default Speaker route,
   unmuted hardware, and 70% desktop output. The speaker persistence check is
-  accepted; no services were changed. Bluetooth playback/switch-back passed
-  before this profile correction and has not been repeated afterward.
+  accepted; no services were changed. The maintainer then repeated Bluetooth
+  playback and disconnect-to-speaker switching with the corrected Speaker
+  profile and confirmed both work normally. Speaker playback, desktop volume
+  control, reboot restoration, and Bluetooth switch-back are now accepted.
   After opening WeChat in the post-reboot session, the maintainer confirmed
   that closing its window and clicking the tray icon restores it, and that
   image paste produces a composer preview without sending. Reopening after
