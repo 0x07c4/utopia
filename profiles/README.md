@@ -76,6 +76,10 @@ The current workstation marks WezTerm disabled and Kitty required.
 Steam and Lutris are optional; the desktop-first provider, validation, and
 recovery boundary
 are documented in [`desktop/gaming/README.md`](../desktop/gaming/README.md).
+WeChat (`wechat-bin`) is optional; its reviewed provider, laptop acceptance,
+installation-review boundary, and recovery are documented in
+[`desktop/social/README.md`](../desktop/social/README.md). This declaration
+does not install it on either host or add it to installer defaults.
 
 ## Home artifacts
 

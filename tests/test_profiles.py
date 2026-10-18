@@ -43,6 +43,19 @@ class ProfileResolutionTest(unittest.TestCase):
             "experimental",
         )
 
+    def test_wechat_is_optional_on_both_hosts(self) -> None:
+        for host in ("arch-laptop", "cachyos-desktop"):
+            with self.subTest(host=host):
+                result = profiles.resolve_profile(profiles.REPO_ROOT, host)
+                packages = result["values"]["packages"]
+                self.assertIn("wechat-bin", packages["optional"])
+                self.assertNotIn("wechat-bin", packages["required"])
+                self.assertNotIn("wechat-bin", packages["disabled"])
+                self.assertEqual(
+                    result["provenance"]["packages.optional"]["layer"],
+                    "workstation.utopia",
+                )
+
     def _write_repo(
         self,
         root: Path,

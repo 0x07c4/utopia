@@ -8,6 +8,13 @@ in [`journal/`](journal/).
 
 ## Active pause point — 2026-10-18
 
+- The accepted WeChat slice now has optional `wechat-bin` package intent and
+  a provider/review/acceptance/recovery boundary under
+  [`desktop/social/README.md`](../desktop/social/README.md). This adds no
+  installation, desktop deployment, installer default, or live configuration
+  change. Use this definition for future rebuild review instead of treating
+  the laptop's installed client or mutable vendor download as a pinned source.
+
 - The current laptop slice is WeChat/social workflow acceptance. The maintainer
   approved and installed `wechat-bin` 4.1.13.26-1, and confirmed login, Chinese
   input, and video audio after a laptop-only ALSA `Speaker` mute/attenuation
