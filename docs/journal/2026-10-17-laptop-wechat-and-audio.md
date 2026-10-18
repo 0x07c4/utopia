@@ -133,11 +133,15 @@ image paste, and notification activation now have user-confirmed acceptance.
 This closes the current basic desktop-integration test round, not all WeChat
 features or a reproducible package/deployment implementation.
 
+After the Speaker correction and successful reboot check, the maintainer
+repeated Bluetooth headphone playback and disconnected during playback to test
+return to internal speakers. Both were confirmed normal, without another agent
+volume adjustment or manual routing change. This completes the selected audio
+regression checks; it does not imply microphone or call acceptance.
+
 Remaining follow-ups (not blockers for this test round):
 
-1. Repeat Bluetooth playback and disconnect-to-speaker switching with the
-   corrected Speaker profile when convenient. The earlier successful Bluetooth
-   checks preceded this profile change. Wired headphones remain untested.
+1. Wired headphones remain untested and are outside this Bluetooth test round.
 2. Review supported automatic-login behavior separately; QR-code login after
    reboot was observed. Do not send messages or inspect private content as an
    agent. Calls and microphone behavior are still unverified and need a
