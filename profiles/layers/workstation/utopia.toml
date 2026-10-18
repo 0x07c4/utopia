@@ -39,5 +39,5 @@ required = [
   "zoxide",
   "zsh",
 ]
-optional = ["bottom", "cava", "lutris", "python-protobuf", "satty", "steam"]
+optional = ["bottom", "cava", "lutris", "python-protobuf", "satty", "steam", "wechat-bin"]
 disabled = ["wezterm"]
