@@ -6,7 +6,43 @@ work changes. Keep durable direction in [`vision.md`](vision.md), and keep
 the active product sequence in [`roadmap.md`](roadmap.md). Keep session history
 in [`journal/`](journal/).
 
-## Active pause point — 2026-10-12
+## Active pause point — 2026-10-18
+
+- The current laptop slice is WeChat/social workflow acceptance. The maintainer
+  approved and installed `wechat-bin` 4.1.13.26-1, and confirmed login, Chinese
+  input, and video audio after a laptop-only ALSA `Speaker` mute/attenuation
+  correction. No persistent audio policy or service was changed. Bluetooth
+  headphones became the default A2DP stereo output at 38% volume; the maintainer
+  confirmed normal playback and normal switching back to internal speakers
+  after disconnection, without agent routing changes. A maintainer-controlled
+  reboot then failed speaker restoration: the saved ALSA state has Speaker
+  enabled at 0 dB, but the live switch is muted despite a successful restore
+  service. This led to route investigation rather than another state save or
+  a startup-unmute workaround.
+  On 2026-10-18, selecting the already-available Speaker profile instead of
+  the higher-priority Line profile automatically enabled the hardware Speaker
+  switch and made Speaker the default output at 40%. The selection is saved
+  in WirePlumber user state. The maintainer confirmed audible playback and
+  working volume-slider control, then rebooted and confirmed both still work.
+  Post-reboot inspection verified the Speaker profile, default Speaker route,
+  unmuted hardware, and 70% desktop output. The speaker persistence check is
+  accepted; no services were changed. Bluetooth playback/switch-back passed
+  before this profile correction and has not been repeated afterward.
+  After opening WeChat in the post-reboot session, the maintainer confirmed
+  that closing its window and clicking the tray icon restores it, and that
+  image paste produces a composer preview without sending. Reopening after
+  reboot required QR-code login; automatic-login support/settings have not
+  been reviewed, so do not claim persistence or diagnose this alone as a bug.
+  The maintainer confirmed an incoming desktop notification and successful
+  activation into its corresponding conversation. The basic WeChat desktop
+  integration test round is accepted: login, Chinese input, video audio, tray
+  restoration, image paste, and notification arrival/activation. Do not expand
+  this into calls, delivery guarantees, or automatic-login acceptance.
+  Wired headphones, microphone,
+  and calls are not covered by the Bluetooth playback check. See
+  [the laptop acceptance record](journal/2026-10-17-laptop-wechat-and-audio.md).
+  The desktop gaming continuation below is separate and must not be deployed
+  to the laptop merely because it appears in this handoff.
 
 - The maintainer deferred game-session idle inhibition and selected Hearthstone
   China as the next gaming slice. The official China Battle.net installer
