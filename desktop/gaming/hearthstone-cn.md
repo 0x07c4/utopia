@@ -62,10 +62,73 @@ same 46-package boundary, and succeeded after administrator authentication.
 Lutris 0.5.22-2 and python-pycurl 7.47.0-1 have no missing packaged files, and
 `lutris --version` reports 0.5.22. Its diagnostics report missing optional
 `python-protobuf` for Battle.net source integration and missing `vulkaninfo`;
-those capabilities are not declared or installed by this trial yet.
+the first diagnostic preceded the follow-up dependency installation below.
+The optional `vulkaninfo` diagnostic CLI remains absent.
 
-Next validate Lutris's GUI and review the Battle.net integration dependency
-before integrating this runner/prefix or retrying the China client. Do not disable
+### Follow-up dependency and runtime checks
+
+`python-protobuf` 36.1-1.1 is now declared optional and installed on the desktop.
+Its packaged-file check passes, Python reports protobuf 7.36.1, and importing
+Lutris's Battle.net service with the normal GTK3 initialization succeeds. The
+missing-module warning is gone. Lutris's GUI opens successfully; this verifies
+the manager and source dependency, not the Windows client or Hearthstone.
+
+After backing up the retained WoW64 prefix, a process-local
+`WINEDLLOVERRIDES=locationapi=d` trial, following the upstream installer setting,
+still showed the same startup logo and high CPU. The installer is already
+floating, so generic tiling is not established as the cause. Debug attachment
+reported a WoW64 execution-access exception involving ntdll; attachment itself
+could have contributed, so this is not a proven cause of the original stall.
+
+A same-version traditional Staging amd64 build was separately downloaded and
+matched upstream SHA-256
+`f70f17f7da3e8c936193e3c089e4a85615d4c1fe3e42f4a276f4160f3601a1b5`.
+Its i386 Unix modules and version check were verified. A fresh separate prefix
+also reached the Agent/startup logo without installing the launcher and showed
+high CPU; changing Wine execution mode alone did not solve the observed issue.
+The China installer's MD5 matched its official CDN response.
+
+A first virtual-desktop attempt was interrupted by session locking and remained
+unclassified. After unlock, the backed-up traditional prefix was launched with
+`wine explorer /desktop=BattleNetCN,1280x720` and the installer's Windows `Z:`
+path. The complete installation configuration appeared, and the bootstrap log
+confirmed it was waiting for user configuration. High CPU alone therefore does
+not prove that the bootstrap is stuck. This successful combined trial does not
+isolate virtual-desktop geometry from the corrected launch path as the cause.
+
+Chinese text initially appeared as boxes. Copying the already-installed Noto
+Sans CJK Regular collection into this prefix and adding a Microsoft YaHei Wine
+replacement alone did not resolve it. Prefix-local `FontLink\\SystemLink`
+entries for Tahoma, Arial, Segoe UI, Microsoft Sans Serif, and Microsoft YaHei,
+pointing to `NotoSansCJK-Regular.ttc,Noto Sans CJK SC`, restored readable Chinese
+after restarting the prefix. This follows Wine's
+[font-link mechanism](https://www.winehq.org/pipermail/wine-devel/2010-February/081576.html);
+no fonts or registry settings were changed for other applications.
+
+The installer then proceeded beyond configuration after disabling its startup
+checkbox and selecting Continue. The Battle.net launcher files were installed,
+and the China client displayed its readable NetEase login/registration and
+license/privacy-consent page. Consent and authentication were not performed by
+the agent; account login and game acceptance remain unverified. Leave this
+client available for the maintainer's next action. Both prefixes and their
+backups are retained.
+
+The installation virtual desktop is not the accepted everyday launch method:
+Niri tiling enlarged its outer window without enlarging its 1280x720 content,
+leaving large black margins. After stopping only this prefix, launching the
+installed `C:\\Program Files (x86)\\Battle.net\\Battle.net.exe` directly produced
+an independent, floating login window without that virtual desktop. Its default
+96 DPI was too small on the desktop's scale-2 output. After a timestamped registry
+backup, setting this prefix's `HKCU\\Control Panel\\Desktop` `LogPixels` DWORD to
+192 and restarting produced a complete, readable 362x597 logical-pixel login
+window. This DPI is a `cachyos-desktop` trial setting, not shared policy or an
+instruction to change laptop scaling. To undo it, stop only this prefix and
+restore the backed-up registry, or restore the prior DPI value before restarting.
+The screenshot check covers the login window, not the post-login launcher or game.
+Do not repeat the already-passed manager dependency work, implicitly disable
+session locking, or promote either runner as a working Hearthstone environment.
+
+Do not disable
 signature validation, update the system implicitly, or claim launcher/game
 compatibility from the initial Wine bootstrap result.
 
