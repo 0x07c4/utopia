@@ -28,8 +28,12 @@ in [`journal/`](journal/).
   area after redraw. The client was left tiled at 1000x1014. This suggests a
   transient repaint/resize interaction, not proof that tiling is unsupported
   or a diagnosed DPI/driver defect. The first game session is now accepted as
-  recorded above; client cold-start acceptance remains open. PR #26 is unmerged
-  pending follow-up. Do not reset DPI or interrupt an active game.
+  recorded above. A later close/reopen cycle restored the main window but
+  reproduced its white corner. A width change 1000 -> 1001 -> 1000 cleared it
+  without changing final geometry or tiling. No automatic resize workaround
+  was added. Process-cold startup and permanent rendering correctness remain
+  open. PR #26 is unmerged pending follow-up. Do not reset DPI or interrupt an
+  active game.
 
 - On `cachyos-desktop`, the optional Battle.net China trial now has a reviewed
   application-launcher entry named **战网（国服）**. Its versioned script and
@@ -43,17 +47,21 @@ in [`journal/`](journal/).
   before changing. A cold launch through the desktop entry produced a Battle.net
   window with no visible Explorer tray window. This hides the standalone Wine
   tray; it does not establish Noctalia tray integration. Use the application
-  entry for reopening, and verify close/reopen behavior after authentication.
+  entry for reopening.
   Reopening while the client was running initially failed to activate it; the
   entry now explicitly focuses one unambiguous Battle.net window through Niri.
   A live repeat focused the same window while game download files continued to
   grow. Matching uses app ID, not prefix identity; multiple clients fall back to
-  normal prefix launch. Do not claim close/reopen acceptance: closing was not
-  tested during the active download to avoid interruption.
+  normal prefix launch. After gameplay and with no active game or recent install
+  writes, normal close removed the window and desktop-entry reopen restored one
+  tiled main window. Window close/reopen acceptance is complete; no forced kill
+  was used. Agent remained running, so this is not a fully cold restart or an
+  authentication-persistence check. The client was left open in ordinary tiling.
   Eight isolated launcher tests pass; current totals are 80 main tests and 67
   installer tests, with both profiles resolving. Startup alone did not establish
   gameplay; the later user report above now supplies first-game acceptance.
-  Continue with launcher lifecycle checks when no game/download is active.
+  Continue with the reproducible launcher paint defect if pursuing this slice;
+  do not repeat the now-accepted basic window close/reopen test unnecessarily.
   Recovery and limitations are in
   [`desktop/gaming/hearthstone-cn.md`](../desktop/gaming/hearthstone-cn.md).
 

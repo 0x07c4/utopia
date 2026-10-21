@@ -155,7 +155,13 @@ Further same-process comparisons reviewed only the upper-right corner:
 The client was left in ordinary 1000x1014 tiling, not forced floating or
 fullscreen. These results support a transient stale-paint/resize interaction;
 they do not isolate its cause or prove a permanent fix. The maintainer later
-completed a game as recorded below; client cold-start acceptance remains open.
+completed a game as recorded below. A subsequent normal close/reopen cycle
+restored the main window through the application entry, but the upper-right
+white region returned on the new tiled window. Increasing its width from 1000
+to 1001 logical pixels, then restoring 1000, cleared the region without changing
+layout or final size. This narrows the temporary workaround to a resize/redraw;
+no resize automation or permanent floating rule has been added. Process-cold
+restart and permanent rendering correctness remain separate open checks.
 Do not reset DPI, disable acceleration, or change drivers
 from this evidence alone. PR #26 remains unmerged pending follow-up.
 Do not repeat the already-passed manager dependency work, implicitly disable
@@ -211,18 +217,22 @@ this prefix's registry, set `HKCU\Software\Wine\Explorer` `ShowSystray` to DWORD
 all `explorer.exe` windows through a compositor rule. The setting is read by
 [Wine 11.19 Explorer](https://github.com/wine-mirror/wine/blob/wine-11.19/programs/explorer/desktop.c#L881).
 It is not proof of Noctalia tray integration: use the launch entry to reopen the
-client rather than relying on the hidden tray. Close/minimize recovery after
-authentication still needs acceptance. No global Niri rules were changed.
+client rather than relying on the hidden tray. No global Niri rules were changed.
 On 2026-10-21, desktop-entry cold startup produced a Battle.net window and zero
 visible Wine Explorer windows. Eight isolated tests cover prerequisite failures,
 no-start checking, argument rejection, space-containing paths, inherited runner
 variables, desktop-entry startup without `~/.local/bin` on PATH, existing-window
 activation, and absent/ambiguous/invalid-window fallback. During downloading,
 reopening from the desktop entry focused the same existing window, without
-creating another window or interrupting file growth. Closing the window was
-deliberately not tested while downloads were active; its exit behavior is not
-yet established. This does
-not verify authenticated client behavior or Hearthstone gameplay.
+creating another window or interrupting file growth. After the first accepted
+game session, no game window/process or recent installation writes were present.
+The agent opened the client, sent a normal window-close request, verified that
+the Battle.net window disappeared without a visible Wine tray, and reopened it
+from the same desktop entry. Exactly one tiled main window returned. No process
+was forcibly killed and the Agent remained running; this verifies window
+close/reopen recovery, not a completely cold Wine/client restart, authentication
+persistence, or all minimize modes. The upper-right paint defect recurred as
+recorded above. Actual gameplay is accepted separately by the maintainer report.
 
 To undo the tray trial, restore the prior `ShowSystray` value (it was absent on
 this desktop, so delete only that value) and restart only this prefix. To undo
