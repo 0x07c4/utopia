@@ -162,6 +162,19 @@ to 1001 logical pixels, then restoring 1000, cleared the region without changing
 layout or final size. This narrows the temporary workaround to a resize/redraw;
 no resize automation or permanent floating rule has been added. Process-cold
 restart and permanent rendering correctness remain separate open checks.
+
+Subsequent diagnosis found no explicit `Client.HardwareAcceleration` setting.
+The public Lutris standard recipe sets it to the string `false`, and
+[its troubleshooting guide](https://github.com/lutris/docs/blob/master/Battle.Net.md)
+suggests disabling acceleration for a different symptom (missing login buttons).
+Neither establishes the cause of this white corner. Two further normal
+close/reopen-and-focus attempts at the original 1000x1014 tiled size showed no
+white corner even before any setting change or resize. No acceleration setting
+was changed: the fault is intermittent, and a clean screenshot after toggling
+an option would not by itself establish an improvement. Leave the working
+configuration intact; use a reproducible baseline and repeated comparisons
+before promoting a client-specific rendering workaround. The client remains
+open in ordinary tiling.
 Do not reset DPI, disable acceleration, or change drivers
 from this evidence alone. PR #26 remains unmerged pending follow-up.
 Do not repeat the already-passed manager dependency work, implicitly disable

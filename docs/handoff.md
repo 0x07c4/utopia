@@ -34,6 +34,13 @@ in [`journal/`](journal/).
   was added. Process-cold startup and permanent rendering correctness remain
   open. PR #26 is unmerged pending follow-up. Do not reset DPI or interrupt an
   active game.
+  Two later original-setting reopen/focus attempts at the same tiled dimensions
+  showed no white region without resizing. The fault is intermittent. Lutris's
+  standard recipe disables client hardware acceleration, but its documented
+  symptom differs; the desktop has no explicit acceleration setting, and no
+  such change was made. Do not claim acceleration is the cause or fixed from
+  these results. Preserve the working configuration until a rendering A/B can
+  establish a repeatable baseline; do not turn this into forced floating.
 
 - On `cachyos-desktop`, the optional Battle.net China trial now has a reviewed
   application-launcher entry named **战网（国服）**. Its versioned script and
