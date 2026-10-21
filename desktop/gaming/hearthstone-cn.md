@@ -228,9 +228,10 @@ Two scoped pieces now bridge the compatibility gap:
 
 1. `cachyos-desktop-battlenet.kdl` gives only the exact China main window its
    measured minimum width and height. It does **not** set a default size,
-   floating, fullscreen, preset widths, or global display scaling. This is an
+   floating, fullscreen, or global display scaling. This is an
    explicit desktop/DPI-192 opt-in, not included by either shared host profile.
-   Remeasure before another host, output scale, or Wine DPI adopts it.
+   Remeasure before another host, output scale, or Wine DPI adopts it. The
+   distinct-width follow-up below avoids duplicate clamped shortcut steps.
 2. `battlenet-repaint.py` observes Niri main-window geometry events and coalesces
    changes for 400 ms, then asks the small Windows PE helper built from
    `battlenet-repaint.c` for a normal
@@ -296,7 +297,8 @@ These are targeted workaround results, not a claim that Wine's upstream resize
 implementation is fixed or that no frame can ever be transient during loading.
 Both shared host compositions and live Niri validate. Launcher/observer tests
 cover opt-in isolation, event filtering, geometry-only scheduling, close state,
-per-prefix locks, and scoped stop checks; current suite totals are 88 and 67.
+per-prefix locks, and scoped stop checks. The distinct-width follow-up brings
+current suite totals to 95 and 67.
 
 To stop only the observer while leaving Battle.net and games alone:
 
@@ -313,6 +315,48 @@ The ordinary launcher still works without adapter files. Restore the backed-up
 launcher if desired; keep the prefix, game, and account data. All earlier
 hardware-acceleration and GDI-path trials were reverted; DPI, global shortcuts,
 and graphics drivers are unchanged. PR #26 remains available for user review.
+
+### Three distinct shortcut widths
+
+The maintainer correctly identified a usability regression in the minimum-size
+bridge: two original narrow presets clamp to the same 1000-pixel width, so every
+third `Mod+R` can appear to do nothing. These are column widths, not UI zoom or
+DPI steps. The desktop trial now explicitly dispatches its two existing shortcuts
+through `battlenet-width.py`, since this Niri version has no window-rule-specific
+preset list. Only the focused, tiled China main client at the reviewed scale-2
+desktop scope uses the three valid choices: minimum 1000, Niri's 66.667%, and
+Niri's 100% available width. On the current output those resolve to
+1000, 1253, and 1888 logical pixels. `Mod+Shift+R` traverses the inverse cycle.
+Other applications, login dialogs, floating clients, unsupported display scopes,
+and failed IPC lookups use the original native preset action. Width updates
+target the inspected window ID, not a potentially changed keyboard focus.
+
+After backing up the existing helper destination and live keybinds, deploy
+`battlenet-width.py` into the same `utopia/helpers` directory (mode 644). Replace
+only the existing two entries **inside** live `~/.config/niri/cfg/keybinds.kdl`:
+
+```kdl
+Mod+R { spawn "sh" "-c" r#"exec python3 "${XDG_DATA_HOME:-$HOME/.local/share}/utopia/helpers/battlenet-width.py" forward"#; }
+Mod+Shift+R { spawn "sh" "-c" r#"exec python3 "${XDG_DATA_HOME:-$HOME/.local/share}/utopia/helpers/battlenet-width.py" back"#; }
+```
+
+Do not add a second `binds` block or duplicate these key entries. Validate Niri.
+This is an explicit desktop-only override, not a shared-keybind deployment to
+the laptop. Six forward and six reverse changes through the installed dispatcher
+each changed width, cycled through all three sizes, and passed cropped right-
+corner rendering checks. Seven isolated dispatcher tests cover both directions,
+custom widths, stable window IDs, native fallbacks, and unsupported scopes.
+
+To undo the dispatcher, **first** restore these two original actions in the live
+binds and validate Niri, then move only `battlenet-width.py` into the timestamped
+backup. Otherwise those shortcuts would point at a missing script. The repaint
+adapter and native-minimum fragment are independent; their recovery above does
+not require removing this file. No package, DPI, focus, or game change is needed.
+
+```kdl
+Mod+R { switch-preset-column-width; }
+Mod+Shift+R { switch-preset-column-width-back; }
+```
 Do not reset DPI, disable acceleration, or change drivers
 from this evidence alone. PR #26 remains unmerged pending follow-up.
 Do not repeat the already-passed manager dependency work, implicitly disable

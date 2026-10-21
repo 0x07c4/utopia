@@ -8,6 +8,20 @@ in [`journal/`](journal/).
 
 ## Active pause point — 2026-10-22
 
+- A user-observed regression in the desktop minimum-size fix is now addressed:
+  two native presets clamped to the same 1000 width, producing a dead-looking
+  `Mod+R` step. The optional `desktop/gaming/battlenet-width.py` dispatcher was
+  deployed with backed-up live desktop keybindings. Only the focused tiled
+  China main window uses three distinct widths (1000, 1253, 1888 on this output);
+  other apps/dialogs and unsupported scopes retain native actions. Forward and
+  reverse each passed six live changes, all distinct with correct corner
+  rendering. Global shortcut keys and shared repository keybinds are unchanged;
+  the live desktop's two actions now delegate to this guarded dispatcher.
+  Seven new tests bring totals to 95 and 67. To undo, restore the two native
+  actions and validate before removing the dispatcher file. This is opt-in
+  desktop behavior, not a laptop deployment. Full instructions are in the
+  gaming trial document; PR #26 remains unmerged for review.
+
 - The desktop Battle.net `Mod+R` paint defect now has a deployed compatibility
   adapter, without forced floating. Measurements showed an X11 window narrower
   than its Win32 rectangle, while Win32 explicitly reports minimum 2000x1280
@@ -23,10 +37,11 @@ in [`journal/`](journal/).
   included transient black samples, not claimed fixed. After content settled,
   six forward and six reverse preset cycles, maximized-column, and fullscreen
   checks passed. Ordinary tiling is restored. Stop/restart and per-prefix
-  singleton behavior are implemented; suite totals are now 88 and 67. The early
+  singleton behavior are implemented; with the follow-up, totals are 95 and 67. The early
   Unix Winelib diagnostic crashed and was discarded; final builds use Windows
   PE with a passing self-test. Acceleration/GDI trials are reverted. No DPI,
-  system-driver, keyboard-binding, or game change was retained. Detailed build,
+  system-driver, or game change was retained. The shortcut-dispatch follow-up
+  above is the only additional binding behavior. Detailed build,
   opt-in, native-limit remeasurement, and scoped rollback instructions are in
   the gaming trial doc. PR #26 remains unmerged for review of the actual fix.
 
