@@ -10,6 +10,17 @@ SCRIPT = Path(__file__).resolve().parents[1] / "desktop/gaming/utopia-battlenet-
 
 
 class BattleNetEntryTest(unittest.TestCase):
+    def test_native_bounds_are_desktop_only_and_do_not_force_floating(self):
+        root = SCRIPT.parents[2]
+        fragment = (SCRIPT.parent / "cachyos-desktop-battlenet.kdl").read_text()
+        self.assertIn('app-id=r#"^battle\\.net\\.exe$"# title=r#"^战网$"#', fragment)
+        self.assertIn("min-width 1000", fragment)
+        self.assertIn("min-height 640", fragment)
+        self.assertNotIn("open-floating", fragment)
+        self.assertNotIn("default-column-width", fragment)
+        for file in (root / "desktop/niri/config.kdl", root / "desktop/niri/cfg/rules.kdl"):
+            self.assertNotIn("utopia-battlenet.kdl", file.read_text())
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="utopia-bnet-test-")
         self.addCleanup(self.temp.cleanup)

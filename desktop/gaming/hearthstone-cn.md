@@ -1,7 +1,8 @@
 # Hearthstone China compatibility trial
 
-This is an experimental `cachyos-desktop` capability. It is not yet accepted as
-a working Linux game. The maintainer selected the China service; the existing
+This is an experimental `cachyos-desktop` capability with one maintainer-confirmed
+completed game session. It is not a generally validated Linux game bundle.
+The maintainer selected the China service; the existing
 Windows environment remains the working fallback. Game-session idle inhibition
 is deferred at the maintainer's request.
 
@@ -125,14 +126,261 @@ window. This DPI is a `cachyos-desktop` trial setting, not shared policy or an
 instruction to change laptop scaling. To undo it, stop only this prefix and
 restore the backed-up registry, or restore the prior DPI value before restarting.
 The screenshot check covers the login window, not the post-login launcher or game.
+
+### Main-client geometry follow-up — 2026-10-21
+
+The main client later appeared tiled at 1000x1014 logical pixels. Focusing it
+showed a white region at the upper-right edge. Without restarting the client,
+moving that same window to floating layout at 1100x720 removed the white region;
+leaving and restoring focus did not reproduce it, and game download files kept
+growing. Only the right edge was reviewed, not account content. This supports a
+geometry/repaint workaround, not proof of a DPI or graphics-driver root cause.
+
+A default-floating rule was briefly added and deployed after backup, but was
+withdrawn from both repository and live rules after review: a successful resize
+does not establish that users must keep this client floating. No permanent
+Battle.net geometry rule remains. The live withdrawal preserved unrelated rules
+and passed Niri validation without restarting the client.
+
+Further same-process comparisons reviewed only the upper-right corner:
+
+| Layout | Logical size | White region after redraw |
+| --- | --- | --- |
+| Tall floating | 1000x1014 | Absent |
+| Restored tiling | 1000x1014 | Absent |
+| Maximized column | 1888x1014 | Absent |
+| Fullscreen | 1920x1080 | Absent |
+| Original tiling after a focus cycle | 1000x1014 | Absent |
+
+The client was left in ordinary 1000x1014 tiling, not forced floating or
+fullscreen. These results support a transient stale-paint/resize interaction;
+they do not isolate its cause or prove a permanent fix. The maintainer later
+completed a game as recorded below. A subsequent normal close/reopen cycle
+restored the main window through the application entry, but the upper-right
+white region returned on the new tiled window. Increasing its width from 1000
+to 1001 logical pixels, then restoring 1000, cleared the region without changing
+layout or final size. This narrows the temporary workaround to a resize/redraw;
+no resize automation or permanent floating rule has been added. Process-cold
+restart and permanent rendering correctness remain separate open checks.
+
+Subsequent diagnosis found no explicit `Client.HardwareAcceleration` setting.
+The public Lutris standard recipe sets it to the string `false`, and
+[its troubleshooting guide](https://github.com/lutris/docs/blob/master/Battle.Net.md)
+suggests disabling acceleration for a different symptom (missing login buttons).
+Neither establishes the cause of this white corner. Two further normal
+close/reopen-and-focus attempts at the original 1000x1014 tiled size showed no
+white corner even before any setting change or resize. No acceleration setting
+was changed: the fault is intermittent, and a clean screenshot after toggling
+an option would not by itself establish an improvement. Leave the working
+configuration intact; use a reproducible baseline and repeated comparisons
+before promoting a client-specific rendering workaround. The client remains
+open in ordinary tiling.
+
+### User-supplied resize trigger — 2026-10-22
+
+The maintainer identified `Super+R` (`Mod+R`), not merely reopening or focusing,
+as the reproduction path. Repository and live bindings both map it to Niri's
+`switch-preset-column-width`. Explicitly focusing Battle.net and invoking that
+same action reproduced the white upper-right area when reducing a wider column
+to a narrow preset. Recorded actual window widths included 1253 and 1000 logical
+pixels. Directly requesting 1000 from 1253 could render correctly, despite the
+same final dimensions. Do not describe reopen-only negative tests as disproving
+this trigger or describe the fault as unexplained random behavior.
+
+Two scoped candidate trials were not promoted:
+
+- The initial hardware-acceleration attempt was invalid: closing the window
+  left Battle.net processes alive, and the running client rewrote the edited
+  setting. After a prefix-only stop with no active game, setting
+  `Client.HardwareAcceleration` to string `false`, cold-starting, and verifying
+  that the value remained present still reproduced the white corner on the
+  preset-width action. The override was then removed, with other JSON values
+  preserved; its absence was verified after restarting.
+- A desktop-only `min-width 1000` fragment initially looked promising, but
+  removing it and cold-starting did not establish a repeatable reverse result.
+  Further preset cycling also produced a black unpainted corner. There is not
+  enough evidence to attribute the fault to a missing minimum-width rule. The
+  fragment and its include were withdrawn; the retired fragment is in private
+  backups, not active configuration or the repository.
+
+The original DPI, hardware-acceleration default, key binding, and ordinary
+tiling were restored. A one-pixel width round trip restored the observed corner
+to normal again. No default-floating rule, automatic resize hook, system
+scaling change, driver change, or new permanent workaround was retained.
+Continue from the preset-resize trigger with resize/redraw event evidence;
+basic gameplay and close/reopen acceptance need not be repeated. PR #26 remains
+unmerged. Only cropped client-edge samples were reviewed; private runtime
+configuration and screenshots remain outside Git.
+
+### Resize compatibility fix — 2026-10-22
+
+The later cross-layer measurements made the missing contract concrete. At one
+bad narrow preset, Niri reported 618x1014 logical pixels and X11 reported
+1236x2028 physical pixels, but DPI-aware Win32 inspection still reported
+2000x2028 for Battle.net. Its `WM_GETMINMAXINFO` reply declares a 2000x1280
+physical minimum at DPI 192. Its X11 `WM_NORMAL_HINTS` lacked `PMinSize`.
+At the desktop's output scale 2, the native minimum is 1000x640 logical pixels.
+This is measured client intent, not a preferred fixed layout. Upstream API
+semantics are documented in
+[MINMAXINFO](https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-minmaxinfo).
+
+Two scoped pieces now bridge the compatibility gap:
+
+1. `cachyos-desktop-battlenet.kdl` gives only the exact China main window its
+   measured minimum width and height. It does **not** set a default size,
+   floating, fullscreen, or global display scaling. This is an
+   explicit desktop/DPI-192 opt-in, not included by either shared host profile.
+   Remeasure before another host, output scale, or Wine DPI adopts it. The
+   distinct-width follow-up below avoids duplicate clamped shortcut steps.
+2. `battlenet-repaint.py` observes Niri main-window geometry events and coalesces
+   changes for 400 ms, then asks the small Windows PE helper built from
+   `battlenet-repaint.c` for a normal
+   [RedrawWindow](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-redrawwindow)
+   call. That helper rechecks the exact public title and executable inside this
+   Wine prefix. No input, injection, focus change, resize, or game modification
+   occurs. Niri geometry is observed rather than the stale Win32 rectangle.
+
+The launcher starts this optional adapter only if its two deployed files exist.
+It neither compiles nor installs them automatically. There is one observer per
+prefix, with an untracked local lock, a stop interface, and automatic exit after
+45 seconds without a matching main window or on Niri IPC closure. Failed helper
+startup does not prevent normal client launch. No autostart or system service
+was added. Neither game nor account content is inspected or logged.
+
+#### Explicit build and deployment
+
+These instructions apply to the already-reviewed desktop trial, **not** an
+installer or authorization for the laptop. Review destination files and save
+timestamped backups before replacement. The existing runner SDK, Clang, and
+Windows-target linker must be available; do not install packages implicitly.
+Build **Windows PE**, never the default Unix Winelib `.exe.so` format. An early
+Winelib diagnostic crashed and its dialog was closed; that program was not
+deployed. The final PE helper passed its no-window self-test.
+
+From the repository root, after the backup/review step:
+
+```sh
+data_root=${XDG_DATA_HOME:-"$HOME/.local/share"}
+wine_runner="$data_root/lutris/runners/wine/wine-11.19-staging-amd64"
+helper_root="$data_root/utopia/helpers"
+build_dir=$(mktemp -d)
+"$wine_runner/bin/winegcc" -b x86_64-windows -m64 -O2 \
+  desktop/gaming/battlenet-repaint.c -o "$build_dir/battlenet-repaint.exe" -luser32
+file "$build_dir/battlenet-repaint.exe"  # must report Windows PE32+, not ELF/script
+WINEPREFIX="$data_root/utopia/gameprefixes/battlenet-cn-legacy" \
+  "$wine_runner/bin/wine" "$build_dir/battlenet-repaint.exe" --self-test
+mkdir -p "$helper_root"
+install -m 644 "$build_dir/battlenet-repaint.exe" "$helper_root/battlenet-repaint.exe"
+install -m 644 desktop/gaming/battlenet-repaint.py "$helper_root/battlenet-repaint.py"
+install -m 755 desktop/gaming/utopia-battlenet-cn "$HOME/.local/bin/utopia-battlenet-cn"
+install -m 644 desktop/gaming/cachyos-desktop-battlenet.kdl \
+  "$HOME/.config/niri/utopia-battlenet.kdl"
+```
+
+Add only `include "../utopia-battlenet.kdl"` to the existing live
+`~/.config/niri/cfg/rules.kdl`, preserving unrelated edits, then run
+`niri validate`. Do not replace the whole rules file or copy this host-specific
+fragment into the shared Niri tree. The optional adapter binary, lock, and
+compiled outputs remain outside Git. Its `--limits` command can remeasure the
+currently visible client's Win32 minimum and DPI without changing it.
+
+#### Verification and recovery
+
+The X11-event prototype passed nine consecutive preset changes. The final
+Niri-event observer passed nine more. The installed desktop-entry cold start
+automatically loaded the adapter; initial startup samples included transient
+black corners before content settled, so startup-frame perfection is **not**
+claimed. Once stable, six `Mod+R` and six `Mod+Shift+R` cycles all showed normal
+right-corner rendering. Maximized-column and fullscreen checks passed, and the
+window was left in ordinary tiling. No extra helper window or Wine tray appeared.
+These are targeted workaround results, not a claim that Wine's upstream resize
+implementation is fixed or that no frame can ever be transient during loading.
+Both shared host compositions and live Niri validate. Launcher/observer tests
+cover opt-in isolation, event filtering, geometry-only scheduling, close state,
+per-prefix locks, and scoped stop checks. The distinct-width follow-up brings
+current suite totals to 95 and 67.
+
+To stop only the observer while leaving Battle.net and games alone:
+
+```sh
+data_root=${XDG_DATA_HOME:-"$HOME/.local/share"}
+python "$data_root/utopia/helpers/battlenet-repaint.py" --stop \
+  --prefix "$data_root/utopia/gameprefixes/battlenet-cn-legacy"
+```
+
+To disable it across future launches, stop it first, then move its deployed
+`.py` and `.exe` files to a private backup (or restore prior versions). Remove
+only the added live Niri include and its desktop fragment, then validate Niri.
+The ordinary launcher still works without adapter files. Restore the backed-up
+launcher if desired; keep the prefix, game, and account data. All earlier
+hardware-acceleration and GDI-path trials were reverted; DPI, global shortcuts,
+and graphics drivers are unchanged. PR #26 remains available for user review.
+
+### Three distinct shortcut widths
+
+The maintainer correctly identified a usability regression in the minimum-size
+bridge: two original narrow presets clamp to the same 1000-pixel width, so every
+third `Mod+R` can appear to do nothing. These are column widths, not UI zoom or
+DPI steps. The desktop trial now explicitly dispatches its two existing shortcuts
+through `battlenet-width.py`, since this Niri version has no window-rule-specific
+preset list. Only the focused, tiled China main client at the reviewed scale-2
+desktop scope uses the three valid choices: minimum 1000, Niri's 66.667%, and
+Niri's 100% available width. On the current output those resolve to
+1000, 1253, and 1888 logical pixels. `Mod+Shift+R` traverses the inverse cycle.
+Other applications, login dialogs, floating clients, unsupported display scopes,
+and failed IPC lookups use the original native preset action. Width updates
+target the inspected window ID, not a potentially changed keyboard focus.
+
+After backing up the existing helper destination and live keybinds, deploy
+`battlenet-width.py` into the same `utopia/helpers` directory (mode 644). Replace
+only the existing two entries **inside** live `~/.config/niri/cfg/keybinds.kdl`:
+
+```kdl
+Mod+R { spawn "sh" "-c" r#"exec python3 "${XDG_DATA_HOME:-$HOME/.local/share}/utopia/helpers/battlenet-width.py" forward"#; }
+Mod+Shift+R { spawn "sh" "-c" r#"exec python3 "${XDG_DATA_HOME:-$HOME/.local/share}/utopia/helpers/battlenet-width.py" back"#; }
+```
+
+Do not add a second `binds` block or duplicate these key entries. Validate Niri.
+This is an explicit desktop-only override, not a shared-keybind deployment to
+the laptop. Six forward and six reverse changes through the installed dispatcher
+each changed width, cycled through all three sizes, and passed cropped right-
+corner rendering checks. Seven isolated dispatcher tests cover both directions,
+custom widths, stable window IDs, native fallbacks, and unsupported scopes.
+
+To undo the dispatcher, **first** restore these two original actions in the live
+binds and validate Niri, then move only `battlenet-width.py` into the timestamped
+backup. Otherwise those shortcuts would point at a missing script. The repaint
+adapter and native-minimum fragment are independent; their recovery above does
+not require removing this file. No package, DPI, focus, or game change is needed.
+
+```kdl
+Mod+R { switch-preset-column-width; }
+Mod+Shift+R { switch-preset-column-width-back; }
+```
+Do not reset DPI, disable acceleration, or change drivers
+from this evidence alone. PR #26 remains unmerged pending follow-up.
 Do not repeat the already-passed manager dependency work, implicitly disable
-session locking, or promote either runner as a working Hearthstone environment.
+session locking, or promote this desktop result to general runner compatibility.
 
 Do not disable
 signature validation, update the system implicitly, or claim launcher/game
 compatibility from the initial Wine bootstrap result.
 
 ## Acceptance and recovery
+
+### First actual game session — 2026-10-21
+
+The maintainer reported completing one Hearthstone game and that it appeared
+normal. This accepts the first real game session on the current desktop trial,
+going beyond the earlier installer, login-page, and download checks. No account,
+match, opponent, or screen content was inspected to establish this result.
+
+Do not expand the report into separately accepted Chinese text entry, physical
+audio output, repeated cold starts, close/reopen behavior, sustained performance,
+or idle-lock behavior. Those were not individually reported. The Battle.net
+white-region root cause is still unresolved; a successful game is not evidence
+that the launcher rendering defect has been permanently fixed. Keep the existing
+Windows fallback and the optional, desktop-scoped trial status.
 
 ### Desktop trial launch entry
 
@@ -164,18 +412,22 @@ this prefix's registry, set `HKCU\Software\Wine\Explorer` `ShowSystray` to DWORD
 all `explorer.exe` windows through a compositor rule. The setting is read by
 [Wine 11.19 Explorer](https://github.com/wine-mirror/wine/blob/wine-11.19/programs/explorer/desktop.c#L881).
 It is not proof of Noctalia tray integration: use the launch entry to reopen the
-client rather than relying on the hidden tray. Close/minimize recovery after
-authentication still needs acceptance. No global Niri rules were changed.
+client rather than relying on the hidden tray. No global Niri rules were changed.
 On 2026-10-21, desktop-entry cold startup produced a Battle.net window and zero
 visible Wine Explorer windows. Eight isolated tests cover prerequisite failures,
 no-start checking, argument rejection, space-containing paths, inherited runner
 variables, desktop-entry startup without `~/.local/bin` on PATH, existing-window
 activation, and absent/ambiguous/invalid-window fallback. During downloading,
 reopening from the desktop entry focused the same existing window, without
-creating another window or interrupting file growth. Closing the window was
-deliberately not tested while downloads were active; its exit behavior is not
-yet established. This does
-not verify authenticated client behavior or Hearthstone gameplay.
+creating another window or interrupting file growth. After the first accepted
+game session, no game window/process or recent installation writes were present.
+The agent opened the client, sent a normal window-close request, verified that
+the Battle.net window disappeared without a visible Wine tray, and reopened it
+from the same desktop entry. Exactly one tiled main window returned. No process
+was forcibly killed and the Agent remained running; this verifies window
+close/reopen recovery, not a completely cold Wine/client restart, authentication
+persistence, or all minimize modes. The upper-right paint defect recurred as
+recorded above. Actual gameplay is accepted separately by the maintainer report.
 
 To undo the tray trial, restore the prior `ShowSystray` value (it was absent on
 this desktop, so delete only that value) and restart only this prefix. To undo

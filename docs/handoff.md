@@ -6,7 +6,91 @@ work changes. Keep durable direction in [`vision.md`](vision.md), and keep
 the active product sequence in [`roadmap.md`](roadmap.md). Keep session history
 in [`journal/`](journal/).
 
-## Active pause point — 2026-10-21
+## Active pause point — 2026-10-22
+
+- A user-observed regression in the desktop minimum-size fix is now addressed:
+  two native presets clamped to the same 1000 width, producing a dead-looking
+  `Mod+R` step. The optional `desktop/gaming/battlenet-width.py` dispatcher was
+  deployed with backed-up live desktop keybindings. Only the focused tiled
+  China main window uses three distinct widths (1000, 1253, 1888 on this output);
+  other apps/dialogs and unsupported scopes retain native actions. Forward and
+  reverse each passed six live changes, all distinct with correct corner
+  rendering. Global shortcut keys and shared repository keybinds are unchanged;
+  the live desktop's two actions now delegate to this guarded dispatcher.
+  Seven new tests bring totals to 95 and 67. To undo, restore the two native
+  actions and validate before removing the dispatcher file. This is opt-in
+  desktop behavior, not a laptop deployment. Full instructions are in the
+  gaming trial document; PR #26 remains unmerged for review.
+
+- The desktop Battle.net `Mod+R` paint defect now has a deployed compatibility
+  adapter, without forced floating. Measurements showed an X11 window narrower
+  than its Win32 rectangle, while Win32 explicitly reports minimum 2000x1280
+  physical at DPI 192 and X11 omits that hint. The opt-in desktop fragment
+  `desktop/gaming/cachyos-desktop-battlenet.kdl` bridges those native bounds as
+  1000x640 logical at scale 2; neither shared host profile includes it. The
+  optional Niri-geometry observer and PE Win32 repaint helper live under
+  `desktop/gaming/`, with compiled/runtime files outside Git. Normal launch
+  starts the observer only when explicitly deployed; no service, input, focus,
+  or geometry-changing hook is used. Both pieces were deployed after backups.
+  Prototype/final observer runs each passed nine preset changes. The installed
+  desktop-entry cold launch starts it correctly; initial loading frames still
+  included transient black samples, not claimed fixed. After content settled,
+  six forward and six reverse preset cycles, maximized-column, and fullscreen
+  checks passed. Ordinary tiling is restored. Stop/restart and per-prefix
+  singleton behavior are implemented; with the follow-up, totals are 95 and 67. The early
+  Unix Winelib diagnostic crashed and was discarded; final builds use Windows
+  PE with a passing self-test. Acceleration/GDI trials are reverted. No DPI,
+  system-driver, or game change was retained. The shortcut-dispatch follow-up
+  above is the only additional binding behavior. Detailed build,
+  opt-in, native-limit remeasurement, and scoped rollback instructions are in
+  the gaming trial doc. PR #26 remains unmerged for review of the actual fix.
+
+- The maintainer supplied the concrete white-region trigger: `Super+R`/`Mod+R`,
+  which maps to `switch-preset-column-width`. Invoking that action on the focused
+  Battle.net window reproduced the defect while shrinking from a wider column;
+  reopen/focus-only negative tests did not cover this path. A verified prefix-
+  cold-start client-acceleration-off trial still reproduced it and was reverted.
+  A desktop-only minimum-width trial was also withdrawn after inconclusive
+  reverse controls; later preset cycling produced a black unpainted corner too.
+  Both live trial settings are removed, original acceleration/DPI/key bindings
+  remain, and the window is tiled. A one-pixel round-trip resize cleared the
+  observed corner, but no automatic workaround was added. Continue diagnosis
+  from preset-resize/redraw events, not more speculative permanent rules. PR #26
+  remains unmerged. Detailed trial validity and rollback are in the gaming doc.
+
+- The maintainer has now completed one Hearthstone China game and reported that
+  it appeared normal. First actual gameplay acceptance is complete on the
+  current desktop trial; do not repeat setup or treat it as still waiting for
+  the first download/game launch. Chinese text entry, physical audio output,
+  sustained performance, idle inhibition, launcher close/reopen, and repeated
+  cold starts were not individually accepted by this report. The Battle.net
+  white-region root cause remains unresolved. Preserve the optional trial and
+  Windows fallback; do not broaden system or driver changes from this result.
+
+- During Hearthstone downloading, the main Battle.net window exposed an
+  upper-right white region while tiled at 1000x1014 logical pixels. Moving only
+  that window to floating 1100x720 removed it, including after a focus cycle;
+  downloading continued. The subsequently added default-floating rule was
+  withdrawn from the repository and live desktop after review and backup;
+  there is no permanent Battle.net geometry rule. Same-process comparisons of
+  tall floating, original tiling, maximized-column tiling, fullscreen, and
+  restored original tiling after refocusing all showed no upper-right white
+  area after redraw. The client was left tiled at 1000x1014. This suggests a
+  transient repaint/resize interaction, not proof that tiling is unsupported
+  or a diagnosed DPI/driver defect. The first game session is now accepted as
+  recorded above. A later close/reopen cycle restored the main window but
+  reproduced its white corner. A width change 1000 -> 1001 -> 1000 cleared it
+  without changing final geometry or tiling. No automatic resize workaround
+  was added. Process-cold startup and permanent rendering correctness remain
+  open. PR #26 is unmerged pending follow-up. Do not reset DPI or interrupt an
+  active game.
+  Two later original-setting reopen/focus attempts at the same tiled dimensions
+  showed no white region without resizing. The fault is intermittent. Lutris's
+  standard recipe disables client hardware acceleration, but its documented
+  symptom differs; the desktop has no explicit acceleration setting, and no
+  such change was made. Do not claim acceleration is the cause or fixed from
+  these results. Preserve the working configuration until a rendering A/B can
+  establish a repeatable baseline; do not turn this into forced floating.
 
 - On `cachyos-desktop`, the optional Battle.net China trial now has a reviewed
   application-launcher entry named **战网（国服）**. Its versioned script and
@@ -20,17 +104,21 @@ in [`journal/`](journal/).
   before changing. A cold launch through the desktop entry produced a Battle.net
   window with no visible Explorer tray window. This hides the standalone Wine
   tray; it does not establish Noctalia tray integration. Use the application
-  entry for reopening, and verify close/reopen behavior after authentication.
+  entry for reopening.
   Reopening while the client was running initially failed to activate it; the
   entry now explicitly focuses one unambiguous Battle.net window through Niri.
   A live repeat focused the same window while game download files continued to
   grow. Matching uses app ID, not prefix identity; multiple clients fall back to
-  normal prefix launch. Do not claim close/reopen acceptance: closing was not
-  tested during the active download to avoid interruption.
+  normal prefix launch. After gameplay and with no active game or recent install
+  writes, normal close removed the window and desktop-entry reopen restored one
+  tiled main window. Window close/reopen acceptance is complete; no forced kill
+  was used. Agent remained running, so this is not a fully cold restart or an
+  authentication-persistence check. The client was left open in ordinary tiling.
   Eight isolated launcher tests pass; current totals are 80 main tests and 67
-  installer tests, with both profiles resolving. Do not infer account or actual
-  Hearthstone acceptance from startup. Continue with user-controlled login/game
-  installation as needed, then game rendering, input, audio, and desktop return.
+  installer tests, with both profiles resolving. Startup alone did not establish
+  gameplay; the later user report above now supplies first-game acceptance.
+  Continue with the reproducible launcher paint defect if pursuing this slice;
+  do not repeat the now-accepted basic window close/reopen test unnecessarily.
   Recovery and limitations are in
   [`desktop/gaming/hearthstone-cn.md`](../desktop/gaming/hearthstone-cn.md).
 

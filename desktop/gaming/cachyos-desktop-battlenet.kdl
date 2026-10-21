@@ -1,0 +1,11 @@
+// Opt-in for cachyos-desktop's Battle.net China prefix at Wine DPI 192.
+// WM_GETMINMAXINFO reports 2000x1280 physical pixels, but Wine does not publish
+// PMinSize to X11. At output scale 2 these are 1000x640 logical pixels.
+// Preserve the application's own limits before Niri sends resize requests;
+// do not force floating, a fixed window size, or a different width shortcut.
+// Other hosts/DPI settings require their own measurement, not this fragment.
+window-rule {
+    match app-id=r#"^battle\.net\.exe$"# title=r#"^战网$"#
+    min-width 1000
+    min-height 640
+}
