@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=Battle.net (China)
+Name[zh_CN]=战网（国服）
+Comment=Launch the existing isolated China Battle.net trial
+Comment[zh_CN]=启动已安装的独立国服战网试验环境
+Exec=/bin/sh -c "exec ~/.local/bin/utopia-battlenet-cn"
+TryExec=/bin/sh
+Icon=applications-games
+Terminal=false
+Categories=Game;
+Keywords=Battle.net;Hearthstone;战网;炉石传说;
+StartupWMClass=battle.net.exe

@@ -134,6 +134,55 @@ compatibility from the initial Wine bootstrap result.
 
 ## Acceptance and recovery
 
+### Desktop trial launch entry
+
+The repository now provides `utopia-battlenet-cn` and its `.desktop` entry beside
+this document. They reuse only the retained traditional Wine 11.19 prefix and
+runner under `${XDG_DATA_HOME:-$HOME/.local/share}`; they do not download software,
+create prefixes, change registry settings, or install packages. This is an
+opt-in desktop trial, not a shared profile deployment or accepted game bundle.
+
+After reviewing existing destination files and backing them up, install the
+script as `~/.local/bin/utopia-battlenet-cn` (mode 755) and the desktop entry as
+`~/.local/share/applications/utopia-battlenet-cn.desktop` (mode 644). Search for
+**战网（国服）** in the normal application launcher. The entry uses the explicit
+home-relative script location because the desktop's Niri session does not have
+`~/.local/bin` on PATH; it needs no global PATH change or keyboard binding.
+`~/.local/bin/utopia-battlenet-cn --check` checks prerequisites without starting
+Wine. Missing prerequisites fail with a notification instead of creating a new
+prefix. The launcher clears inherited runner/architecture/DLL override variables
+so another game's experiment does not silently alter this trial.
+When Niri and Python 3 are available, the entry first focuses a single existing
+`battle.net.exe` window instead of relying on Battle.net's unreliable activation.
+Window matching is by application ID, not prefix identity: if multiple Battle.net
+clients are visible, it does not guess which to focus and falls back to the
+configured prefix's normal launch. Missing/unavailable IPC also falls back.
+
+The white Battle.net icon strip was Wine's standalone tray. After backing up
+this prefix's registry, set `HKCU\Software\Wine\Explorer` `ShowSystray` to DWORD
+0, then restart only this prefix. This disables the standalone tray window, not
+all `explorer.exe` windows through a compositor rule. The setting is read by
+[Wine 11.19 Explorer](https://github.com/wine-mirror/wine/blob/wine-11.19/programs/explorer/desktop.c#L881).
+It is not proof of Noctalia tray integration: use the launch entry to reopen the
+client rather than relying on the hidden tray. Close/minimize recovery after
+authentication still needs acceptance. No global Niri rules were changed.
+On 2026-10-21, desktop-entry cold startup produced a Battle.net window and zero
+visible Wine Explorer windows. Eight isolated tests cover prerequisite failures,
+no-start checking, argument rejection, space-containing paths, inherited runner
+variables, desktop-entry startup without `~/.local/bin` on PATH, existing-window
+activation, and absent/ambiguous/invalid-window fallback. During downloading,
+reopening from the desktop entry focused the same existing window, without
+creating another window or interrupting file growth. Closing the window was
+deliberately not tested while downloads were active; its exit behavior is not
+yet established. This does
+not verify authenticated client behavior or Hearthstone gameplay.
+
+To undo the tray trial, restore the prior `ShowSystray` value (it was absent on
+this desktop, so delete only that value) and restart only this prefix. To undo
+the launch entry, remove only these two installed Utopia entry files, or restore
+their timestamped backups if files existed before deployment. Keep the runner,
+prefix, accounts, and game data. Registry backups remain outside Git.
+
 Validate each boundary separately: Lutris starts, a managed runner creates a
 fresh prefix, the official China installer starts, the China client reaches its
 login page, and Hearthstone launches after the user logs in and installs it.
