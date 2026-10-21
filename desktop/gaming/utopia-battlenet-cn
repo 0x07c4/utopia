@@ -33,6 +33,22 @@ if [ "${1-}" = --check ]; then
     exit 0
 fi
 
+export WINEPREFIX
+# Do not inherit another game's architecture or DLL override experiment.
+unset WINEARCH WINEDLLOVERRIDES WINELOADER WINESERVER
+export WINEDEBUG=-all
+
+# Optional, explicitly deployed desktop compatibility adapter. Never compile or
+# install it on launch; absent files leave the ordinary launch path unchanged.
+repaint_dir="$data_root/utopia/helpers"
+if [ -f "$repaint_dir/battlenet-repaint.py" ] &&
+    [ -f "$repaint_dir/battlenet-repaint.exe" ] &&
+    command -v python3 >/dev/null 2>&1 && command -v niri >/dev/null 2>&1; then
+    python3 "$repaint_dir/battlenet-repaint.py" --prefix "$WINEPREFIX" \
+        --runner "$runner" --helper "$repaint_dir/battlenet-repaint.exe" \
+        </dev/null >/dev/null 2>&1 &
+fi
+
 # Battle.net's own single-instance handling does not reliably activate Niri.
 # Focus only an unambiguous existing client; otherwise let Wine handle startup.
 if [ -n "${NIRI_SOCKET-}" ] && command -v python3 >/dev/null 2>&1 &&
@@ -58,9 +74,5 @@ PY
     fi
 fi
 
-export WINEPREFIX
-# Do not inherit another game's architecture or DLL override experiment.
-unset WINEARCH WINEDLLOVERRIDES WINELOADER WINESERVER
-export WINEDEBUG=-all
 cd "${client%/*}"
 exec "$runner" 'C:\Program Files (x86)\Battle.net\Battle.net.exe'

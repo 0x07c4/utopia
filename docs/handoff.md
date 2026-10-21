@@ -8,6 +8,28 @@ in [`journal/`](journal/).
 
 ## Active pause point — 2026-10-22
 
+- The desktop Battle.net `Mod+R` paint defect now has a deployed compatibility
+  adapter, without forced floating. Measurements showed an X11 window narrower
+  than its Win32 rectangle, while Win32 explicitly reports minimum 2000x1280
+  physical at DPI 192 and X11 omits that hint. The opt-in desktop fragment
+  `desktop/gaming/cachyos-desktop-battlenet.kdl` bridges those native bounds as
+  1000x640 logical at scale 2; neither shared host profile includes it. The
+  optional Niri-geometry observer and PE Win32 repaint helper live under
+  `desktop/gaming/`, with compiled/runtime files outside Git. Normal launch
+  starts the observer only when explicitly deployed; no service, input, focus,
+  or geometry-changing hook is used. Both pieces were deployed after backups.
+  Prototype/final observer runs each passed nine preset changes. The installed
+  desktop-entry cold launch starts it correctly; initial loading frames still
+  included transient black samples, not claimed fixed. After content settled,
+  six forward and six reverse preset cycles, maximized-column, and fullscreen
+  checks passed. Ordinary tiling is restored. Stop/restart and per-prefix
+  singleton behavior are implemented; suite totals are now 88 and 67. The early
+  Unix Winelib diagnostic crashed and was discarded; final builds use Windows
+  PE with a passing self-test. Acceleration/GDI trials are reverted. No DPI,
+  system-driver, keyboard-binding, or game change was retained. Detailed build,
+  opt-in, native-limit remeasurement, and scoped rollback instructions are in
+  the gaming trial doc. PR #26 remains unmerged for review of the actual fix.
+
 - The maintainer supplied the concrete white-region trigger: `Super+R`/`Mod+R`,
   which maps to `switch-preset-column-width`. Invoking that action on the focused
   Battle.net window reproduced the defect while shrinking from a wider column;

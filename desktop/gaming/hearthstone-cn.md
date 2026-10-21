@@ -211,6 +211,108 @@ Continue from the preset-resize trigger with resize/redraw event evidence;
 basic gameplay and close/reopen acceptance need not be repeated. PR #26 remains
 unmerged. Only cropped client-edge samples were reviewed; private runtime
 configuration and screenshots remain outside Git.
+
+### Resize compatibility fix — 2026-10-22
+
+The later cross-layer measurements made the missing contract concrete. At one
+bad narrow preset, Niri reported 618x1014 logical pixels and X11 reported
+1236x2028 physical pixels, but DPI-aware Win32 inspection still reported
+2000x2028 for Battle.net. Its `WM_GETMINMAXINFO` reply declares a 2000x1280
+physical minimum at DPI 192. Its X11 `WM_NORMAL_HINTS` lacked `PMinSize`.
+At the desktop's output scale 2, the native minimum is 1000x640 logical pixels.
+This is measured client intent, not a preferred fixed layout. Upstream API
+semantics are documented in
+[MINMAXINFO](https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-minmaxinfo).
+
+Two scoped pieces now bridge the compatibility gap:
+
+1. `cachyos-desktop-battlenet.kdl` gives only the exact China main window its
+   measured minimum width and height. It does **not** set a default size,
+   floating, fullscreen, preset widths, or global display scaling. This is an
+   explicit desktop/DPI-192 opt-in, not included by either shared host profile.
+   Remeasure before another host, output scale, or Wine DPI adopts it.
+2. `battlenet-repaint.py` observes Niri main-window geometry events and coalesces
+   changes for 400 ms, then asks the small Windows PE helper built from
+   `battlenet-repaint.c` for a normal
+   [RedrawWindow](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-redrawwindow)
+   call. That helper rechecks the exact public title and executable inside this
+   Wine prefix. No input, injection, focus change, resize, or game modification
+   occurs. Niri geometry is observed rather than the stale Win32 rectangle.
+
+The launcher starts this optional adapter only if its two deployed files exist.
+It neither compiles nor installs them automatically. There is one observer per
+prefix, with an untracked local lock, a stop interface, and automatic exit after
+45 seconds without a matching main window or on Niri IPC closure. Failed helper
+startup does not prevent normal client launch. No autostart or system service
+was added. Neither game nor account content is inspected or logged.
+
+#### Explicit build and deployment
+
+These instructions apply to the already-reviewed desktop trial, **not** an
+installer or authorization for the laptop. Review destination files and save
+timestamped backups before replacement. The existing runner SDK, Clang, and
+Windows-target linker must be available; do not install packages implicitly.
+Build **Windows PE**, never the default Unix Winelib `.exe.so` format. An early
+Winelib diagnostic crashed and its dialog was closed; that program was not
+deployed. The final PE helper passed its no-window self-test.
+
+From the repository root, after the backup/review step:
+
+```sh
+data_root=${XDG_DATA_HOME:-"$HOME/.local/share"}
+wine_runner="$data_root/lutris/runners/wine/wine-11.19-staging-amd64"
+helper_root="$data_root/utopia/helpers"
+build_dir=$(mktemp -d)
+"$wine_runner/bin/winegcc" -b x86_64-windows -m64 -O2 \
+  desktop/gaming/battlenet-repaint.c -o "$build_dir/battlenet-repaint.exe" -luser32
+file "$build_dir/battlenet-repaint.exe"  # must report Windows PE32+, not ELF/script
+WINEPREFIX="$data_root/utopia/gameprefixes/battlenet-cn-legacy" \
+  "$wine_runner/bin/wine" "$build_dir/battlenet-repaint.exe" --self-test
+mkdir -p "$helper_root"
+install -m 644 "$build_dir/battlenet-repaint.exe" "$helper_root/battlenet-repaint.exe"
+install -m 644 desktop/gaming/battlenet-repaint.py "$helper_root/battlenet-repaint.py"
+install -m 755 desktop/gaming/utopia-battlenet-cn "$HOME/.local/bin/utopia-battlenet-cn"
+install -m 644 desktop/gaming/cachyos-desktop-battlenet.kdl \
+  "$HOME/.config/niri/utopia-battlenet.kdl"
+```
+
+Add only `include "../utopia-battlenet.kdl"` to the existing live
+`~/.config/niri/cfg/rules.kdl`, preserving unrelated edits, then run
+`niri validate`. Do not replace the whole rules file or copy this host-specific
+fragment into the shared Niri tree. The optional adapter binary, lock, and
+compiled outputs remain outside Git. Its `--limits` command can remeasure the
+currently visible client's Win32 minimum and DPI without changing it.
+
+#### Verification and recovery
+
+The X11-event prototype passed nine consecutive preset changes. The final
+Niri-event observer passed nine more. The installed desktop-entry cold start
+automatically loaded the adapter; initial startup samples included transient
+black corners before content settled, so startup-frame perfection is **not**
+claimed. Once stable, six `Mod+R` and six `Mod+Shift+R` cycles all showed normal
+right-corner rendering. Maximized-column and fullscreen checks passed, and the
+window was left in ordinary tiling. No extra helper window or Wine tray appeared.
+These are targeted workaround results, not a claim that Wine's upstream resize
+implementation is fixed or that no frame can ever be transient during loading.
+Both shared host compositions and live Niri validate. Launcher/observer tests
+cover opt-in isolation, event filtering, geometry-only scheduling, close state,
+per-prefix locks, and scoped stop checks; current suite totals are 88 and 67.
+
+To stop only the observer while leaving Battle.net and games alone:
+
+```sh
+data_root=${XDG_DATA_HOME:-"$HOME/.local/share"}
+python "$data_root/utopia/helpers/battlenet-repaint.py" --stop \
+  --prefix "$data_root/utopia/gameprefixes/battlenet-cn-legacy"
+```
+
+To disable it across future launches, stop it first, then move its deployed
+`.py` and `.exe` files to a private backup (or restore prior versions). Remove
+only the added live Niri include and its desktop fragment, then validate Niri.
+The ordinary launcher still works without adapter files. Restore the backed-up
+launcher if desired; keep the prefix, game, and account data. All earlier
+hardware-acceleration and GDI-path trials were reverted; DPI, global shortcuts,
+and graphics drivers are unchanged. PR #26 remains available for user review.
 Do not reset DPI, disable acceleration, or change drivers
 from this evidence alone. PR #26 remains unmerged pending follow-up.
 Do not repeat the already-passed manager dependency work, implicitly disable
