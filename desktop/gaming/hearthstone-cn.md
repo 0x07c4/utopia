@@ -135,15 +135,29 @@ leaving and restoring focus did not reproduce it, and game download files kept
 growing. Only the right edge was reviewed, not account content. This supports a
 geometry/repaint workaround, not proof of a DPI or graphics-driver root cause.
 
-The shared Niri rules now open only app ID `battle.net.exe` with exact title
-`战网` floating, without imposing these desktop test dimensions. Login dialogs,
-other Wine programs, and the game itself are not matched. Both host compositions
-validate, but runtime acceptance is desktop-only. After a timestamped backup,
-the exact rule was added to the desktop live rules while preserving unrelated
-rules. Existing-window resize/refocus acceptance passed; restart acceptance is
-deferred until downloading finishes. To undo, remove only that exact rule and
-validate Niri, then return the existing window to tiling if desired. Do not
-restore a complete old rules file over unrelated newer edits.
+A default-floating rule was briefly added and deployed after backup, but was
+withdrawn from both repository and live rules after review: a successful resize
+does not establish that users must keep this client floating. No permanent
+Battle.net geometry rule remains. The live withdrawal preserved unrelated rules
+and passed Niri validation without restarting the client.
+
+Further same-process comparisons reviewed only the upper-right corner:
+
+| Layout | Logical size | White region after redraw |
+| --- | --- | --- |
+| Tall floating | 1000x1014 | Absent |
+| Restored tiling | 1000x1014 | Absent |
+| Maximized column | 1888x1014 | Absent |
+| Fullscreen | 1920x1080 | Absent |
+| Original tiling after a focus cycle | 1000x1014 | Absent |
+
+The client was left in ordinary 1000x1014 tiling, not forced floating or
+fullscreen. These results support a transient stale-paint/resize interaction;
+they do not isolate its cause or prove a permanent fix. The game executable
+has appeared, but its presence alone does not establish download completion.
+Cold-start and repeated-focus acceptance remain pending confirmation that the
+download is finished. Do not reset DPI, disable acceleration, or change drivers
+from this evidence alone. PR #26 remains unmerged pending follow-up.
 Do not repeat the already-passed manager dependency work, implicitly disable
 session locking, or promote either runner as a working Hearthstone environment.
 

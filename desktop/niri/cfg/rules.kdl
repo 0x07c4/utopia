@@ -43,13 +43,6 @@
        open-focused false
     }
 
-    // Battle.net's main client repaints poorly in a tall tiled viewport.
-    // Preserve its own size rather than imposing desktop-specific dimensions.
-    window-rule {
-        match app-id=r#"^battle\.net\.exe$"# title=r#"^战网$"#
-        open-floating true
-    }
-
     // The native game needs a landscape viewport at startup, not a half column.
     window-rule {
         match app-id=r#"^Stardew Valley$"#
