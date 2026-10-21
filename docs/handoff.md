@@ -8,6 +8,15 @@ in [`journal/`](journal/).
 
 ## Active pause point — 2026-10-21
 
+- The maintainer has now completed one Hearthstone China game and reported that
+  it appeared normal. First actual gameplay acceptance is complete on the
+  current desktop trial; do not repeat setup or treat it as still waiting for
+  the first download/game launch. Chinese text entry, physical audio output,
+  sustained performance, idle inhibition, launcher close/reopen, and repeated
+  cold starts were not individually accepted by this report. The Battle.net
+  white-region root cause remains unresolved. Preserve the optional trial and
+  Windows fallback; do not broaden system or driver changes from this result.
+
 - During Hearthstone downloading, the main Battle.net window exposed an
   upper-right white region while tiled at 1000x1014 logical pixels. Moving only
   that window to floating 1100x720 removed it, including after a focus cycle;
@@ -18,9 +27,9 @@ in [`journal/`](journal/).
   restored original tiling after refocusing all showed no upper-right white
   area after redraw. The client was left tiled at 1000x1014. This suggests a
   transient repaint/resize interaction, not proof that tiling is unsupported
-  or a diagnosed DPI/driver defect. Hearthstone.exe now exists, but download
-  completion and client cold-start acceptance remain unverified. PR #26 is
-  unmerged pending follow-up. Do not reset DPI or interrupt an active download.
+  or a diagnosed DPI/driver defect. The first game session is now accepted as
+  recorded above; client cold-start acceptance remains open. PR #26 is unmerged
+  pending follow-up. Do not reset DPI or interrupt an active game.
 
 - On `cachyos-desktop`, the optional Battle.net China trial now has a reviewed
   application-launcher entry named **战网（国服）**. Its versioned script and
@@ -42,9 +51,9 @@ in [`journal/`](journal/).
   normal prefix launch. Do not claim close/reopen acceptance: closing was not
   tested during the active download to avoid interruption.
   Eight isolated launcher tests pass; current totals are 80 main tests and 67
-  installer tests, with both profiles resolving. Do not infer account or actual
-  Hearthstone acceptance from startup. Continue with user-controlled login/game
-  installation as needed, then game rendering, input, audio, and desktop return.
+  installer tests, with both profiles resolving. Startup alone did not establish
+  gameplay; the later user report above now supplies first-game acceptance.
+  Continue with launcher lifecycle checks when no game/download is active.
   Recovery and limitations are in
   [`desktop/gaming/hearthstone-cn.md`](../desktop/gaming/hearthstone-cn.md).
 

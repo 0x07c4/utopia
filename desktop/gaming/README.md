@@ -5,7 +5,9 @@ target is `cachyos-desktop`; declaring it optional does not install it on either
 host or make it an Arch-installer default. The first game acceptance target is
 Stardew Valley. GTA Online remains in the existing Windows environment; Battle.net
 and Hearthstone integration is now a separate
-[China-client compatibility trial](hearthstone-cn.md), still unvalidated.
+[China-client compatibility trial](hearthstone-cn.md), now with one completed
+game session confirmed by the maintainer on the desktop. This is not general
+Linux compatibility or full lifecycle acceptance.
 
 ## Provider and installation
 

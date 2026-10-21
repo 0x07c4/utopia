@@ -1,7 +1,8 @@
 # Hearthstone China compatibility trial
 
-This is an experimental `cachyos-desktop` capability. It is not yet accepted as
-a working Linux game. The maintainer selected the China service; the existing
+This is an experimental `cachyos-desktop` capability with one maintainer-confirmed
+completed game session. It is not a generally validated Linux game bundle.
+The maintainer selected the China service; the existing
 Windows environment remains the working fallback. Game-session idle inhibition
 is deferred at the maintainer's request.
 
@@ -153,19 +154,32 @@ Further same-process comparisons reviewed only the upper-right corner:
 
 The client was left in ordinary 1000x1014 tiling, not forced floating or
 fullscreen. These results support a transient stale-paint/resize interaction;
-they do not isolate its cause or prove a permanent fix. The game executable
-has appeared, but its presence alone does not establish download completion.
-Cold-start and repeated-focus acceptance remain pending confirmation that the
-download is finished. Do not reset DPI, disable acceleration, or change drivers
+they do not isolate its cause or prove a permanent fix. The maintainer later
+completed a game as recorded below; client cold-start acceptance remains open.
+Do not reset DPI, disable acceleration, or change drivers
 from this evidence alone. PR #26 remains unmerged pending follow-up.
 Do not repeat the already-passed manager dependency work, implicitly disable
-session locking, or promote either runner as a working Hearthstone environment.
+session locking, or promote this desktop result to general runner compatibility.
 
 Do not disable
 signature validation, update the system implicitly, or claim launcher/game
 compatibility from the initial Wine bootstrap result.
 
 ## Acceptance and recovery
+
+### First actual game session — 2026-10-21
+
+The maintainer reported completing one Hearthstone game and that it appeared
+normal. This accepts the first real game session on the current desktop trial,
+going beyond the earlier installer, login-page, and download checks. No account,
+match, opponent, or screen content was inspected to establish this result.
+
+Do not expand the report into separately accepted Chinese text entry, physical
+audio output, repeated cold starts, close/reopen behavior, sustained performance,
+or idle-lock behavior. Those were not individually reported. The Battle.net
+white-region root cause is still unresolved; a successful game is not evidence
+that the launcher rendering defect has been permanently fixed. Keep the existing
+Windows fallback and the optional, desktop-scoped trial status.
 
 ### Desktop trial launch entry
 
