@@ -1,0 +1,41 @@
+#!/bin/sh
+# Explicit desktop trial entry: no installation or prefix creation here.
+set -eu
+
+fail() {
+    printf '%s\n' "$1" >&2
+    if command -v notify-send >/dev/null 2>&1; then
+        notify-send '战网（国服）' "$1" || :
+    fi
+    exit 1
+}
+
+case "${1-}" in
+    --help) printf '%s\n' 'Usage: utopia-battlenet-cn [--check]'; exit 0 ;;
+    ''|--check) ;;
+    *) fail '不支持的参数；使用 --check 检查现有安装。' ;;
+esac
+[ "$#" -le 1 ] || fail '不接受额外参数。'
+
+data_root=${XDG_DATA_HOME:-"$HOME/.local/share"}
+case "$data_root" in
+    /*) ;;
+    *) fail 'XDG_DATA_HOME 必须是绝对路径。' ;;
+esac
+WINEPREFIX="$data_root/utopia/gameprefixes/battlenet-cn-legacy"
+runner="$data_root/lutris/runners/wine/wine-11.19-staging-amd64/bin/wine"
+client="$WINEPREFIX/drive_c/Program Files (x86)/Battle.net/Battle.net.exe"
+[ -f "$WINEPREFIX/system.reg" ] || fail '未找到已验证的国服战网前缀；请先完成独立安装。'
+[ -x "$runner" ] || fail '未找到已验证的 Wine Staging 11.19 运行器。'
+[ -f "$client" ] || fail '此独立前缀中尚未安装战网客户端。'
+if [ "${1-}" = --check ]; then
+    printf '%s\n' '战网前缀、运行器和客户端文件已就绪；此检查不启动 Wine。'
+    exit 0
+fi
+
+export WINEPREFIX
+# Do not inherit another game's architecture or DLL override experiment.
+unset WINEARCH WINEDLLOVERRIDES WINELOADER WINESERVER
+export WINEDEBUG=-all
+cd "${client%/*}"
+exec "$runner" 'C:\Program Files (x86)\Battle.net\Battle.net.exe'

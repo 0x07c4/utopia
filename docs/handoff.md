@@ -6,7 +6,27 @@ work changes. Keep durable direction in [`vision.md`](vision.md), and keep
 the active product sequence in [`roadmap.md`](roadmap.md). Keep session history
 in [`journal/`](journal/).
 
-## Active pause point — 2026-10-18
+## Active pause point — 2026-10-21
+
+- On `cachyos-desktop`, the optional Battle.net China trial now has a reviewed
+  application-launcher entry named **战网（国服）**. Its versioned script and
+  desktop entry are under `desktop/gaming/`; both were installed into user data
+  after timestamped backups. The script only reuses the verified traditional
+  Wine 11.19 runner and existing prefix; it never installs or initializes them.
+  A `--check` path validates files without starting Wine. Niri's session lacks
+  `~/.local/bin` on PATH, so the desktop entry explicitly launches the script
+  from that home-relative location, without changing global PATH. The white
+  icon strip was addressed with prefix-local `Explorer/ShowSystray=0`, backed up
+  before changing. A cold launch through the desktop entry produced a Battle.net
+  window with no visible Explorer tray window. This hides the standalone Wine
+  tray; it does not establish Noctalia tray integration. Use the application
+  entry for reopening, and verify close/reopen behavior after authentication.
+  Six isolated launcher tests pass; current totals are 78 main tests and 67
+  installer tests, with both profiles resolving. Do not infer account or actual
+  Hearthstone acceptance from startup. Continue with user-controlled login/game
+  installation as needed, then game rendering, input, audio, and desktop return.
+  Recovery and limitations are in
+  [`desktop/gaming/hearthstone-cn.md`](../desktop/gaming/hearthstone-cn.md).
 
 - The accepted WeChat slice now has optional `wechat-bin` package intent and
   a provider/review/acceptance/recovery boundary under
