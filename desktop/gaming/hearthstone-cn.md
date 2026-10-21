@@ -152,6 +152,11 @@ home-relative script location because the desktop's Niri session does not have
 Wine. Missing prerequisites fail with a notification instead of creating a new
 prefix. The launcher clears inherited runner/architecture/DLL override variables
 so another game's experiment does not silently alter this trial.
+When Niri and Python 3 are available, the entry first focuses a single existing
+`battle.net.exe` window instead of relying on Battle.net's unreliable activation.
+Window matching is by application ID, not prefix identity: if multiple Battle.net
+clients are visible, it does not guess which to focus and falls back to the
+configured prefix's normal launch. Missing/unavailable IPC also falls back.
 
 The white Battle.net icon strip was Wine's standalone tray. After backing up
 this prefix's registry, set `HKCU\Software\Wine\Explorer` `ShowSystray` to DWORD
@@ -162,9 +167,14 @@ It is not proof of Noctalia tray integration: use the launch entry to reopen the
 client rather than relying on the hidden tray. Close/minimize recovery after
 authentication still needs acceptance. No global Niri rules were changed.
 On 2026-10-21, desktop-entry cold startup produced a Battle.net window and zero
-visible Wine Explorer windows. Six isolated tests cover prerequisite failures,
+visible Wine Explorer windows. Eight isolated tests cover prerequisite failures,
 no-start checking, argument rejection, space-containing paths, inherited runner
-variables, and desktop-entry startup without `~/.local/bin` on PATH. This does
+variables, desktop-entry startup without `~/.local/bin` on PATH, existing-window
+activation, and absent/ambiguous/invalid-window fallback. During downloading,
+reopening from the desktop entry focused the same existing window, without
+creating another window or interrupting file growth. Closing the window was
+deliberately not tested while downloads were active; its exit behavior is not
+yet established. This does
 not verify authenticated client behavior or Hearthstone gameplay.
 
 To undo the tray trial, restore the prior `ShowSystray` value (it was absent on

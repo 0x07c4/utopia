@@ -23,6 +23,7 @@ class BattleNetEntryTest(unittest.TestCase):
         self.env.pop("DBUS_SESSION_BUS_ADDRESS", None)
         self.env.pop("DISPLAY", None)
         self.env.pop("WAYLAND_DISPLAY", None)
+        self.env.pop("NIRI_SOCKET", None)
 
     def ready(self):
         self.client.parent.mkdir(parents=True)
@@ -91,3 +92,39 @@ class BattleNetEntryTest(unittest.TestCase):
                                 capture_output=True, text=True, timeout=10)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout.splitlines()[0], str(self.prefix))
+
+    def mock_niri(self, response):
+        commands = self.root / "commands"
+        commands.mkdir()
+        script = commands / "niri"
+        script.write_text(
+            '#!/bin/sh\n'
+            'if [ "$2" = --json ]; then\n'
+            f"    printf '%s\\n' '{response}'\n"
+            'else\n'
+            '    printf "%s\\n" "$*" > "$HOME/focus-call"\n'
+            'fi\n'
+        )
+        script.chmod(0o755)
+        self.env.update(PATH=f"{commands}:/usr/bin:/bin", NIRI_SOCKET="test-only")
+
+    def test_existing_client_is_focused_without_wine(self):
+        self.ready()
+        self.mock_niri('[{"id": 42, "app_id": "battle.net.exe"}]')
+        result = self.run_entry()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout, "")
+        self.assertEqual((self.root / "focus-call").read_text(),
+                         "msg action focus-window --id 42\n")
+
+    def test_absent_ambiguous_or_invalid_windows_fall_back_to_runner(self):
+        self.ready()
+        self.mock_niri('[]')
+        niri = self.root / "commands/niri"
+        for response in ('[]', 'invalid', '[{"id":1,"app_id":"battle.net.exe"},'
+                         '{"id":2,"app_id":"battle.net.exe"}]'):
+            niri.write_text(f"#!/bin/sh\nprintf '%s\\n' '{response}'\n")
+            result = self.run_entry()
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertTrue(result.stdout.startswith(str(self.prefix)))
+        self.assertFalse((self.root / "focus-call").exists())

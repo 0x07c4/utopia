@@ -21,7 +21,13 @@ in [`journal/`](journal/).
   window with no visible Explorer tray window. This hides the standalone Wine
   tray; it does not establish Noctalia tray integration. Use the application
   entry for reopening, and verify close/reopen behavior after authentication.
-  Six isolated launcher tests pass; current totals are 78 main tests and 67
+  Reopening while the client was running initially failed to activate it; the
+  entry now explicitly focuses one unambiguous Battle.net window through Niri.
+  A live repeat focused the same window while game download files continued to
+  grow. Matching uses app ID, not prefix identity; multiple clients fall back to
+  normal prefix launch. Do not claim close/reopen acceptance: closing was not
+  tested during the active download to avoid interruption.
+  Eight isolated launcher tests pass; current totals are 80 main tests and 67
   installer tests, with both profiles resolving. Do not infer account or actual
   Hearthstone acceptance from startup. Continue with user-controlled login/game
   installation as needed, then game rendering, input, audio, and desktop return.
