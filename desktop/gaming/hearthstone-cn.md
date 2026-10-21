@@ -175,6 +175,42 @@ an option would not by itself establish an improvement. Leave the working
 configuration intact; use a reproducible baseline and repeated comparisons
 before promoting a client-specific rendering workaround. The client remains
 open in ordinary tiling.
+
+### User-supplied resize trigger — 2026-10-22
+
+The maintainer identified `Super+R` (`Mod+R`), not merely reopening or focusing,
+as the reproduction path. Repository and live bindings both map it to Niri's
+`switch-preset-column-width`. Explicitly focusing Battle.net and invoking that
+same action reproduced the white upper-right area when reducing a wider column
+to a narrow preset. Recorded actual window widths included 1253 and 1000 logical
+pixels. Directly requesting 1000 from 1253 could render correctly, despite the
+same final dimensions. Do not describe reopen-only negative tests as disproving
+this trigger or describe the fault as unexplained random behavior.
+
+Two scoped candidate trials were not promoted:
+
+- The initial hardware-acceleration attempt was invalid: closing the window
+  left Battle.net processes alive, and the running client rewrote the edited
+  setting. After a prefix-only stop with no active game, setting
+  `Client.HardwareAcceleration` to string `false`, cold-starting, and verifying
+  that the value remained present still reproduced the white corner on the
+  preset-width action. The override was then removed, with other JSON values
+  preserved; its absence was verified after restarting.
+- A desktop-only `min-width 1000` fragment initially looked promising, but
+  removing it and cold-starting did not establish a repeatable reverse result.
+  Further preset cycling also produced a black unpainted corner. There is not
+  enough evidence to attribute the fault to a missing minimum-width rule. The
+  fragment and its include were withdrawn; the retired fragment is in private
+  backups, not active configuration or the repository.
+
+The original DPI, hardware-acceleration default, key binding, and ordinary
+tiling were restored. A one-pixel width round trip restored the observed corner
+to normal again. No default-floating rule, automatic resize hook, system
+scaling change, driver change, or new permanent workaround was retained.
+Continue from the preset-resize trigger with resize/redraw event evidence;
+basic gameplay and close/reopen acceptance need not be repeated. PR #26 remains
+unmerged. Only cropped client-edge samples were reviewed; private runtime
+configuration and screenshots remain outside Git.
 Do not reset DPI, disable acceleration, or change drivers
 from this evidence alone. PR #26 remains unmerged pending follow-up.
 Do not repeat the already-passed manager dependency work, implicitly disable

@@ -6,7 +6,20 @@ work changes. Keep durable direction in [`vision.md`](vision.md), and keep
 the active product sequence in [`roadmap.md`](roadmap.md). Keep session history
 in [`journal/`](journal/).
 
-## Active pause point — 2026-10-21
+## Active pause point — 2026-10-22
+
+- The maintainer supplied the concrete white-region trigger: `Super+R`/`Mod+R`,
+  which maps to `switch-preset-column-width`. Invoking that action on the focused
+  Battle.net window reproduced the defect while shrinking from a wider column;
+  reopen/focus-only negative tests did not cover this path. A verified prefix-
+  cold-start client-acceleration-off trial still reproduced it and was reverted.
+  A desktop-only minimum-width trial was also withdrawn after inconclusive
+  reverse controls; later preset cycling produced a black unpainted corner too.
+  Both live trial settings are removed, original acceleration/DPI/key bindings
+  remain, and the window is tiled. A one-pixel round-trip resize cleared the
+  observed corner, but no automatic workaround was added. Continue diagnosis
+  from preset-resize/redraw events, not more speculative permanent rules. PR #26
+  remains unmerged. Detailed trial validity and rollback are in the gaming doc.
 
 - The maintainer has now completed one Hearthstone China game and reported that
   it appeared normal. First actual gameplay acceptance is complete on the
