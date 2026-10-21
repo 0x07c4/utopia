@@ -8,6 +8,18 @@ in [`journal/`](journal/).
 
 ## Active pause point — 2026-10-21
 
+- During Hearthstone downloading, the main Battle.net window exposed an
+  upper-right white region while tiled at 1000x1014 logical pixels. Moving only
+  that window to floating 1100x720 removed it, including after a focus cycle;
+  downloading continued. A precise shared rule for app ID `battle.net.exe` and
+  title `战网` now defaults the main client to floating without hard-coded
+  dimensions. Both host compositions validate. The rule was deployed only to
+  the desktop after backup, preserving unrelated live rules; the current
+  window was adjusted without restart. Cold-start acceptance of this rule is
+  pending completion of the download. This is a geometry/repaint workaround,
+  not a proven DPI or driver diagnosis. Details and rollback are in the gaming
+  trial document. Do not reset DPI or restart the client during downloading.
+
 - On `cachyos-desktop`, the optional Battle.net China trial now has a reviewed
   application-launcher entry named **战网（国服）**. Its versioned script and
   desktop entry are under `desktop/gaming/`; both were installed into user data

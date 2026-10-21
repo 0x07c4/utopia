@@ -125,6 +125,25 @@ window. This DPI is a `cachyos-desktop` trial setting, not shared policy or an
 instruction to change laptop scaling. To undo it, stop only this prefix and
 restore the backed-up registry, or restore the prior DPI value before restarting.
 The screenshot check covers the login window, not the post-login launcher or game.
+
+### Main-client geometry follow-up — 2026-10-21
+
+The main client later appeared tiled at 1000x1014 logical pixels. Focusing it
+showed a white region at the upper-right edge. Without restarting the client,
+moving that same window to floating layout at 1100x720 removed the white region;
+leaving and restoring focus did not reproduce it, and game download files kept
+growing. Only the right edge was reviewed, not account content. This supports a
+geometry/repaint workaround, not proof of a DPI or graphics-driver root cause.
+
+The shared Niri rules now open only app ID `battle.net.exe` with exact title
+`战网` floating, without imposing these desktop test dimensions. Login dialogs,
+other Wine programs, and the game itself are not matched. Both host compositions
+validate, but runtime acceptance is desktop-only. After a timestamped backup,
+the exact rule was added to the desktop live rules while preserving unrelated
+rules. Existing-window resize/refocus acceptance passed; restart acceptance is
+deferred until downloading finishes. To undo, remove only that exact rule and
+validate Niri, then return the existing window to tiling if desired. Do not
+restore a complete old rules file over unrelated newer edits.
 Do not repeat the already-passed manager dependency work, implicitly disable
 session locking, or promote either runner as a working Hearthstone environment.
 
