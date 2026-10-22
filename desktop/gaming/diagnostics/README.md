@@ -90,3 +90,7 @@ fix in a different Wine release. Do not substitute a new runner, patched DLL or
 global Fcitx setting on the strength of this comparison alone. A candidate fix
 must first pass this reproducer and then a scoped game-input check, with the
 existing runner/prefix kept recoverable.
+
+The [runner source review](runner-review.md) records the exact newer Wine,
+Valve and Staging snapshots examined next. It does not select a verified fix or
+authorize replacing the working runner; a separate experiment needs review.

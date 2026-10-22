@@ -8,6 +8,19 @@ in [`journal/`](journal/).
 
 ## Active pause point — 2026-10-22
 
+- The [read-only runner review](../desktop/gaming/diagnostics/runner-review.md)
+  checked exact Wine 11.20 and Valve `proton_11.0` IMM32 snapshots plus the
+  Staging 11.20 patch catalog. No evidenced drop-in fix for B was selected;
+  the two source functions retain their direct-host-forwarding difference.
+  This is not runtime testing of newer runners or an exhaustive patch survey.
+  The old 2014 caret-based patch is not treated as a candidate-setter fix.
+  No new Wine build/prefix, DLL override, package, or global input change was
+  made. Next obtain a maintainer choice: a separately scoped, temporary-prefix
+  Wine patch experiment (with prerequisite/provenance review and A/B gates),
+  or a sanitized upstream report draft with the limitation retained. Neither
+  building a patched runner nor publishing an issue is authorized by this
+  review. Preserve the working game runner and prefix untouched.
+
 - A neutral Wine IME coordinate A/B now reproduces the candidate placement gap
   outside Hearthstone. The original `desktop/gaming/diagnostics/` PE probe uses
   only its own window/context. A (`ImmSetCompositionWindow`) positions the panel
