@@ -8,6 +8,20 @@ in [`journal/`](journal/).
 
 ## Active pause point — 2026-10-22
 
+- A neutral Wine IME coordinate A/B now reproduces the candidate placement gap
+  outside Hearthstone. The original `desktop/gaming/diagnostics/` PE probe uses
+  only its own window/context. A (`ImmSetCompositionWindow`) positions the panel
+  at its lower marker; B (`ImmSetCandidateWindow`) leaves it near the upper-left.
+  Both calls succeeded with identical coordinates/DPI under the same reviewed
+  runner/prefix. The maintainer supplied both visual results. This narrows the
+  compatibility gap but does not prove the game's API usage or fix its input.
+  Both probe windows were closed normally; game, prefix settings and global
+  input policy are unchanged. Build/run and interpretation are documented with
+  the source; generated binaries and screenshots stay outside Git. Do not repeat
+  these baseline checks without a concrete candidate fix. Next review whether a
+  runner fix addresses the reproducer or obtain game coordinate-only evidence;
+  no new runner or injected hook is authorized. PR #27 carries this follow-up.
+
 - PR #26 was merged into `main` as `46c3637` at the maintainer's request.
   The optional desktop Battle.net resize/repaint adapter and three-width
   dispatcher are now the repository baseline. The 95 main tests and 67

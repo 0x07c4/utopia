@@ -431,8 +431,19 @@ game/Win32 rectangle reporting and XIM coordinate delivery the next diagnostic
 boundary, not proof that Fcitx, Wine, or the game is individually at fault.
 The screenshot alone does not establish a scaling-factor error.
 
-Continue with coordinate-only observations and, if needed, a separate neutral
-input client on the same runner. Do not capture typed text, trace keystrokes,
+The independent [coordinate reproducer](diagnostics/README.md) now supplies a
+controlled result in the same runner and prefix: A reports a composition point
+and its panel follows the lower marker; B reports a candidate point at the same
+coordinates but its panel stays near the upper-left. Both setters return
+success. This demonstrates the candidate-only failure without running a game
+experiment; it does not prove Hearthstone's API usage. The original reproducer
+source and build/run instructions are versioned, not its executable or images.
+Both temporary probe windows were normally closed, leaving the game alone.
+
+Do not repeat A/B unless testing a concrete candidate fix. Next establish whether
+a reviewed runner fix addresses this reproducer, or obtain coordinate-only
+evidence of the game's API usage. Neither a new runner nor an injected game hook
+has been authorized or deployed. Do not capture typed text, trace keystrokes,
 inject game hooks, force a fixed screen position, or restart the input method
 globally. A per-game experiment must have a backup, rollback and before/after
 input check before promotion; global `UseOnTheSpot`, theme and DPI changes are
