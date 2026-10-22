@@ -8,6 +8,28 @@ in [`journal/`](journal/).
 
 ## Active pause point — 2026-10-22
 
+- PR #26 was merged into `main` as `46c3637` at the maintainer's request.
+  The optional desktop Battle.net resize/repaint adapter and three-width
+  dispatcher are now the repository baseline. The 95 main tests and 67
+  installer tests pass. The current task is daily Hearthstone interaction
+  acceptance, not more setup or another first-game test. After the maintainer
+  launched Hearthstone, its window measured 1920x1080 logical pixels. A targeted
+  game/desktop/game focus cycle passed and original desktop focus was restored;
+  geometry remained unchanged. Its unmuted running audio stream had active
+  links to an unmuted running sink. The maintainer confirmed audible game sound
+  and working volume adjustment. The maintainer's input screenshot shows Chinese
+  text in the game field but a candidate panel near the upper-left, far from
+  that lower-right field. Chinese input is therefore partial, not accepted as
+  complete; candidate anchoring is the current reproducible defect. Wine input
+  contexts use XIM. Upstream coordinate forwarding identifies the next boundary
+  to measure, not a proven failing component. No theme, global scaling, XIM,
+  registry, or driver setting was changed. Keep the private screenshot outside
+  Git. A fullscreen toggle round trip also remains unaccepted.
+  Do not send messages, start matches, or inspect conversations.
+  Keep idle inhibition
+  deferred and all current configuration unchanged unless a defect is shown.
+  Use the [daily acceptance checklist](../desktop/gaming/hearthstone-cn.md#daily-interaction-acceptance--2026-10-22).
+
 - A user-observed regression in the desktop minimum-size fix is now addressed:
   two native presets clamped to the same 1000 width, producing a dead-looking
   `Mod+R` step. The optional `desktop/gaming/battlenet-width.py` dispatcher was
@@ -20,7 +42,7 @@ in [`journal/`](journal/).
   Seven new tests bring totals to 95 and 67. To undo, restore the two native
   actions and validate before removing the dispatcher file. This is opt-in
   desktop behavior, not a laptop deployment. Full instructions are in the
-  gaming trial document; PR #26 remains unmerged for review.
+  gaming trial document; the change landed through PR #26.
 
 - The desktop Battle.net `Mod+R` paint defect now has a deployed compatibility
   adapter, without forced floating. Measurements showed an X11 window narrower
@@ -43,9 +65,10 @@ in [`journal/`](journal/).
   system-driver, or game change was retained. The shortcut-dispatch follow-up
   above is the only additional binding behavior. Detailed build,
   opt-in, native-limit remeasurement, and scoped rollback instructions are in
-  the gaming trial doc. PR #26 remains unmerged for review of the actual fix.
+  the gaming trial doc. The fix landed through PR #26.
 
-- The maintainer supplied the concrete white-region trigger: `Super+R`/`Mod+R`,
+- Historical diagnosis before the merged adapter: the maintainer supplied the
+  concrete white-region trigger, `Super+R`/`Mod+R`,
   which maps to `switch-preset-column-width`. Invoking that action on the focused
   Battle.net window reproduced the defect while shrinking from a wider column;
   reopen/focus-only negative tests did not cover this path. A verified prefix-
@@ -54,9 +77,10 @@ in [`journal/`](journal/).
   reverse controls; later preset cycling produced a black unpainted corner too.
   Both live trial settings are removed, original acceleration/DPI/key bindings
   remain, and the window is tiled. A one-pixel round-trip resize cleared the
-  observed corner, but no automatic workaround was added. Continue diagnosis
-  from preset-resize/redraw events, not more speculative permanent rules. PR #26
-  remains unmerged. Detailed trial validity and rollback are in the gaming doc.
+  observed corner, but no automatic workaround was added at that stage. The
+  subsequent native-bound/repaint diagnosis and merged fix above supersede
+  this investigation pause. Detailed trial validity and rollback are in the
+  gaming doc; do not repeat the failed acceleration trial.
 
 - The maintainer has now completed one Hearthstone China game and reported that
   it appeared normal. First actual gameplay acceptance is complete on the
@@ -64,10 +88,13 @@ in [`journal/`](journal/).
   the first download/game launch. Chinese text entry, physical audio output,
   sustained performance, idle inhibition, launcher close/reopen, and repeated
   cold starts were not individually accepted by this report. The Battle.net
-  white-region root cause remains unresolved. Preserve the optional trial and
-  Windows fallback; do not broaden system or driver changes from this result.
+  resize defect has the separately validated adapter described above; the game
+  report alone does not validate launcher rendering. Preserve the optional
+  trial and Windows fallback; do not broaden system or driver changes from this
+  result.
 
-- During Hearthstone downloading, the main Battle.net window exposed an
+- Historical geometry trials, superseded by the merged adapter: during
+  Hearthstone downloading, the main Battle.net window exposed an
   upper-right white region while tiled at 1000x1014 logical pixels. Moving only
   that window to floating 1100x720 removed it, including after a focus cycle;
   downloading continued. The subsequently added default-floating rule was
@@ -82,8 +109,8 @@ in [`journal/`](journal/).
   reproduced its white corner. A width change 1000 -> 1001 -> 1000 cleared it
   without changing final geometry or tiling. No automatic resize workaround
   was added. Process-cold startup and permanent rendering correctness remain
-  open. PR #26 is unmerged pending follow-up. Do not reset DPI or interrupt an
-  active game.
+  open at that stage. PR #26 subsequently added the scoped adapter above.
+  Do not reset DPI or interrupt an active game.
   Two later original-setting reopen/focus attempts at the same tiled dimensions
   showed no white region without resizing. The fault is intermittent. Lutris's
   standard recipe disables client hardware acceleration, but its documented
@@ -114,11 +141,11 @@ in [`journal/`](journal/).
   tiled main window. Window close/reopen acceptance is complete; no forced kill
   was used. Agent remained running, so this is not a fully cold restart or an
   authentication-persistence check. The client was left open in ordinary tiling.
-  Eight isolated launcher tests pass; current totals are 80 main tests and 67
-  installer tests, with both profiles resolving. Startup alone did not establish
+  Eight original isolated launcher tests passed at this stage; the current
+  totals are 95 main tests and 67 installer tests. Startup alone did not establish
   gameplay; the later user report above now supplies first-game acceptance.
-  Continue with the reproducible launcher paint defect if pursuing this slice;
-  do not repeat the now-accepted basic window close/reopen test unnecessarily.
+  Continue with daily game interaction acceptance, not the now-resolved preset
+  paint defect or the accepted basic window close/reopen test.
   Recovery and limitations are in
   [`desktop/gaming/hearthstone-cn.md`](../desktop/gaming/hearthstone-cn.md).
 
@@ -167,8 +194,9 @@ in [`journal/`](journal/).
   The desktop gaming continuation below is separate and must not be deployed
   to the laptop merely because it appears in this handoff.
 
-- The maintainer deferred game-session idle inhibition and selected Hearthstone
-  China as the next gaming slice. The official China Battle.net installer
+- Historical installation record (superseded by the accepted gameplay and
+  daily checks above): the maintainer deferred game-session idle inhibition
+  and selected Hearthstone China. The official China Battle.net installer
   endpoint was verified, including its `Battle.net-Setup-CN.exe` redirect;
   Lutris's standard international recipe is only a reference, not a verified
   China installer. `lutris` is now declared optional. Its 46-package transaction
@@ -251,7 +279,8 @@ in [`journal/`](journal/).
   Existing Niri Steam rules, fullscreen/escape shortcuts, Xwayland support, and
   the desktop's graphics prerequisites were inspected; no live desktop policy
   was changed by package installation; the later backed-up Stardew window-rule
-  trial is described above. Start actual game acceptance with Stardew Valley.
+  trial is described above. Actual Stardew gameplay remains unaccepted; it is
+  not the selected follow-up while Hearthstone daily checks are active.
   GTA Online
   remains in the existing Windows environment; Hearthstone/Battle.net needs a
   separate compatibility review. Do not deploy optional gaming packages to the
@@ -606,17 +635,28 @@ public commit.
 
 ## Immediate next work
 
-The current implementation passes both Python suites (71 profile/audit/
-deployment-plan tests and 67 Arch-installer tests). Continue in this order, one
+The current implementation passes both Python suites (95 main tests and 67
+Arch-installer tests). Continue in this order, one
 focused change at a time:
 
 The current selected slice is the optional desktop gaming baseline: the Steam
 installation and Stardew native startup/menu slice is validated on the desktop.
-Game-session idle inhibition is explicitly deferred. The active next task is
-the Hearthstone China compatibility trial; do not repeat Steam installation or
-the resolved Stardew fullscreen/menu check. The visual and performance
-follow-ups
-below remain deferred while this slice is active.
+Game-session idle inhibition is explicitly deferred. Hearthstone China has one
+maintainer-accepted completed game, and the Battle.net resize compatibility fix
+landed in PR #26. The active next task is the narrow daily interaction checklist:
+desktop/game focus and fullscreen recovery, in-game Chinese input, and physical
+audio with volume control. Game/desktop/game IPC focus switching and current
+full-screen-sized geometry were checked; the maintainer accepted physical game
+audio and volume control. The maintainer's screenshot demonstrates Chinese text
+in the input field but a wrongly anchored candidate panel near the upper-left.
+Continue with candidate-coordinate diagnosis; do not treat input as fully passed
+or change the theme/global DPI to hide the symptom. A fullscreen toggle round trip
+also remains open. Read-only session readiness is not game acceptance.
+Do not repeat Steam installation, the resolved Stardew fullscreen/menu check,
+the first Hearthstone match, or failed launcher acceleration trials. Do not
+install performance overlays, change idle policy, or deploy desktop Wine/DPI
+settings to the laptop. The visual and performance follow-ups below remain
+deferred while this slice is active.
 
 1. **Keep the accepted Fcitx adapter host-scoped and opt-in for now.** The
    laptop and desktop A/B results are visually accepted, and the repository
