@@ -37,10 +37,16 @@ in [`journal/`](journal/).
   confirmed normal exit from both apps. Prefix processes/windows were absent
   and its server wait completed. A private full cold backup passed checksum
   and metadata comparison. Revision 2's hash was verified, and Battle.net is
-  now launched temporarily with the private runner against the working prefix;
-  game input is pending. The ordinary runner/launcher are unchanged, but the
-  trial may modify prefix state. Use the recorded cold backup on failure;
-  paths/accounts/logs stay private. Permanent deployment is not authorized.
+  launched temporarily with the private runner against the working prefix.
+  The game trial failed: the maintainer screenshot still shows the candidate
+  panel upper-left, far from the input field. Do not promote the neutral result
+  to a game fix or repeat this trial unchanged. Game API/module usage is not
+  established; text commit was not separately accepted. The maintainer normally
+  exited both apps. Prefix processes/server were confirmed stopped; recovery
+  from the cold backup passed checksum/metadata checks before and after the
+  staged restore. Both cold backup and post-trial prefix are retained, with
+  nothing deleted. No game relaunch followed. The ordinary runner/launcher remain unchanged;
+  paths/accounts/logs stay private. No global changes or permanent deployment.
   Patch, source/license notices, probe and byte verifier are
   versioned; binaries, downloaded source, prefix and private logs stay outside
   Git. Six verifier tests bring the main suite to 101; installer suite is 67.

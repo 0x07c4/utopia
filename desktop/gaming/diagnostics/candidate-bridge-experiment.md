@@ -4,7 +4,8 @@ This is an experimental `cachyos-desktop` probe result, not a Hearthstone fix.
 The maintainer continued with the scoped experiment on 2026-10-22. Only a private
 runner copy and a new temporary prefix participated in neutral tests; the
 working game prefix and accounts were not used. The separately approved game
-trial below now uses the working prefix after a verified full cold backup.
+trial below used the working prefix after a verified full cold backup; the
+trial failed and that prefix has since been restored and verified.
 The ordinary runner and launch entry remain unchanged.
 No system package, service, driver or global input setting was changed.
 
@@ -108,7 +109,7 @@ memory, typed contents or keystrokes were inspected.
 | Revision 2 C width change and focus round trip | Maintainer confirmed normal after narrowing and switching away/back. |
 | Revision 2 A | Maintainer confirmed near the point marker, with overlap. Point mode has no exclusion requirement. |
 | Revision 2 B | Maintainer confirmed near the point marker. |
-| Game trial | Separately approved; cold backup verified, private-runner Battle.net launched; game-input result pending. |
+| Game trial | Failed: maintainer screenshot shows candidates still upper-left, far from the game field. No permanent deployment. |
 
 Contracts cover point, exclusion, secondary and default candidate forms, form
 readback, preserving composition state, and rejecting a null form/out-of-range
@@ -148,8 +149,21 @@ symlinks preserved, without hard links, then verified with a checksum/metadata
 dry-run comparison. The game executable is inside the prefix; XDG-folder links
 are links, not backups of those external folders. No external folder is an
 explicit trial write target. Revision 2's module hash was rechecked and private-runner
-Battle.net started against the working prefix. Game input is still pending;
-do not claim that the original prefix stayed unused after this approved launch.
+Battle.net started against the working prefix. The maintainer launched the
+game and supplied a screenshot with the candidate panel still upper-left,
+far from the input field. Candidate positioning therefore failed; text
+selection/commit was not separately accepted. The neutral result did not
+transfer to the actual game. It remains unknown whether the game uses this
+API path or loads the expected module; probe fingerprints establish neither.
+No game memory, typed-content trace or conversations were inspected. The
+maintainer then confirmed normal exit from both apps for recovery. After a
+prefix-process/server stop check, a staged copy of the cold backup passed the
+checksum/metadata comparison. The post-trial prefix was moved aside without
+deletion, the staged copy restored to the exact original path, and a second
+comparison passed. Cold backup and post-trial prefix are retained privately.
+The ordinary runner/entry were never replaced; no game was relaunched after
+recovery. Do not repeat the same failed trial without new evidence.
+Do not claim that the original prefix stayed unused after this approved launch.
 Local paths, backup, accounts and logs remain outside Git. On this desktop only:
 
 1. The maintainer normally exits Hearthstone and Battle.net. Confirm no prefix
