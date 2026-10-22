@@ -89,7 +89,7 @@ memory, typed contents or keystrokes were inspected.
 | Same contracts, modified module at DPI 192 | Zero failures. |
 | Patched B in the isolated prefix | Maintainer confirmed the panel near the lower marker. |
 | Reverse control: unmodified B, same prefix/settings | Maintainer confirmed return to the upper-left. |
-| Patched A regression | Open for maintainer verification; not yet accepted. |
+| Patched A regression | Maintainer confirmed the panel still near the lower marker. |
 | Visual exclusion-area, resize and focus regressions | Not accepted yet. |
 | Hearthstone with this experiment | Not attempted or authorized. |
 
@@ -98,8 +98,9 @@ readback, preserving composition state, and rejecting a null form/out-of-range
 list. They do not verify visible placement or every style combination. The
 separate no-window `--self-test` is only a startup check, not an IME test.
 
-B/reverse control supports this bridge in the neutral reproducer, not proof of
-Hearthstone's API usage. Before a game trial, separately review regressions,
+B/reverse control and the accepted A regression support this bridge in the
+neutral reproducer, not proof of Hearthstone's API usage. Before a game trial,
+separately review the remaining regressions,
 runner provenance, full prefix backup/recovery, and module verification without
 private-input tracing. Do not point a different build at the working game
 prefix, which Wine may modify merely on startup.

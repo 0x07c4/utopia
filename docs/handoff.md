@@ -16,9 +16,10 @@ in [`journal/`](journal/).
   composition state. Own-process/export-code fingerprints distinguish loaded
   implementations; ambiguous PID/file-map inference was discarded. The
   maintainer accepted patched B near its lower marker and reverse control B
-  returning to the upper-left in the same isolated environment. Patched A is
-  currently open for regression confirmation; visual exclusion/resize/focus
-  checks and any game trial remain unaccepted. No game use is authorized by the
+  returning to the upper-left in the same isolated environment. The maintainer
+  also accepted patched A still near its lower marker. Temporary probes were
+  then stopped; artifacts are retained. Visual exclusion/resize/focus checks
+  and any game trial remain unaccepted. No game use is authorized by the
   probe result. Patch, source/license notices, probe and byte verifier are
   versioned; binaries, downloaded source, prefix and private logs stay outside
   Git. Five verifier tests bring the main suite to 100; installer suite is 67.
