@@ -103,7 +103,8 @@ memory, typed contents or keystrokes were inspected.
 | Patched A regression | Maintainer confirmed the panel still near the lower marker. |
 | Revision 1 exclusion-area C | Maintainer confirmed near the marker but overlapping; failed. |
 | Revision 2 lower-edge fallback C | Maintainer confirmed near the marker without overlap. |
-| Revision 2 A/B, resize and focus regressions | Not accepted yet. |
+| Revision 2 C width change and focus round trip | Maintainer confirmed normal after narrowing and switching away/back. |
+| Revision 2 A/B regressions | Not accepted yet. |
 | Hearthstone with this experiment | Not attempted or authorized. |
 
 Contracts cover point, exclusion, secondary and default candidate forms, form
@@ -117,9 +118,13 @@ with strict warnings and passed the hidden contracts with the patched
 fingerprint at DPI 192. After the first visual failure, the revised bridge was
 rebuilt and loaded only after stopping the isolated prefix; revision 1's output
 was retained. Revision 2 contracts also pass, and its visible C placement was
-accepted. The same C window remains available for resize/focus checks; those
-are not accepted from API status alone. Earlier A/B acceptance applies to
-revision 1, not automatically to the new module.
+accepted. The same C window was narrowed from 936 to 720 logical pixels;
+the maintainer confirmed normal placement after narrowing and switching to a
+terminal and back (recomposition was allowed). This does not establish
+uninterrupted preedit retention or arbitrary screen-edge avoidance. C was
+then stopped through only its isolated prefix; revision 2 A is open for visual
+confirmation. Earlier A/B acceptance applies to revision 1, not automatically
+to the new module.
 
 B/reverse control and the accepted A regression support revision 1 in the
 neutral reproducer, not proof of Hearthstone's API usage. Before a game trial,

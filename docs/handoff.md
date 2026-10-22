@@ -25,7 +25,11 @@ in [`journal/`](journal/).
   not complete exclusion semantics. The maintainer accepted revision 2 C near
   the marker without overlap; its strict PE build and contracts pass. The own
   code-region fingerprint was expanded from 64 to 512 bytes to distinguish the
-  revision (the old span could not). Revision 2 A/B, resize/focus checks
+  revision (the old span could not). The maintainer also accepted C after a
+  width change from 936 to 720 logical pixels and a terminal focus round trip;
+  recomposition was allowed, so preedit retention is not claimed. C was then
+  stopped only in its isolated prefix; revision 2 A is open for confirmation.
+  Revision 2 A/B checks
   and any game trial remain unaccepted. No game use is authorized by the
   probe result. Patch, source/license notices, probe and byte verifier are
   versioned; binaries, downloaded source, prefix and private logs stay outside
