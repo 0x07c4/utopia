@@ -84,9 +84,10 @@ client was linked to an uncorked, unmuted stream and an unmuted output, but this
 does not certify physical speaker output. Actual gameplay remains open. Session
 locking interrupted an earlier verification run; the visual check passed after
 unlock. Game-session idle inhibition is explicitly deferred by the maintainer.
-Keep the current lock policy. Hearthstone China has one accepted completed game;
-the active follow-up is its [daily interaction checklist](hearthstone-cn.md#daily-interaction-acceptance--2026-10-22),
-not another installation or first-match test.
+Keep the current lock policy. Hearthstone China has one accepted completed game.
+Its input method now uses an accepted fixed candidate area through the dedicated
+runner; candidate size after per-screen DPI scaling and ordinary-launcher
+verification are the remaining checks in its [daily interaction checklist](hearthstone-cn.md#daily-interaction-acceptance--2026-10-22).
 
 ## Recovery
 

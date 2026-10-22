@@ -8,6 +8,33 @@ in [`journal/`](journal/).
 
 ## Active pause point — 2026-10-22
 
+- **Hearthstone input:** the maintainer accepted the fixed candidate area's
+  location after it moved the panel from upper-left to lower-center. Chinese
+  composition candidates were visible in the game; candidate selection/commit
+  was not yet retested. The maintainer noted the panel looked small. Fcitx's
+  tracked and live `PerScreenDPI=True` setting is now loaded; its visual effect
+  awaits confirmation. This affects candidate panels across applications on
+  the Xwayland screen (reported density about 163 DPI), not only Hearthstone.
+  The previous live Fcitx config is retained beside the private trial backup.
+
+  The fixed anchor is an opt-in, Hearthstone-only patch to Wine 11.19 IMM32.
+  It follows the client size at 50% width / 84% height and refreshes while the
+  game has focus. A private 848 MB runner copy with the tested module is
+  installed under the Utopia data directory. The regular Utopia launcher now
+  selects that runner and sets its opt-in flag; its previous live copy is
+  backed up. The launcher `--check` and shell syntax checks pass. The current
+  visual trial used a separate temporary copy; verify the next normal launch
+  once, then confirm candidate readability and selection. Original Lutris Wine,
+  game client files, and the cold prefix backup are intact.
+
+  This fallback does not repair caret tracking. The previous query experiment
+  reported `(0, 2122)` with zero line height; read-only managed-code inspection
+  also found `HSInputField.GenerateCaret` passing local coordinates with only a
+  screen-height flip. That is consistent with the observed position but was not
+  traced live. Do not repeat neutral A/B/C or failed query trials. Do not modify
+  the game client. Patch source, installer, notices and host config are in Git;
+  compiled modules and game/runtime data remain outside Git.
+
 - The maintainer continued with the scoped [Wine bridge experiment](../desktop/gaming/diagnostics/candidate-bridge-experiment.md).
   Baseline and original, LGPL-attributed IMM32 changes were built from exact
   Wine 11.19 source using existing tools. A runner copy and new temporary prefix

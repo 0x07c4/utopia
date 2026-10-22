@@ -398,7 +398,7 @@ was changed. Active desktop Rime remains readiness evidence only.
 | --- | --- | --- |
 | Desktop/game focus | With the game at its main menu, switch away and back; inspect compositor focus without sending game input. | Game/desktop/game IPC focus checks passed; original focus restored. |
 | Fullscreen recovery | Inspect the game's current geometry; if testing the existing `Mod+Shift+F` toggle, restore the original mode afterward. | 1920x1080 logical geometry observed; toggle round trip pending. Do not copy Stardew's rule onto Hearthstone. |
-| Chinese input | The maintainer selects an existing game text field, composes and commits a short neutral phrase, then clears it without sending. | Partial: Chinese text is visible in the field, but the candidate panel is far from it; anchoring fails. |
+| Chinese input | The maintainer selects an existing game text field, composes and commits a short neutral phrase, then clears it without sending. | The fixed anchor moved the candidate panel from upper-left to the lower-center game area; the maintainer accepted its position but noted it looks small. Candidate selection/commit and the screen-DPI size adjustment remain to be confirmed. |
 | Audio route and output | Inspect only the game's stream state, links, mute and sink state; the maintainer confirms actual sound. | Running unmuted stream/sink and active links checked; audible sound confirmed by the maintainer. |
 | Volume control | The maintainer uses the normal media key or control-center slider, confirms the audible change, and restores the preferred level. | Normal volume adjustment confirmed by the maintainer; the agent changed no routing or volume. |
 
@@ -421,7 +421,7 @@ private social content and is not included or reproduced in the repository.
 Read-only checks found Wine input contexts using the XIM frontend, Fcitx 5.1.23
 with `UseOnTheSpot=False`, and no explicit Wine `InputStyle` or `UseXIM` registry
 override in this trial prefix. These checks do not expose the negotiated XIM
-style or prove which process supplied a bad rectangle. No setting was changed.
+style or prove which process supplied a bad rectangle.
 
 In [Wine 11.19's XIM implementation](https://github.com/wine-mirror/wine/blob/wine-11.19/dlls/winex11.drv/xim.c),
 the initial spot is zero; composition-rectangle forwarding updates it only for
@@ -440,14 +440,36 @@ experiment; it does not prove Hearthstone's API usage. The original reproducer
 source and build/run instructions are versioned, not its executable or images.
 Both temporary probe windows were normally closed, leaving the game alone.
 
-Do not repeat A/B unless testing a concrete candidate fix. Next establish whether
-a reviewed runner fix addresses this reproducer, or obtain coordinate-only
-evidence of the game's API usage. Neither a new runner nor an injected game hook
-has been authorized or deployed. Do not capture typed text, trace keystrokes,
-inject game hooks, force a fixed screen position, or restart the input method
-globally. A per-game experiment must have a backup, rollback and before/after
-input check before promotion; global `UseOnTheSpot`, theme and DPI changes are
-not justified by the current evidence. Keep the game and prefix intact.
+The [fixed-anchor fallback](diagnostics/imm32-hearthstone-fixed-anchor.patch)
+is visually accepted at its current position. It sets the XIM spot to 50% client
+width and 84% client height while the game has focus, refreshing at 250 ms. It
+is a fixed-area workaround, not caret following. The game showed Chinese
+composition and the candidate list in the lower-center area; the maintainer
+noted the list looked small.
+
+The source patch and [private runner installer](install-hearthstone-fixed-ime)
+are versioned. A separate runner copy keeps the change out of the shared Lutris
+runner; the regular Utopia Battle.net launcher selects it only when present.
+Rebuild its x86_64 IMM32 from pinned Wine 11.19 source, then run the installer
+with that PE module. The patch is opt-in through
+`UTOPIA_HEARTHSTONE_FIXED_IME=1` and internally checks for `Hearthstone.exe`.
+Built DLLs, trial logs and images stay outside Git. The original runner and a
+full cold game-prefix backup remain available.
+
+The candidate list was visually small. Live Fcitx Classic UI configuration
+used a 12-point font and had per-screen DPI disabled; this screen reports about
+163 DPI under Xwayland. The tracked and live Classic UI setting now enables
+per-screen DPI, with the prior live config saved beside the private trial
+backup. This affects Fcitx candidate panels on this screen across applications,
+not just Hearthstone. Its visual effect remains to be confirmed. The wallpaper
+theme remains generated user runtime state and was not copied into Git.
+
+Do not repeat the neutral A/B/C checks or failed position-query trials. Do not
+treat the game's zero-height, upper-left `IMR_QUERYCHARPOSITION` result as a
+usable caret. The maintainer has not asked to patch the game client. Chinese
+text remains a maintainer-only test: choose a candidate and clear it without
+sending. No chat, match, private game memory, typed text or key trace is part of
+validation.
 
 ### Desktop trial launch entry
 
