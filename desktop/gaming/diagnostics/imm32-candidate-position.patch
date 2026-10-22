@@ -1,0 +1,38 @@
+Wine base: 455e3509b98a6919fd4ad1def4803e08c41c03b2 (wine-11.19)
+SPDX-License-Identifier: LGPL-2.1-or-later
+Original Utopia experimental change; no game injection or global configuration.
+Forward the primary candidate anchor without modifying the composition form.
+Not deployed to the working game runner or prefix.
+
+diff --git a/dlls/imm32/imm.c b/dlls/imm32/imm.c
+--- a/dlls/imm32/imm.c
++++ b/dlls/imm32/imm.c
+@@ -3,6 +3,7 @@
+  *
+  * Copyright 1998 Patrik Stridvall
+  * Copyright 2002, 2003, 2007 CodeWeavers, Aric Stewart
++ * Copyright 2026 Utopia contributors
+  *
+  * This library is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU Lesser General Public
+@@ -2439,6 +2440,20 @@
+     ImmNotifyIME( himc, NI_CONTEXTUPDATED, 0, IMC_SETCANDIDATEPOS );
+     SendMessageW( ctx->hWnd, WM_IME_NOTIFY, IMN_SETCANDIDATEPOS, 1 << candidate->dwIndex );
+ 
++    /* The host IME has one anchor; forward only the primary candidate list.
++     * Do not overwrite cfCompForm: candidate and composition forms are distinct.
++     */
++    if (ctx->hWnd && !candidate->dwIndex &&
++        (candidate->dwStyle == CFS_CANDIDATEPOS || candidate->dwStyle == CFS_EXCLUDE))
++    {
++        RECT rect;
++
++        if (candidate->dwStyle == CFS_EXCLUDE) rect = candidate->rcArea;
++        else SetRect( &rect, candidate->ptCurrentPos.x, candidate->ptCurrentPos.y,
++                      candidate->ptCurrentPos.x + 1, candidate->ptCurrentPos.y + 1 );
++        NtUserCallTwoParam( (ULONG_PTR)ctx->hWnd, (ULONG_PTR)&rect, NtUserCallTwoParam_SetIMECompositionRect );
++    }
++
+     ImmUnlockIMC( himc );
+ 
+     return TRUE;

@@ -26,11 +26,12 @@ updates the XIM spot from Win32 caret operations. It is not evidence of a curren
 candidate-setter bridge, a maintained binary containing one, or Hearthstone
 using those caret operations. It was not copied, applied, or adopted.
 
-## Proposed next experiment — not approved or applied
+## Scoped experiment selected after this review
 
-Testing a private Wine change is a new experimental scope, not routine Utopia
-configuration deployment. Obtain the maintainer's choice before preparing a
-patched runner or initializing another prefix. Keep the following boundaries:
+The maintainer continued with the scoped temporary-prefix experiment after the
+review. Its [construction and current evidence](candidate-bridge-experiment.md)
+are recorded separately. This permits private probe builds, not game deployment
+or replacement of the working runner. Keep the following boundaries:
 
 1. Inspect build prerequisites, source provenance/license, disk use, and a
    bounded build plan first. Do not install missing dependencies implicitly.

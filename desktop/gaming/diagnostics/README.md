@@ -94,3 +94,10 @@ existing runner/prefix kept recoverable.
 The [runner source review](runner-review.md) records the exact newer Wine,
 Valve and Staging snapshots examined next. It does not select a verified fix or
 authorize replacing the working runner; a separate experiment needs review.
+
+The subsequently selected [isolated bridge experiment](candidate-bridge-experiment.md)
+has its own patch, license, private-prefix boundary and remaining acceptance
+gates. It is not installed in the game environment. The probe also supports
+`--contract-test` (hidden own-window form/state checks) and `--module-check`
+(own candidate-function fingerprint). Visual runs print that fingerprint too;
+neither mode reads game state or text.

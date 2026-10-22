@@ -11,6 +11,60 @@
 static int candidate_only;
 static POINT spot;
 
+static int module_fingerprint(void)
+{
+    HMODULE module = GetModuleHandleW(L"imm32.dll");
+    FARPROC address = module ? GetProcAddress(module, "ImmSetCandidateWindow") : NULL;
+    if (!address) return 1;
+    /* Only this probe's own code is read, never a game's memory or input. */
+    const unsigned char *code = (const unsigned char *)address;
+    unsigned long long fingerprint = 0xcbf29ce484222325ULL;
+    for (unsigned i = 0; i < 64; i++) {
+        fingerprint ^= code[i];
+        fingerprint *= 0x100000001b3ULL;
+    }
+    printf("own_candidate_code_fingerprint=%016llx\n", fingerprint);
+    return 0;
+}
+
+static int contract_test(HWND window)
+{
+    HIMC context = ImmGetContext(window);
+    COMPOSITIONFORM expected = {0}, observed = {0};
+    CANDIDATEFORM candidate = {0}, stored = {0};
+    int failed = 0;
+    if (!context) { puts("contract_context_unavailable"); return 1; }
+    expected.dwStyle = CFS_POINT;
+    expected.ptCurrentPos.x = 17;
+    expected.ptCurrentPos.y = 23;
+    if (!ImmSetCompositionWindow(context, &expected)) failed++;
+    for (unsigned i = 0; i < 4; i++) {
+        candidate.dwIndex = (i == 2) ? 1 : 0;
+        candidate.dwStyle = (i == 1) ? CFS_EXCLUDE :
+                            (i == 3) ? CFS_DEFAULT : CFS_CANDIDATEPOS;
+        candidate.ptCurrentPos.x = 120;
+        candidate.ptCurrentPos.y = 320;
+        SetRect(&candidate.rcArea, 120, 300, 360, 340);
+        if (!ImmSetCandidateWindow(context, &candidate)) failed++;
+        if (!ImmGetCandidateWindow(context, candidate.dwIndex, &stored) ||
+            stored.dwIndex != candidate.dwIndex || stored.dwStyle != candidate.dwStyle ||
+            stored.ptCurrentPos.x != candidate.ptCurrentPos.x ||
+            stored.ptCurrentPos.y != candidate.ptCurrentPos.y ||
+            !EqualRect(&stored.rcArea, &candidate.rcArea)) failed++;
+        if (!ImmGetCompositionWindow(context, &observed) ||
+            observed.dwStyle != expected.dwStyle ||
+            observed.ptCurrentPos.x != expected.ptCurrentPos.x ||
+            observed.ptCurrentPos.y != expected.ptCurrentPos.y ||
+            !EqualRect(&observed.rcArea, &expected.rcArea)) failed++;
+    }
+    if (ImmSetCandidateWindow(context, NULL)) failed++;
+    candidate.dwIndex = 32;
+    if (ImmSetCandidateWindow(context, &candidate)) failed++;
+    ImmReleaseContext(window, context);
+    printf("candidate_form_contract_failures=%d\n", failed);
+    return failed ? 1 : 0;
+}
+
 static void update_anchor(HWND window)
 {
     RECT area;
@@ -94,8 +148,12 @@ int main(int argc, char **argv)
         puts("coordinate-only PE probe ready");
         return 0;
     }
+    if (argc == 2 && !strcmp(argv[1], "--module-check")) return module_fingerprint();
     if (argc != 2 || (strcmp(argv[1], "--composition") &&
-                      strcmp(argv[1], "--candidate"))) return 2;
+                      strcmp(argv[1], "--candidate") &&
+                      strcmp(argv[1], "--contract-test"))) return 2;
+    int contracts = !strcmp(argv[1], "--contract-test");
+    if (module_fingerprint()) return 5;
     candidate_only = !strcmp(argv[1], "--candidate");
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
     HINSTANCE instance = GetModuleHandleW(NULL);
@@ -111,6 +169,11 @@ int main(int argc, char **argv)
             WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
             1400, 900, NULL, NULL, instance, NULL);
     if (!window) return 4;
+    if (contracts) {
+        int status = contract_test(window);
+        DestroyWindow(window);
+        return status;
+    }
     ShowWindow(window, SW_SHOWNOACTIVATE);
     MSG message;
     while (GetMessageW(&message, NULL, 0, 0) > 0) {

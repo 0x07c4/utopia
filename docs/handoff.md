@@ -8,6 +8,21 @@ in [`journal/`](journal/).
 
 ## Active pause point — 2026-10-22
 
+- The maintainer continued with the scoped [Wine bridge experiment](../desktop/gaming/diagnostics/candidate-bridge-experiment.md).
+  Baseline and original, LGPL-attributed IMM32 changes were built from exact
+  Wine 11.19 source using existing tools. A runner copy and new temporary prefix
+  contain the test; the game runner/prefix and global input policy are untouched.
+  Candidate form contracts pass on both modules at DPI 192 without changing
+  composition state. Own-process/export-code fingerprints distinguish loaded
+  implementations; ambiguous PID/file-map inference was discarded. The
+  maintainer accepted patched B near its lower marker and reverse control B
+  returning to the upper-left in the same isolated environment. Patched A is
+  currently open for regression confirmation; visual exclusion/resize/focus
+  checks and any game trial remain unaccepted. No game use is authorized by the
+  probe result. Patch, source/license notices, probe and byte verifier are
+  versioned; binaries, downloaded source, prefix and private logs stay outside
+  Git. Five verifier tests bring the main suite to 100; installer suite is 67.
+
 - The [read-only runner review](../desktop/gaming/diagnostics/runner-review.md)
   checked exact Wine 11.20 and Valve `proton_11.0` IMM32 snapshots plus the
   Staging 11.20 patch catalog. No evidenced drop-in fix for B was selected;
@@ -15,11 +30,9 @@ in [`journal/`](journal/).
   This is not runtime testing of newer runners or an exhaustive patch survey.
   The old 2014 caret-based patch is not treated as a candidate-setter fix.
   No new Wine build/prefix, DLL override, package, or global input change was
-  made. Next obtain a maintainer choice: a separately scoped, temporary-prefix
-  Wine patch experiment (with prerequisite/provenance review and A/B gates),
-  or a sanitized upstream report draft with the limitation retained. Neither
-  building a patched runner nor publishing an issue is authorized by this
-  review. Preserve the working game runner and prefix untouched.
+  made during that review. The later selected isolated experiment above
+  supersedes its choice pause; game deployment and upstream issue publication
+  remain unauthorized. Preserve the working game runner and prefix untouched.
 
 - A neutral Wine IME coordinate A/B now reproduces the candidate placement gap
   outside Hearthstone. The original `desktop/gaming/diagnostics/` PE probe uses
@@ -33,11 +46,11 @@ in [`journal/`](journal/).
   the source; generated binaries and screenshots stay outside Git. Do not repeat
   these baseline checks without a concrete candidate fix. Next review whether a
   runner fix addresses the reproducer or obtain game coordinate-only evidence;
-  no new runner or injected hook is authorized. PR #27 carries this follow-up.
+  no game-runner change or injected hook is authorized. PR #27 carries this follow-up.
 
 - PR #26 was merged into `main` as `46c3637` at the maintainer's request.
   The optional desktop Battle.net resize/repaint adapter and three-width
-  dispatcher are now the repository baseline. The 95 main tests and 67
+  dispatcher are now the repository baseline. The 100 main tests and 67
   installer tests pass. The current task is daily Hearthstone interaction
   acceptance, not more setup or another first-game test. After the maintainer
   launched Hearthstone, its window measured 1920x1080 logical pixels. A targeted
@@ -662,7 +675,7 @@ public commit.
 
 ## Immediate next work
 
-The current implementation passes both Python suites (95 main tests and 67
+The current implementation passes both Python suites (100 main tests and 67
 Arch-installer tests). Continue in this order, one
 focused change at a time:
 
