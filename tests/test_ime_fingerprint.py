@@ -54,6 +54,12 @@ class FingerprintTest(unittest.TestCase):
         modified[0x500] ^= 1
         self.assertEqual(fingerprint(original), fingerprint(modified))
 
+    def test_later_export_region_change_is_detected(self):
+        original = pe_fixture()
+        modified = pe_fixture()
+        modified[0x300+200] ^= 1
+        self.assertNotEqual(fingerprint(original), fingerprint(modified))
+
     def test_missing_export_is_rejected(self):
         data = pe_fixture()
         data[0x280] = ord("X")

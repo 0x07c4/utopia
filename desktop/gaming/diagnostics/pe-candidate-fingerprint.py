@@ -33,8 +33,8 @@ def fingerprint(path):
         if name == b'ImmSetCandidateWindow':
             ordinal = unpack_from('<H', data, ordinals+2*i)[0]
             code = offset(unpack_from('<I', data, functions+4*ordinal)[0])
-            code_bytes = data[code:code+64]
-            if len(code_bytes) != 64:
+            code_bytes = data[code:code+512]
+            if len(code_bytes) != 512:
                 raise ValueError('Export code is truncated')
             value = 0xcbf29ce484222325
             for byte in code_bytes:

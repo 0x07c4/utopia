@@ -14,8 +14,15 @@ are LGPL-2.1-or-later; see [the notice](../../../THIRD_PARTY_NOTICES.md#wine-can
 and the verbatim license under `LICENSES/`. No historical Staging patch was
 adopted. Downloaded Wine source and compiled modules remain outside Git.
 
-The change forwards only primary-list candidate point/exclusion rectangles to
-the existing host rectangle operation. It preserves notifications and return
+The change forwards only primary-list candidate anchors to the existing host
+rectangle operation. For `CFS_EXCLUDE`, revision 2 approximates avoidance by
+using the exclusion rectangle's lower edge. [Wine's X11 driver](https://github.com/wine-mirror/wine/blob/455e3509b98a6919fd4ad1def4803e08c41c03b2/dlls/winex11.drv/xim.c)
+forwards only
+`rect.left/top` as `XNSpotLocation`, discarding its extent; forwarding the full
+rectangle in revision 1 therefore placed the panel over it. The lower-edge
+fallback is not a full exclusion contract: screen-edge adjustment, large panels
+and other host drivers may still overlap. Only this X11 environment was tested.
+The change preserves notifications and return
 behavior, and does not call `ImmSetCompositionWindow` or overwrite `cfCompForm`.
 Secondary lists and default/unsupported styles retain the prior behavior.
 This is not complete Windows IME compatibility or an upstream-accepted patch.
@@ -58,7 +65,7 @@ PID, or replace a module while its test processes are running.
 ## Loaded-implementation check
 
 Replacing a runner file alone does not prove it loaded. The probe's
-`--module-check` and visual runs fingerprint the first 64 bytes of
+`--module-check` and visual runs now fingerprint a 512-byte code region from
 `ImmSetCandidateWindow` in **the probe's own address space**. Compare against
 the matching export bytes from the two locally built PE files:
 
@@ -71,7 +78,11 @@ python desktop/gaming/diagnostics/pe-candidate-fingerprint.py \
 Use the explicit private runner/prefix environment for `--module-check`, too.
 The two builds produced distinct fingerprints, and accepted visual runs printed
 the expected implementation. The verifier uses the Python standard library.
-This is a local build discriminator, not authentication; different compiler
+This is a region fingerprint, not a claim about function length. The initial
+64-byte method distinguished baseline/revision 1 but failed to distinguish the
+exclusion revision. It was expanded before accepting revision 2, with a test
+for changes beyond the initial span. This is a local build discriminator, not
+authentication; different compiler
 output or relocations can invalidate a byte comparison.
 
 An initial `/proc` mapping check was inconclusive. Compositor-reported Xwayland
@@ -90,7 +101,9 @@ memory, typed contents or keystrokes were inspected.
 | Patched B in the isolated prefix | Maintainer confirmed the panel near the lower marker. |
 | Reverse control: unmodified B, same prefix/settings | Maintainer confirmed return to the upper-left. |
 | Patched A regression | Maintainer confirmed the panel still near the lower marker. |
-| Visual exclusion-area, resize and focus regressions | Not accepted yet. |
+| Revision 1 exclusion-area C | Maintainer confirmed near the marker but overlapping; failed. |
+| Revision 2 lower-edge fallback C | Maintainer confirmed near the marker without overlap. |
+| Revision 2 A/B, resize and focus regressions | Not accepted yet. |
 | Hearthstone with this experiment | Not attempted or authorized. |
 
 Contracts cover point, exclusion, secondary and default candidate forms, form
@@ -101,10 +114,14 @@ separate no-window `--self-test` is only a startup check, not an IME test.
 The follow-up probe adds `--exclude` (C) with a visible exclusion rectangle,
 and refreshes its own anchor on size/movement/focus changes. It was rebuilt
 with strict warnings and passed the hidden contracts with the patched
-fingerprint at DPI 192. C is open for visual confirmation; neither its visual
-result nor subsequent resize/focus behavior is accepted from API status alone.
+fingerprint at DPI 192. After the first visual failure, the revised bridge was
+rebuilt and loaded only after stopping the isolated prefix; revision 1's output
+was retained. Revision 2 contracts also pass, and its visible C placement was
+accepted. The same C window remains available for resize/focus checks; those
+are not accepted from API status alone. Earlier A/B acceptance applies to
+revision 1, not automatically to the new module.
 
-B/reverse control and the accepted A regression support this bridge in the
+B/reverse control and the accepted A regression support revision 1 in the
 neutral reproducer, not proof of Hearthstone's API usage. Before a game trial,
 separately review the remaining regressions,
 runner provenance, full prefix backup/recovery, and module verification without

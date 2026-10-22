@@ -15,7 +15,7 @@ diff --git a/dlls/imm32/imm.c b/dlls/imm32/imm.c
   *
   * This library is free software; you can redistribute it and/or
   * modify it under the terms of the GNU Lesser General Public
-@@ -2439,6 +2440,20 @@
+@@ -2439,6 +2440,26 @@
      ImmNotifyIME( himc, NI_CONTEXTUPDATED, 0, IMC_SETCANDIDATEPOS );
      SendMessageW( ctx->hWnd, WM_IME_NOTIFY, IMN_SETCANDIDATEPOS, 1 << candidate->dwIndex );
  
@@ -27,7 +27,13 @@ diff --git a/dlls/imm32/imm.c b/dlls/imm32/imm.c
 +    {
 +        RECT rect;
 +
-+        if (candidate->dwStyle == CFS_EXCLUDE) rect = candidate->rcArea;
++        if (candidate->dwStyle == CFS_EXCLUDE)
++        {
++            /* XIM receives only the top-left point, not an exclusion area.
++             * Approximate avoidance by anchoring at the area's lower edge. */
++            rect = candidate->rcArea;
++            rect.top = rect.bottom;
++        }
 +        else SetRect( &rect, candidate->ptCurrentPos.x, candidate->ptCurrentPos.y,
 +                      candidate->ptCurrentPos.x + 1, candidate->ptCurrentPos.y + 1 );
 +        NtUserCallTwoParam( (ULONG_PTR)ctx->hWnd, (ULONG_PTR)&rect, NtUserCallTwoParam_SetIMECompositionRect );

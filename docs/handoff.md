@@ -20,12 +20,16 @@ in [`journal/`](journal/).
   also accepted patched A still near its lower marker. Temporary probes were
   then stopped; artifacts are retained. The follow-up probe now has an
   exclusion-area mode C and anchor refresh on size/movement/focus changes.
-  Its strict PE build and patched-module contracts pass; C is open for
-  maintainer visual confirmation. Visual exclusion/resize/focus checks
+  Revision 1 C failed visually: near the marker but overlapping. The X11 path
+  discards rectangle extent, so revision 2 uses a lower-edge point fallback,
+  not complete exclusion semantics. The maintainer accepted revision 2 C near
+  the marker without overlap; its strict PE build and contracts pass. The own
+  code-region fingerprint was expanded from 64 to 512 bytes to distinguish the
+  revision (the old span could not). Revision 2 A/B, resize/focus checks
   and any game trial remain unaccepted. No game use is authorized by the
   probe result. Patch, source/license notices, probe and byte verifier are
   versioned; binaries, downloaded source, prefix and private logs stay outside
-  Git. Five verifier tests bring the main suite to 100; installer suite is 67.
+  Git. Six verifier tests bring the main suite to 101; installer suite is 67.
 
 - The [read-only runner review](../desktop/gaming/diagnostics/runner-review.md)
   checked exact Wine 11.20 and Valve `proton_11.0` IMM32 snapshots plus the

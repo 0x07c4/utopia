@@ -101,6 +101,9 @@ gates. It is not installed in the game environment. The probe also supports
 `--contract-test` (hidden own-window form/state checks) and `--module-check`
 (own candidate-function fingerprint). Visual runs print that fingerprint too;
 neither mode reads game state or text.
+The fingerprint now covers a 512-byte region from the export entry, rather
+than the original 64 bytes, so the exclusion revision is distinguishable.
+It is not a function-length assertion or cryptographic identity check.
 
 ## Isolated visual regression modes
 

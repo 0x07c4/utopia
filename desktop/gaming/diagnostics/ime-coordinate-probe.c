@@ -20,7 +20,9 @@ static int module_fingerprint(void)
     /* Only this probe's own code is read, never a game's memory or input. */
     const unsigned char *code = (const unsigned char *)address;
     unsigned long long fingerprint = 0xcbf29ce484222325ULL;
-    for (unsigned i = 0; i < 64; i++) {
+    /* A region, not a function-length claim. These owned test builds have
+     * mapped code here; the larger span distinguishes exclusion revisions. */
+    for (unsigned i = 0; i < 512; i++) {
         fingerprint ^= code[i];
         fingerprint *= 0x100000001b3ULL;
     }
