@@ -11,7 +11,8 @@ in [`journal/`](journal/).
 - The maintainer continued with the scoped [Wine bridge experiment](../desktop/gaming/diagnostics/candidate-bridge-experiment.md).
   Baseline and original, LGPL-attributed IMM32 changes were built from exact
   Wine 11.19 source using existing tools. A runner copy and new temporary prefix
-  contain the test; the game runner/prefix and global input policy are untouched.
+  contained neutral tests; the game runner/prefix were untouched in that phase.
+  The later approved game trial is recorded below; global input policy is intact.
   Candidate form contracts pass on both modules at DPI 192 without changing
   composition state. Own-process/export-code fingerprints distinguish loaded
   implementations; ambiguous PID/file-map inference was discarded. The
@@ -32,10 +33,15 @@ in [`journal/`](journal/).
   2 A near (covering) its point marker and B near its marker; A/B have no
   exclusion requirement. This neutral matrix is complete; do not repeat it
   without a concrete change. All temporary probes are stopped, with artifacts
-  retained. A proposed single-game trial with cold full-prefix backup and
-  original-runner fallback is documented in the experiment; separate approval
-  is pending, the game remains running and unchanged. No game use is authorized
-  merely by the probe result. Patch, source/license notices, probe and byte verifier are
+  retained. The maintainer separately approved the single-game trial and
+  confirmed normal exit from both apps. Prefix processes/windows were absent
+  and its server wait completed. A private full cold backup passed checksum
+  and metadata comparison. Revision 2's hash was verified, and Battle.net is
+  now launched temporarily with the private runner against the working prefix;
+  game input is pending. The ordinary runner/launcher are unchanged, but the
+  trial may modify prefix state. Use the recorded cold backup on failure;
+  paths/accounts/logs stay private. Permanent deployment is not authorized.
+  Patch, source/license notices, probe and byte verifier are
   versioned; binaries, downloaded source, prefix and private logs stay outside
   Git. Six verifier tests bring the main suite to 101; installer suite is 67.
 

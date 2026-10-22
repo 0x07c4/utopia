@@ -2,8 +2,10 @@
 
 This is an experimental `cachyos-desktop` probe result, not a Hearthstone fix.
 The maintainer continued with the scoped experiment on 2026-10-22. Only a private
-runner copy and a new temporary prefix participate; the working game runner,
-prefix, accounts, saves and launch entry are not modified or used for tests.
+runner copy and a new temporary prefix participated in neutral tests; the
+working game prefix and accounts were not used. The separately approved game
+trial below now uses the working prefix after a verified full cold backup.
+The ordinary runner and launch entry remain unchanged.
 No system package, service, driver or global input setting was changed.
 
 ## Change and provenance
@@ -106,7 +108,7 @@ memory, typed contents or keystrokes were inspected.
 | Revision 2 C width change and focus round trip | Maintainer confirmed normal after narrowing and switching away/back. |
 | Revision 2 A | Maintainer confirmed near the point marker, with overlap. Point mode has no exclusion requirement. |
 | Revision 2 B | Maintainer confirmed near the point marker. |
-| Hearthstone with this experiment | Not attempted or authorized. |
+| Game trial | Separately approved; cold backup verified, private-runner Battle.net launched; game-input result pending. |
 
 Contracts cover point, exclusion, secondary and default candidate forms, form
 readback, preserving composition state, and rejecting a null form/out-of-range
@@ -133,13 +135,22 @@ change or specific regression.
 
 The neutral results support this narrow experiment, not proof of Hearthstone's
 API usage. Screen-edge/large-panel behavior, uninterrupted preedit retention
-and non-X11 drivers remain outside acceptance. No game trial has occurred.
+and non-X11 drivers remain outside acceptance. They are not game acceptance.
 
-## Proposed single game trial — requires separate approval
+## Separately approved single game trial
 
 The next useful evidence is one actual game-input check, not a broader neutral
-test suite. Current trial authorization is still pending; none of these steps
-has been applied. On this desktop only:
+test suite. The maintainer explicitly approved this plan on 2026-10-22 and
+confirmed normal exit from Hearthstone and Battle.net. No prefix processes or
+matching application windows remained, and a bounded prefix-scoped server wait
+completed. A private timestamped full cold backup was made with metadata and
+symlinks preserved, without hard links, then verified with a checksum/metadata
+dry-run comparison. The game executable is inside the prefix; XDG-folder links
+are links, not backups of those external folders. No external folder is an
+explicit trial write target. Revision 2's module hash was rechecked and private-runner
+Battle.net started against the working prefix. Game input is still pending;
+do not claim that the original prefix stayed unused after this approved launch.
+Local paths, backup, accounts and logs remain outside Git. On this desktop only:
 
 1. The maintainer normally exits Hearthstone and Battle.net. Confirm no prefix
    processes remain; do not kill an active game or infer identity from the
@@ -174,6 +185,8 @@ has been applied. On this desktop only:
 
 Close only temporary probes; if normal closing is ineffective, stop only the
 verified temporary prefix and wait before module replacement. Leave artifacts
-unused. No working-game/system rollback is needed because neither changed.
+unused. For neutral probes no working-game/system rollback was needed. The
+approved game trial may change prefix state merely on launch; use its cold
+backup/original-runner recovery above. No system change is in scope.
 Do not delete prefixes, source trees, caches or game data during cleanup.
 Generated files/local inventory remain outside Git. No upstream issue was posted.
