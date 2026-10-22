@@ -113,6 +113,8 @@ that rectangle without overlapping it, not merely somewhere outside it. This
 follows the [candidate form contract](https://learn.microsoft.com/en-us/windows/win32/api/imm/ns-imm-candidateform).
 The rectangle is 360 by 96 client pixels; point modes keep their existing
 marker and API behavior. C logs only the same own-window status/coordinates.
+A/B markers indicate a point and may be covered by the panel; only C's
+rectangle tests avoidance. Do not classify point-marker overlap as failure.
 
 Visual modes refresh their anchor on window size, movement and focus changes,
 as well as composition events. This models an application updating its own

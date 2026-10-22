@@ -28,10 +28,14 @@ in [`journal/`](journal/).
   revision (the old span could not). The maintainer also accepted C after a
   width change from 936 to 720 logical pixels and a terminal focus round trip;
   recomposition was allowed, so preedit retention is not claimed. C was then
-  stopped only in its isolated prefix; revision 2 A is open for confirmation.
-  Revision 2 A/B checks
-  and any game trial remain unaccepted. No game use is authorized by the
-  probe result. Patch, source/license notices, probe and byte verifier are
+  stopped only in its isolated prefix. The maintainer then confirmed revision
+  2 A near (covering) its point marker and B near its marker; A/B have no
+  exclusion requirement. This neutral matrix is complete; do not repeat it
+  without a concrete change. All temporary probes are stopped, with artifacts
+  retained. A proposed single-game trial with cold full-prefix backup and
+  original-runner fallback is documented in the experiment; separate approval
+  is pending, the game remains running and unchanged. No game use is authorized
+  merely by the probe result. Patch, source/license notices, probe and byte verifier are
   versioned; binaries, downloaded source, prefix and private logs stay outside
   Git. Six verifier tests bring the main suite to 101; installer suite is 67.
 

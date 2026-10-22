@@ -104,7 +104,8 @@ memory, typed contents or keystrokes were inspected.
 | Revision 1 exclusion-area C | Maintainer confirmed near the marker but overlapping; failed. |
 | Revision 2 lower-edge fallback C | Maintainer confirmed near the marker without overlap. |
 | Revision 2 C width change and focus round trip | Maintainer confirmed normal after narrowing and switching away/back. |
-| Revision 2 A/B regressions | Not accepted yet. |
+| Revision 2 A | Maintainer confirmed near the point marker, with overlap. Point mode has no exclusion requirement. |
+| Revision 2 B | Maintainer confirmed near the point marker. |
 | Hearthstone with this experiment | Not attempted or authorized. |
 
 Contracts cover point, exclusion, secondary and default candidate forms, form
@@ -122,16 +123,52 @@ accepted. The same C window was narrowed from 936 to 720 logical pixels;
 the maintainer confirmed normal placement after narrowing and switching to a
 terminal and back (recomposition was allowed). This does not establish
 uninterrupted preedit retention or arbitrary screen-edge avoidance. C was
-then stopped through only its isolated prefix; revision 2 A is open for visual
-confirmation. Earlier A/B acceptance applies to revision 1, not automatically
-to the new module.
+then stopped through only its isolated prefix. Revision 2 A and B were tested
+in sequence with the verified revision 2 fingerprint. The maintainer confirmed
+A near (but covering) its marker and B near its marker. A/B specify a point,
+not an exclusion rectangle, so covering their marker is not the C failure.
+All temporary probes were then stopped only through their isolated prefix;
+artifacts remain. Do not repeat this completed neutral matrix without a new
+change or specific regression.
 
-B/reverse control and the accepted A regression support revision 1 in the
-neutral reproducer, not proof of Hearthstone's API usage. Before a game trial,
-separately review the remaining regressions,
-runner provenance, full prefix backup/recovery, and module verification without
-private-input tracing. Do not point a different build at the working game
-prefix, which Wine may modify merely on startup.
+The neutral results support this narrow experiment, not proof of Hearthstone's
+API usage. Screen-edge/large-panel behavior, uninterrupted preedit retention
+and non-X11 drivers remain outside acceptance. No game trial has occurred.
+
+## Proposed single game trial — requires separate approval
+
+The next useful evidence is one actual game-input check, not a broader neutral
+test suite. Current trial authorization is still pending; none of these steps
+has been applied. On this desktop only:
+
+1. The maintainer normally exits Hearthstone and Battle.net. Confirm no prefix
+   processes remain; do not kill an active game or infer identity from the
+   compositor's shared Xwayland PID.
+2. Make a timestamped, permission-restricted, full cold prefix backup outside
+   Git, preserving symlinks and metadata without hard links. Check free space,
+   copy exit status and a no-write comparison before proceeding. A live copy
+   is not a consistent backup. Inventory and any account-bearing data stay
+   private. Leave the original runner and ordinary launcher unchanged.
+3. Verify the private runner's revision 2 module hash and provenance. This is
+   an upstream Wine 11.19 IMM32 module inside a Staging runner copy, not a full
+   matched Staging rebuild; the neutral checks do not guarantee game
+   compatibility. Record the exact trial runner and backup locally.
+4. Use that explicit private runner/prefix for a temporary launch only after
+   approval and backup. Clear inherited loader/DLL overrides, keep debug
+   tracing off, and do not change registry, DPI, global input or the regular
+   launcher. Wine may alter prefix state merely on startup. A probe's own-code
+   fingerprint is not proof of what the game loaded; do not inspect game
+   memory or enable private-input tracing to obtain that proof.
+5. Have the maintainer type neutral Chinese test text in an existing game
+   field, observe candidate location and confirm selection/commit, then clear
+   it without sending. No match or account interaction is needed. Record only
+   the result, not social screenshots or input logs. An unchanged result ends
+   the trial rather than prompting speculative global changes.
+6. Exit normally and return to the original runner. On failure, keep the
+   post-trial prefix separately and restore the verified cold backup before
+   normal launch; never overwrite or delete the only copy. Review exact paths
+   before restoration. A successful test still needs separate promotion of
+   any regular-launch change; this plan does not authorize permanent deploy.
 
 ## Recovery
 
