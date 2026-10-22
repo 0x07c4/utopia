@@ -98,6 +98,12 @@ readback, preserving composition state, and rejecting a null form/out-of-range
 list. They do not verify visible placement or every style combination. The
 separate no-window `--self-test` is only a startup check, not an IME test.
 
+The follow-up probe adds `--exclude` (C) with a visible exclusion rectangle,
+and refreshes its own anchor on size/movement/focus changes. It was rebuilt
+with strict warnings and passed the hidden contracts with the patched
+fingerprint at DPI 192. C is open for visual confirmation; neither its visual
+result nor subsequent resize/focus behavior is accepted from API status alone.
+
 B/reverse control and the accepted A regression support this bridge in the
 neutral reproducer, not proof of Hearthstone's API usage. Before a game trial,
 separately review the remaining regressions,

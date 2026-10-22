@@ -101,3 +101,19 @@ gates. It is not installed in the game environment. The probe also supports
 `--contract-test` (hidden own-window form/state checks) and `--module-check`
 (own candidate-function fingerprint). Visual runs print that fingerprint too;
 neither mode reads game state or text.
+
+## Isolated visual regression modes
+
+For the private runner/new-prefix experiment only, `--exclude` opens C and
+reports a `CFS_EXCLUDE` rectangle at the lower marker. The panel should be near
+that rectangle without overlapping it, not merely somewhere outside it. This
+follows the [candidate form contract](https://learn.microsoft.com/en-us/windows/win32/api/imm/ns-imm-candidateform).
+The rectangle is 360 by 96 client pixels; point modes keep their existing
+marker and API behavior. C logs only the same own-window status/coordinates.
+
+Visual modes refresh their anchor on window size, movement and focus changes,
+as well as composition events. This models an application updating its own
+layout; it does not establish that a game performs those updates. Test each
+size/focus transition with a visible candidate panel, and distinguish API
+success from visible acceptance. Use only the isolated environment described
+in the experiment, not the working game prefix, for these patched runs.

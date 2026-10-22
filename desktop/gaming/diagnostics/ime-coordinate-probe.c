@@ -9,6 +9,7 @@
 #include <string.h>
 
 static int candidate_only;
+static int exclude_area;
 static POINT spot;
 
 static int module_fingerprint(void)
@@ -75,8 +76,10 @@ static void update_anchor(HWND window)
     spot.y = area.bottom * 3 / 4;
     if (candidate_only) {
         CANDIDATEFORM form = {0};
-        form.dwStyle = CFS_CANDIDATEPOS;
+        form.dwStyle = exclude_area ? CFS_EXCLUDE : CFS_CANDIDATEPOS;
         form.ptCurrentPos = spot;
+        if (exclude_area)
+            SetRect(&form.rcArea, spot.x, spot.y, spot.x + 360, spot.y + 96);
         printf("candidate_api_ok=%d", ImmSetCandidateWindow(context, &form));
     } else {
         COMPOSITIONFORM form = {0};
@@ -97,6 +100,8 @@ static LRESULT CALLBACK procedure(HWND window, UINT message, WPARAM w, LPARAM l)
 {
     switch (message) {
     case WM_SETFOCUS:
+    case WM_SIZE:
+    case WM_MOVE:
     case WM_IME_STARTCOMPOSITION:
         update_anchor(window);
         return 0;
@@ -119,14 +124,17 @@ static LRESULT CALLBACK procedure(HWND window, UINT message, WPARAM w, LPARAM l)
                                L"Microsoft YaHei");
         HGDIOBJ old = SelectObject(dc, font);
         RECT text = {40, 40, client.right - 40, 250};
-        DrawTextW(dc, candidate_only ?
+        DrawTextW(dc, exclude_area ?
+            L"位置对照 C：候选排除区域\n点击此窗口，切换中文后输入 nihao。\n候选框应靠近下方矩形，但不覆盖矩形。\n只观察位置，不会保存或发送输入。\n完成后按 Esc 关闭。" : candidate_only ?
             L"位置对照 B：仅报告候选框位置\n点击此窗口，切换中文后输入 nihao。\n只观察候选框位置，不会保存或发送输入。\n完成后按 Esc 关闭。" :
             L"位置对照 A：报告预编辑光标位置\n点击此窗口，切换中文后输入 nihao。\n只观察候选框位置，不会保存或发送输入。\n完成后按 Esc 关闭。",
             -1, &text, DT_LEFT | DT_WORDBREAK);
         RECT marker = {client.right / 5, client.bottom * 3 / 4,
-                       client.right / 5 + 240, client.bottom * 3 / 4 + 48};
+                       client.right / 5 + (exclude_area ? 360 : 240),
+                       client.bottom * 3 / 4 + (exclude_area ? 96 : 48)};
         FrameRect(dc, &marker, GetStockObject(BLACK_BRUSH));
-        DrawTextW(dc, L"候选框应靠近这里", -1, &marker, DT_LEFT);
+        DrawTextW(dc, exclude_area ? L"候选框不应覆盖此区域" : L"候选框应靠近这里",
+                  -1, &marker, DT_LEFT);
         SelectObject(dc, old);
         DeleteObject(font);
         EndPaint(window, &ps);
@@ -151,10 +159,12 @@ int main(int argc, char **argv)
     if (argc == 2 && !strcmp(argv[1], "--module-check")) return module_fingerprint();
     if (argc != 2 || (strcmp(argv[1], "--composition") &&
                       strcmp(argv[1], "--candidate") &&
+                      strcmp(argv[1], "--exclude") &&
                       strcmp(argv[1], "--contract-test"))) return 2;
     int contracts = !strcmp(argv[1], "--contract-test");
     if (module_fingerprint()) return 5;
-    candidate_only = !strcmp(argv[1], "--candidate");
+    exclude_area = !strcmp(argv[1], "--exclude");
+    candidate_only = exclude_area || !strcmp(argv[1], "--candidate");
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
     HINSTANCE instance = GetModuleHandleW(NULL);
     WNDCLASSW klass = {0};
@@ -165,6 +175,7 @@ int main(int argc, char **argv)
     klass.lpszClassName = L"UtopiaIMECoordinateProbe";
     if (!RegisterClassW(&klass)) return 3;
     HWND window = CreateWindowW(klass.lpszClassName,
+            exclude_area ? L"Utopia IME probe C" :
             candidate_only ? L"Utopia IME probe B" : L"Utopia IME probe A",
             WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
             1400, 900, NULL, NULL, instance, NULL);
