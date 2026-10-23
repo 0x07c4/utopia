@@ -1,0 +1,126 @@
+From: Utopia contributors
+Subject: [EXPERIMENT] imm32: provide a Hearthstone-only fixed candidate anchor
+
+Based on Wine 11.19 (commit 455e3509b98a6919fd4ad1def4803e08c41c03b2).
+Copyright 2026 Utopia contributors; modified Wine LGPL-2.1-or-later source.
+No game memory, client binary, composition text or key input is inspected.
+Enable only for Hearthstone with UTOPIA_HEARTHSTONE_FIXED_IME=1.
+
+--- a/dlls/imm32/ime.c
++++ b/dlls/imm32/ime.c
+@@ -1,5 +1,6 @@
+ /*
+  * Copyright 2023 Rémi Bernon for CodeWeavers
++ * Copyright 2026 Utopia contributors
+  *
+  * This library is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU Lesser General Public
+@@ -22,6 +23,24 @@
+ #include "imm_private.h"
+ 
+ WINE_DEFAULT_DEBUG_CHANNEL(imm);
++WINE_DECLARE_DEBUG_CHANNEL(utopia_ime);
++
++/* Opt-in fixed candidate anchor, scoped to Hearthstone only. This deliberately
++ * does not claim caret tracking or inspect game text, keys, or private state. */
++static BOOL utopia_query_enabled(void)
++{
++    static int enabled = -1;
++    WCHAR image[MAX_PATH], option[2], *base;
++    if (enabled != -1) return enabled;
++    enabled = 0;
++    if (GetEnvironmentVariableW( L"UTOPIA_HEARTHSTONE_FIXED_IME", option, 2 ) != 1 || option[0] != '1')
++        return FALSE;
++    if (!GetModuleFileNameW( NULL, image, MAX_PATH )) return FALSE;
++    base = wcsrchr( image, '\\' );
++    enabled = !wcsicmp( base ? base + 1 : image, L"Hearthstone.exe" );
++    if (enabled) TRACE_(utopia_ime)( "fixed-anchor-v1 active pid=%lu\n", GetCurrentProcessId() );
++    return enabled;
++}
+ 
+ static BOOL is_ime_hkl( HKL hkl )
+ {
+@@ -375,6 +394,35 @@
+     ImmUnlockIMC( himc );
+ }
+ 
++static void utopia_fixed_position( HIMC himc )
++{
++    INPUTCONTEXT *ctx;
++    HWND hwnd;
++    static HWND last_hwnd;
++    static POINT last_point;
++    static ULONG_PTR last_result;
++    ULONG_PTR forwarded;
++    RECT bounds, rect;
++    POINT point;
++
++    if (!utopia_query_enabled() || !(ctx = ImmLockIMC( himc ))) return;
++    hwnd = ctx->hWnd;
++    ImmUnlockIMC( himc );
++    if (!hwnd || hwnd != GetFocus()) return;
++    if (!GetClientRect( hwnd, &bounds ) || bounds.right <= 0 || bounds.bottom <= 0) return;
++    point.x = bounds.right / 2;
++    point.y = MulDiv( bounds.bottom, 84, 100 );
++    SetRect( &rect, point.x, point.y, point.x + 1, point.y + 1 );
++    forwarded = NtUserCallTwoParam( (ULONG_PTR)hwnd, (ULONG_PTR)&rect,
++                                   NtUserCallTwoParam_SetIMECompositionRect );
++    if (last_hwnd != hwnd || last_point.x != point.x || last_point.y != point.y || last_result != forwarded)
++        TRACE_(utopia_ime)( "fixed anchor pid=%lu client=%ld,%ld result=%Iu\n", GetCurrentProcessId(),
++                       point.x, point.y, forwarded );
++    last_hwnd = hwnd;
++    last_point = point;
++    last_result = forwarded;
++}
++
+ static UINT ime_set_comp_string( HIMC himc, LPARAM lparam )
+ {
+     union
+@@ -414,6 +462,7 @@
+     ImmUnlockIMC( himc );
+     ImmGenerateMessage( himc );
+ 
++    if (count) utopia_fixed_position( himc );
+     return count;
+ }
+ 
+@@ -442,7 +491,31 @@
+     switch (msg)
+     {
+     case WM_CREATE:
++        /* XIM PreeditPosition need not send composition callbacks. Refresh on
++         * this UI thread, without examining input, while the app has focus. */
++        if (utopia_query_enabled())
++        {
++            UINT_PTR timer = SetTimer( hwnd, 0x5554, 250, NULL );
++            TRACE_(utopia_ime)( "position timer=%Iu\n", timer );
++        }
+         return TRUE;
++    case WM_TIMER:
++        if (wparam == 0x5554 && utopia_query_enabled())
++        {
++            HWND focus = GetFocus();
++            HIMC active;
++            if (focus && GetAncestor( focus, GA_ROOT ) == GetForegroundWindow() &&
++                (active = ImmGetContext( focus )))
++            {
++                utopia_fixed_position( active );
++                ImmReleaseContext( focus, active );
++            }
++            return 0;
++        }
++        break;
++    case WM_DESTROY:
++        if (utopia_query_enabled()) KillTimer( hwnd, 0x5554 );
++        break;
+     case WM_PAINT:
+         ime_ui_paint( himc, hwnd );
+         return FALSE;
+@@ -482,6 +555,7 @@
+ 
+ BOOL WINAPI ImeInquire( IMEINFO *info, WCHAR *ui_class, DWORD flags )
+ {
++    utopia_query_enabled();
+     TRACE( "info %p, ui_class %p, flags %#lx\n", info, ui_class, flags );
+ 
+     ime_ui_class.hInstance = imm32_module;

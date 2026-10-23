@@ -1,0 +1,46 @@
+#!/bin/sh
+# Install the verified IMM32 build into a private copy of the reviewed runner.
+set -eu
+
+fail() {
+    printf '%s\n' "$1" >&2
+    exit 1
+}
+
+[ "$#" -eq 1 ] || fail 'Usage: install-hearthstone-fixed-ime <x86_64 imm32.dll>'
+module=$1
+[ -f "$module" ] || fail 'The built IMM32 module does not exist.'
+
+data_root=${XDG_DATA_HOME:-"$HOME/.local/share"}
+base_runner="$data_root/lutris/runners/wine/wine-11.19-staging-amd64"
+target="$data_root/utopia/runners/hearthstone-ime-wine-11.19-staging-amd64"
+original="$base_runner/lib/wine/x86_64-windows/imm32.dll"
+destination="$target/lib/wine/x86_64-windows/imm32.dll"
+expected_original=77764e6cd01dfadcd001b9d7b973c84ecf2e9fa302a472522466a803301ff07b
+
+[ -x "$base_runner/bin/wine" ] || fail 'The reviewed Wine 11.19 Staging runner is missing.'
+[ -f "$original" ] || fail 'The reviewed runner IMM32 module is missing.'
+[ "$(sha256sum "$original" | cut -d ' ' -f 1)" = "$expected_original" ] ||
+    fail 'The source runner IMM32 no longer matches the reviewed build.'
+case "$(file -b "$module")" in
+    'PE32+ executable for WINE (DLL), x86-64,'*) ;;
+    *) fail 'Expected the reviewed x86_64 Wine PE IMM32 build.' ;;
+esac
+[ ! -e "$target" ] || fail 'The private runner destination already exists; inspect it before replacing anything.'
+
+runner_parent=${target%/*}
+mkdir -p "$runner_parent"
+stage=$(mktemp -d "$runner_parent/.hearthstone-ime-stage.XXXXXXXX")
+mkdir "$stage/runner"
+cp -a "$base_runner/." "$stage/runner/"
+install -m 0644 "$module" "$stage/runner/lib/wine/x86_64-windows/imm32.dll"
+
+[ "$(sha256sum "$stage/runner/lib/wine/x86_64-windows/imm32.dll" | cut -d ' ' -f 1)" = \
+  "$(sha256sum "$module" | cut -d ' ' -f 1)" ] || fail 'The staged module hash does not match.'
+[ "$(sha256sum "$original" | cut -d ' ' -f 1)" = "$expected_original" ] ||
+    fail 'The original runner changed during copying.'
+
+mv "$stage/runner" "$target"
+rmdir "$stage"
+printf 'Installed private Hearthstone runner: %s\n' "$target"
+printf 'Patched IMM32 SHA-256: %s\n' "$(sha256sum "$destination" | cut -d ' ' -f 1)"

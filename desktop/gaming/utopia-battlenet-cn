@@ -24,6 +24,7 @@ case "$data_root" in
 esac
 WINEPREFIX="$data_root/utopia/gameprefixes/battlenet-cn-legacy"
 runner="$data_root/lutris/runners/wine/wine-11.19-staging-amd64/bin/wine"
+fixed_ime_runner="$data_root/utopia/runners/hearthstone-ime-wine-11.19-staging-amd64/bin/wine"
 client="$WINEPREFIX/drive_c/Program Files (x86)/Battle.net/Battle.net.exe"
 [ -f "$WINEPREFIX/system.reg" ] || fail '未找到已验证的国服战网前缀；请先完成独立安装。'
 [ -x "$runner" ] || fail '未找到已验证的 Wine Staging 11.19 运行器。'
@@ -37,6 +38,12 @@ export WINEPREFIX
 # Do not inherit another game's architecture or DLL override experiment.
 unset WINEARCH WINEDLLOVERRIDES WINELOADER WINESERVER
 export WINEDEBUG=-all
+if [ -x "$fixed_ime_runner" ]; then
+    runner="$fixed_ime_runner"
+    export UTOPIA_HEARTHSTONE_FIXED_IME=1
+else
+    unset UTOPIA_HEARTHSTONE_FIXED_IME
+fi
 
 # Optional, explicitly deployed desktop compatibility adapter. Never compile or
 # install it on launch; absent files leave the ordinary launch path unchanged.

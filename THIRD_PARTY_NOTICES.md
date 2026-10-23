@@ -62,6 +62,45 @@ The image and SVG assets are byte-for-byte identical to the upstream
 `Image` lines are the only modification. The Fcitx configuration selects this
 fixed, attributed theme until a wallpaper-driven Fcitx adapter is designed.
 
+## Wine candidate-position experiment
+
+- Path: `desktop/gaming/diagnostics/imm32-candidate-position.patch`
+- Project: Wine
+- Upstream: <https://github.com/wine-mirror/wine>
+- Base file: `dlls/imm32/imm.c`
+- Verified base revision: `455e3509b98a6919fd4ad1def4803e08c41c03b2` (`wine-11.19`)
+- Upstream copyright: Patrik Stridvall; CodeWeavers and Aric Stewart; the Wine
+  project authors listed in the upstream `AUTHORS` file.
+- License of the patch and its Wine context: LGPL-2.1-or-later, not Utopia's
+  default Apache-2.0 license.
+- License copy: `LICENSES/Wine-LGPL-2.1-or-later.txt`, copied from the exact
+  upstream revision's `COPYING.LIB`.
+
+This is an original Utopia experimental change to Wine's candidate-coordinate
+forwarding, with attribution preserved in the patch. It is not copied from the
+historical Wine Staging caret-position patch. Only the patch is distributed;
+downloaded source trees and built Wine modules remain outside Git. This does
+not deploy the experiment to the game prefix or establish game compatibility.
+
+## Wine Hearthstone fixed-anchor compatibility experiment
+
+- Path: `desktop/gaming/diagnostics/imm32-hearthstone-fixed-anchor.patch`
+- Project: Wine
+- Upstream: <https://github.com/wine-mirror/wine>
+- Base file and revision: `dlls/imm32/ime.c`, Wine 11.19 commit
+  `455e3509b98a6919fd4ad1def4803e08c41c03b2`
+- Upstream copyright: Rémi Bernon for CodeWeavers and the Wine project authors
+  listed in the upstream `AUTHORS` file.
+- License: LGPL-2.1-or-later, not Utopia's default Apache-2.0 license.
+- License copy: `LICENSES/Wine-LGPL-2.1-or-later.txt`.
+
+This opt-in patch is original Utopia work. It places the Fcitx candidate anchor
+at a fixed point relative to the focused Hearthstone client area. It does not
+inspect or change game memory, files, text or keys. The source patch is tracked;
+downloaded source trees and built modules remain outside Git. The visual
+acceptance is limited to the reviewed desktop setup and does not establish
+correct caret following or support for other Wine versions.
+
 ## Neovim configuration submodule
 
 - Gitlink path: `editor/nvim`

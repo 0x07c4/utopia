@@ -1,0 +1,4 @@
+# Preserve verbatim LGPL text and required blank context in the Wine patch.
+LICENSES/Wine-LGPL-2.1-or-later.txt whitespace=-blank-at-eol
+desktop/gaming/diagnostics/imm32-candidate-position.patch whitespace=-blank-at-eol
+desktop/gaming/diagnostics/imm32-hearthstone-fixed-anchor.patch whitespace=-blank-at-eol

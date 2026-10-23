@@ -110,8 +110,8 @@ The installer then proceeded beyond configuration after disabling its startup
 checkbox and selecting Continue. The Battle.net launcher files were installed,
 and the China client displayed its readable NetEase login/registration and
 license/privacy-consent page. Consent and authentication were not performed by
-the agent; account login and game acceptance remain unverified. Leave this
-client available for the maintainer's next action. Both prefixes and their
+the agent; at this installation stage, account login and game acceptance were
+still unverified. Later acceptance is recorded below. Both prefixes and their
 backups are retained.
 
 The installation virtual desktop is not the accepted everyday launch method:
@@ -207,10 +207,11 @@ The original DPI, hardware-acceleration default, key binding, and ordinary
 tiling were restored. A one-pixel width round trip restored the observed corner
 to normal again. No default-floating rule, automatic resize hook, system
 scaling change, driver change, or new permanent workaround was retained.
-Continue from the preset-resize trigger with resize/redraw event evidence;
-basic gameplay and close/reopen acceptance need not be repeated. PR #26 remains
-unmerged. Only cropped client-edge samples were reviewed; private runtime
-configuration and screenshots remain outside Git.
+This historical investigation continued from the preset-resize trigger with
+resize/redraw event evidence, and was superseded by the fix below, merged in
+PR #26. Basic gameplay and close/reopen acceptance need not be repeated. Only
+cropped client-edge samples were reviewed; private runtime configuration and
+screenshots remain outside Git.
 
 ### Resize compatibility fix — 2026-10-22
 
@@ -314,7 +315,7 @@ only the added live Niri include and its desktop fragment, then validate Niri.
 The ordinary launcher still works without adapter files. Restore the backed-up
 launcher if desired; keep the prefix, game, and account data. All earlier
 hardware-acceleration and GDI-path trials were reverted; DPI, global shortcuts,
-and graphics drivers are unchanged. PR #26 remains available for user review.
+and graphics drivers are unchanged. The fix was merged through PR #26.
 
 ### Three distinct shortcut widths
 
@@ -358,7 +359,7 @@ Mod+R { switch-preset-column-width; }
 Mod+Shift+R { switch-preset-column-width-back; }
 ```
 Do not reset DPI, disable acceleration, or change drivers
-from this evidence alone. PR #26 remains unmerged pending follow-up.
+from this evidence alone. The follow-up was merged through PR #26.
 Do not repeat the already-passed manager dependency work, implicitly disable
 session locking, or promote this desktop result to general runner compatibility.
 
@@ -377,10 +378,99 @@ match, opponent, or screen content was inspected to establish this result.
 
 Do not expand the report into separately accepted Chinese text entry, physical
 audio output, repeated cold starts, close/reopen behavior, sustained performance,
-or idle-lock behavior. Those were not individually reported. The Battle.net
-white-region root cause is still unresolved; a successful game is not evidence
-that the launcher rendering defect has been permanently fixed. Keep the existing
-Windows fallback and the optional, desktop-scoped trial status.
+or idle-lock behavior. Those were not individually reported. A successful game
+does not validate the launcher rendering adapter described separately above.
+Keep the existing Windows fallback and the optional, desktop-scoped trial status.
+
+### Daily interaction acceptance — 2026-10-22
+
+PR #26 is merged as `46c3637`. Continue from the working game and launcher,
+without reinstalling, starting another match, or adding performance tooling.
+The maintainer launched the game at its menu for these checks. The game window
+measured 1920x1080 logical pixels. Targeted Niri game/desktop/game focus switching
+passed all three checks, left geometry unchanged, and restored the original
+desktop focus. No in-game input was synthesized. The running, unmuted game audio
+stream had active links to a running, unmuted sink. The maintainer separately
+confirmed audible game sound and normal volume adjustment. No live configuration
+was changed. Active desktop Rime remains readiness evidence only.
+
+| Boundary | Narrow check | Current evidence |
+| --- | --- | --- |
+| Desktop/game focus | With the game at its main menu, switch away and back; inspect compositor focus without sending game input. | Game/desktop/game IPC focus checks passed; original focus restored. |
+| Fullscreen recovery | Inspect the game's current geometry; if testing the existing `Mod+Shift+F` toggle, restore the original mode afterward. | 1920x1080 logical geometry observed; toggle round trip pending. Do not copy Stardew's rule onto Hearthstone. |
+| Chinese input | The maintainer selects an existing game text field, composes and commits a short neutral phrase, then clears it without sending. | The fixed anchor moved the candidate panel from upper-left to the lower-center game area; the maintainer accepted its position but noted it looked small. Candidate size and selection/commit remain unresolved. |
+| Audio route and output | Inspect only the game's stream state, links, mute and sink state; the maintainer confirms actual sound. | Running unmuted stream/sink and active links checked; audible sound confirmed by the maintainer. |
+| Volume control | The maintainer uses the normal media key or control-center slider, confirms the audible change, and restores the preferred level. | Normal volume adjustment confirmed by the maintainer; the agent changed no routing or volume. |
+
+Do not capture friend lists, conversations, account details, or game screenshots
+to establish these results. Record only sanitized outcomes. Credentials, consent,
+chat sending, match entry, and subjective listening remain maintainer actions.
+If the game is not running, wait for it rather than claiming these checks passed.
+Game-session idle inhibition stays deferred; keep the current ten-minute lock.
+Failure should first produce a reproducible symptom and a scoped diagnosis,
+not a speculative DPI, driver, input-method, or audio-policy change.
+
+#### Candidate anchoring defect
+
+The maintainer supplied a screenshot showing an upper-left candidate panel while
+the game text field was near the lower-right. Chinese text was already visible
+in the field. This distinguishes working text entry from incorrect candidate
+placement; do not mark the complete input path accepted. The screenshot contains
+private social content and is not included or reproduced in the repository.
+
+Read-only checks found Wine input contexts using the XIM frontend, Fcitx 5.1.23
+with `UseOnTheSpot=False`, and no explicit Wine `InputStyle` or `UseXIM` registry
+override in this trial prefix. These checks do not expose the negotiated XIM
+style or prove which process supplied a bad rectangle.
+
+In [Wine 11.19's XIM implementation](https://github.com/wine-mirror/wine/blob/wine-11.19/dlls/winex11.drv/xim.c),
+the initial spot is zero; composition-rectangle forwarding updates it only for
+a position-capable input style. [Fcitx 5.1.23's XIM frontend](https://github.com/fcitx/fcitx5/blob/5.1.23/src/frontend/xim/xim.cpp)
+translates supplied area/spot coordinates to screen coordinates. This makes
+game/Win32 rectangle reporting and XIM coordinate delivery the next diagnostic
+boundary, not proof that Fcitx, Wine, or the game is individually at fault.
+The screenshot alone does not establish a scaling-factor error.
+
+The independent [coordinate reproducer](diagnostics/README.md) now supplies a
+controlled result in the same runner and prefix: A reports a composition point
+and its panel follows the lower marker; B reports a candidate point at the same
+coordinates but its panel stays near the upper-left. Both setters return
+success. This demonstrates the candidate-only failure without running a game
+experiment; it does not prove Hearthstone's API usage. The original reproducer
+source and build/run instructions are versioned, not its executable or images.
+Both temporary probe windows were normally closed, leaving the game alone.
+
+The [fixed-anchor fallback](diagnostics/imm32-hearthstone-fixed-anchor.patch)
+is visually accepted at its current position. It sets the XIM spot to 50% client
+width and 84% client height while the game has focus, refreshing at 250 ms. It
+is a fixed-area workaround, not caret following. The game showed Chinese
+composition and the candidate list in the lower-center area; the maintainer
+noted the list looked small.
+
+The source patch and [private runner installer](install-hearthstone-fixed-ime)
+are versioned. A separate runner copy keeps the change out of the shared Lutris
+runner; the regular Utopia Battle.net launcher selects it only when present.
+Rebuild its x86_64 IMM32 from pinned Wine 11.19 source, then run the installer
+with that PE module. The patch is opt-in through
+`UTOPIA_HEARTHSTONE_FIXED_IME=1` and internally checks for `Hearthstone.exe`.
+Built DLLs, trial logs and images stay outside Git. The original runner and a
+full cold game-prefix backup remain available.
+
+The candidate list was visually small. Its Fcitx Classic UI font is back at the
+original 12 points. A 16-point trial was immediately reverted because Fcitx's
+shared font would also enlarge candidate panels in the terminal and other
+applications. Fcitx states that per-screen DPI is disabled under XWayland, so
+that attempted toggle was ineffective and is set to `False`. Candidate size
+remains unresolved; any future Hearthstone-only sizing change must be scoped to
+the game rather than changing this shared setting. The wallpaper theme remains
+generated user runtime state and was not copied into Git.
+
+Do not repeat the neutral A/B/C checks or failed position-query trials. Do not
+treat the game's zero-height, upper-left `IMR_QUERYCHARPOSITION` result as a
+usable caret. The maintainer has not asked to patch the game client. Chinese
+text remains a maintainer-only test: choose a candidate and clear it without
+sending. No chat, match, private game memory, typed text or key trace is part of
+validation.
 
 ### Desktop trial launch entry
 
