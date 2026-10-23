@@ -1,7 +1,7 @@
 # Utopia's managed wallpaper center combines local files and Wallhaven discovery
 # in one keyboard-first panel. Runtime thumbnails and wallpapers stay outside Git.
 [plugins]
-enabled = ["utopia/wallpaper"]
+enabled = ["utopia/wallpaper", "utopia/shortcuts"]
 
 # The same home-relative directory backs both pages of the unified browser.
 [plugin_settings."utopia/wallpaper"]

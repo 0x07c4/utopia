@@ -1,12 +1,61 @@
 # Current handoff
 
 This is the short, rolling entry point for continuing Utopia on another machine
-or in a new agent session. Update it when the active baseline or immediate next
-work changes. Keep durable direction in [`vision.md`](vision.md), and keep
-the active product sequence in [`roadmap.md`](roadmap.md). Keep session history
-in [`journal/`](journal/).
+or in a new agent session. Keep durable direction in [vision.md](vision.md),
+the product sequence in [roadmap.md](roadmap.md), and incident history in
+[journal/](journal/).
 
-## Active pause point — 2026-10-22
+## Active pause point — 2026-10-24
+
+- **Current laptop topic:** `work/desktop-interaction`. Read the
+  [interaction design](design/desktop-interaction.md) and
+  [operation inventory](design/desktop-interaction-inventory.md).
+  The shared configuration has 135 bindings / 100 actions; the read-only
+  `utopia/shortcuts` guide shows 84 entries before search and expands workspace
+  ranges when searching. The final content audit found no unclassified or
+  generic custom-action entries in the shared configuration.
+- **Confirmed decisions and acceptance:** `Super+/` opens the plugin guide;
+  native help and its fallback binding are removed. `Super+T` is the terminal
+  entry; its `Super+Enter` alias is removed. Launcher aliases remain visible.
+  `Super+N` opens notifications and `Super+Y` clipboard history; the maintainer
+  confirmed both. `Super+V` remains floating. Common-first ordering, synonyms,
+  secondary explanations and workspace ranges are implemented. Earlier search,
+  category and scrolling acceptance was followed by a CPU-timeout failure.
+  After the cache optimization, on 2026-10-24 the maintainer explicitly confirmed
+  `Super+/`, search, category switching and close all work normally.
+  Launcher search/result activation was also confirmed earlier.
+- **Live state and limits:** the laptop received the enabled plugin, its
+  launcher provider and reviewed bindings after backups. Live help code matches
+  the repository. Noctalia 5.3.0 needs this plugin disabled/re-enabled when a new
+  manifest entry is added; config reload alone did not register it. The
+  installed shell is still the distro build. Both host compositions validate;
+  no desktop deployment occurred. Suites pass 133 main + 67 installer tests.
+  Temporary real-handler diagnostics also passed 29 consecutive interactions
+  without timeouts and were removed. No private clipboard, notification,
+  account or media contents were inspected.
+- **Validation boundaries:** the approved media changes are Play → toggle and
+  Pause → pause. Command semantics and bindings are checked, but physical media
+  keys/player compatibility, multi-monitor behavior and lock-screen media
+  behavior were not manually exercised. Do not call these accepted from help
+  UI feedback or trigger session exit, lock, capture or playback for an agent
+  check. Calls and screen sharing remain deferred; the laptop has no gaming
+  requirement. Preserve the desktop's host-specific gaming/input work below.
+- **Upstream contribution:** [Noctalia PR #5014](https://github.com/noctalia-dev/noctalia/pull/5014)
+  is open and ready for review, not merged; no reviews/comments as of the
+  2026-10-24 check. Template and maintainer-intake checks pass. Commit
+  `9b1278ced8a9867c3c8308d5c12e4efd0c330d73` contains only three upstream
+  fix/test files. Full compilation, three relevant test executables, a failing
+  original-guard control and a passing patched isolated-shell reproduction
+  establish the contribution's local evidence; metadata checks are not code
+  review. The [MIT-attributed patch and PR description](upstream/noctalia/README.md)
+  preserve the exact base and continuation steps. The installed shell was not
+  replaced. See the [runtime validation lesson](journal/2026-10-23-noctalia-plugin-runtime-validation.md)
+  and [minimal reproduction](journal/2026-10-23-noctalia-manifest-reload-report.md).
+- **Immediate continuation:** consolidate the accepted interaction work as one
+  coherent branch submission after final diff/privacy and domain checks.
+  Keep upstream PR follow-up separate from laptop acceptance; do not add more
+  per-tweak branches or unrelated application/hardware work. Final submission
+  state must be recorded here when it changes.
 
 - **Hearthstone input:** the maintainer accepted the fixed candidate area's
   location after it moved the panel from upper-left to lower-center. Chinese

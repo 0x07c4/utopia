@@ -6,27 +6,25 @@ binds {
     // ─── noctalia-shell keybinds ───
     // https://docs.noctalia.dev/getting-started/keybinds/
 
-    Mod+Shift+ESCAPE                     { show-hotkey-overlay; }
+    // Slash shares a key with ? on the usual layout: a short help entry.
+    Mod+Slash                           hotkey-overlay-title="快捷键说明" { spawn-sh "noctalia msg panel-toggle utopia/shortcuts:guide"; }
 
     // ─── Applications ───
-    Mod+Return                          hotkey-overlay-title="Open Terminal: Kitty" { spawn "kitty"; }
-    Mod+T                               hotkey-overlay-title="Open Terminal: Kitty (Utopia)" { spawn "kitty"; }
-    Mod+B                               hotkey-overlay-title="Open Browser: Google Chrome" { spawn "google-chrome-stable"; }
+    Mod+T                               hotkey-overlay-title="终端" { spawn "kitty"; }
+    Mod+B                               hotkey-overlay-title="浏览器" { spawn "google-chrome-stable"; }
 
     // --- Noctalia ---
-    Mod+Shift+Return                    hotkey-overlay-title="Open Wallpaper Center: local and Wallhaven" { spawn-sh "noctalia msg panel-toggle utopia/wallpaper:center"; }
-    Mod+S                               hotkey-overlay-title="Open Control Center: noctalia controlCenter" { spawn-sh "noctalia msg panel-toggle control-center"; }
-    Mod+Shift+S                         hotkey-overlay-title="Open Settings: noctalia settings" { spawn-sh "noctalia msg settings-toggle"; }
-    Mod+CTRL+Return                     hotkey-overlay-title="Open App Launcher: noctalia launcher" { spawn-sh "noctalia msg panel-toggle launcher"; }
-    Mod+D                               hotkey-overlay-title="Open App Launcher: noctalia launcher (Utopia)" { spawn-sh "noctalia msg panel-toggle launcher"; }
-    Mod+ALT+L                           hotkey-overlay-title="Lock Screen: noctalia lock" { spawn-sh "noctalia msg session lock"; }
-    Mod+Shift+Q                         hotkey-overlay-title="Session Menu: noctalia sessionMenu" { spawn-sh "noctalia msg panel-toggle session"; }
+    Mod+Shift+Return                    hotkey-overlay-title="壁纸中心" { spawn-sh "noctalia msg panel-toggle utopia/wallpaper:center"; }
+    Mod+S                               hotkey-overlay-title="控制中心" { spawn-sh "noctalia msg panel-toggle control-center"; }
+    Mod+Shift+S                         hotkey-overlay-title="桌面设置" { spawn-sh "noctalia msg settings-toggle"; }
+    Mod+N                               hotkey-overlay-title="通知中心" { spawn-sh "noctalia msg panel-toggle control-center notifications"; }
+    Mod+Y                               hotkey-overlay-title="剪贴板历史" { spawn-sh "noctalia msg panel-toggle clipboard"; }
+    Mod+CTRL+Return                     hotkey-overlay-title=null { spawn-sh "noctalia msg panel-toggle launcher"; }
+    Mod+D                               hotkey-overlay-title="应用启动器" { spawn-sh "noctalia msg panel-toggle launcher"; }
+    Mod+ALT+L                           hotkey-overlay-title="锁屏" { spawn-sh "noctalia msg session lock"; }
+    Mod+Shift+Q                         hotkey-overlay-title="会话菜单" { spawn-sh "noctalia msg panel-toggle session"; }
 
-    // Please set the text editor of your choice.
-    // Mod+Shift+E                               hotkey-overlay-title="Open Text Editor: Zed" { spawn "zed"; }
-
-    // Please choose your own file manager.
-    Mod+E                               hotkey-overlay-title="File Manager: Nautilus" { spawn "nautilus"; }
+    Mod+E                               hotkey-overlay-title="文件管理器" { spawn "nautilus"; }
 
     // ─── Media Controls ───
     XF86AudioRaiseVolume                allow-when-locked=true { spawn-sh "noctalia msg volume-up"; }
@@ -35,8 +33,8 @@ binds {
     XF86AudioMicMute                    allow-when-locked=true { spawn-sh "noctalia msg mic-mute"; }
     XF86AudioNext                       allow-when-locked=true { spawn-sh "noctalia msg media next"; }
     XF86AudioPrev                       allow-when-locked=true { spawn-sh "noctalia msg media previous"; }
-    XF86AudioPlay                       allow-when-locked=true { spawn-sh "noctalia msg media play"; }
-    XF86AudioPause                      allow-when-locked=true { spawn-sh "noctalia msg media stop"; }
+    XF86AudioPlay                       allow-when-locked=true { spawn-sh "noctalia msg media toggle"; }
+    XF86AudioPause                      allow-when-locked=true { spawn-sh "noctalia msg media pause"; }
 
     // ─── Brightness Controls ───
     XF86MonBrightnessUp                 allow-when-locked=true { spawn-sh "noctalia msg brightness-up"; }

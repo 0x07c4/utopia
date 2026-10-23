@@ -210,8 +210,8 @@ class HomeArtifactAuditTest(unittest.TestCase):
             encoded = json.dumps(result)
 
             self.assertEqual(result["profile"], "arch-laptop")
-            self.assertEqual(result["summary"]["total"], 18)
-            self.assertEqual(result["summary"]["missing"], 18)
+            self.assertEqual(result["summary"]["total"], 19)
+            self.assertEqual(result["summary"]["missing"], 19)
             self.assertNotIn(str(home), encoded)
             self.assertTrue(audit.has_drift(result))
 

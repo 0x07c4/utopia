@@ -101,6 +101,19 @@ downloaded source trees and built modules remain outside Git. The visual
 acceptance is limited to the reviewed desktop setup and does not establish
 correct caret following or support for other Wine versions.
 
+## Noctalia manifest reload contribution candidate
+
+- Path: `docs/upstream/noctalia/manifest-reload.patch`
+- Upstream: <https://github.com/noctalia-dev/noctalia>
+- Base revision: `98c0d16389a306f33169d70bb044f0b6082dcc8b`
+- License: MIT
+- License copy: `docs/upstream/noctalia/LICENSE`
+
+The patch contains upstream context and proposed modifications for contribution
+to Noctalia, licensed under MIT for that purpose. It is not a vendored shell or
+a deployed profile artifact. Source checkouts, build dependencies and binaries
+remain outside Git. Validation status is recorded in the adjacent README.
+
 ## Neovim configuration submodule
 
 - Gitlink path: `editor/nvim`

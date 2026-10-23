@@ -129,6 +129,18 @@ deploy = true
 validators = []
 
 [[artifacts]]
+id = "desktop.noctalia-shortcuts-plugin"
+layer = "workstation.utopia"
+domain = "desktop"
+source = "desktop/noctalia/plugins/utopia-shortcuts"
+destination = ".local/share/noctalia/plugins/utopia-shortcuts"
+kind = "tree"
+state = "managed"
+capture = true
+deploy = true
+validators = []
+
+[[artifacts]]
 id = "terminal.kitty"
 layer = "workstation.utopia"
 domain = "terminal"

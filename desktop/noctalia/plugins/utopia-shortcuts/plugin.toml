@@ -1,0 +1,27 @@
+id = "utopia/shortcuts"
+name = "Utopia Shortcuts"
+version = "0.1.0"
+plugin_api = 33
+author = "Utopia"
+license = "Apache-2.0"
+dependencies = []
+tags = ["productivity"]
+icon = "keyboard"
+description = "A read-only, searchable guide to the current Niri bindings."
+
+[[launcher_provider]]
+id = "help"
+entry = "launcher.luau"
+prefix = "keys"
+glyph = "keyboard"
+include_in_global_search = true
+
+[[panel]]
+id = "guide"
+entry = "panel.luau"
+width = 820
+height = 600
+placement = "floating"
+position = "center"
+keyboard_focus = "exclusive"
+capture_keys = ["Up", "Down", "Page_Up", "Page_Down", "ctrl+f", "ctrl+r"]
