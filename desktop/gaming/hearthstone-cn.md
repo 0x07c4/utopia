@@ -398,7 +398,7 @@ was changed. Active desktop Rime remains readiness evidence only.
 | --- | --- | --- |
 | Desktop/game focus | With the game at its main menu, switch away and back; inspect compositor focus without sending game input. | Game/desktop/game IPC focus checks passed; original focus restored. |
 | Fullscreen recovery | Inspect the game's current geometry; if testing the existing `Mod+Shift+F` toggle, restore the original mode afterward. | 1920x1080 logical geometry observed; toggle round trip pending. Do not copy Stardew's rule onto Hearthstone. |
-| Chinese input | The maintainer selects an existing game text field, composes and commits a short neutral phrase, then clears it without sending. | The fixed anchor moved the candidate panel from upper-left to the lower-center game area; the maintainer accepted its position but noted it looks small. Candidate selection/commit and the screen-DPI size adjustment remain to be confirmed. |
+| Chinese input | The maintainer selects an existing game text field, composes and commits a short neutral phrase, then clears it without sending. | The fixed anchor moved the candidate panel from upper-left to the lower-center game area; the maintainer accepted its position but noted it looked small. Candidate size and selection/commit remain unresolved. |
 | Audio route and output | Inspect only the game's stream state, links, mute and sink state; the maintainer confirms actual sound. | Running unmuted stream/sink and active links checked; audible sound confirmed by the maintainer. |
 | Volume control | The maintainer uses the normal media key or control-center slider, confirms the audible change, and restores the preferred level. | Normal volume adjustment confirmed by the maintainer; the agent changed no routing or volume. |
 
@@ -456,13 +456,14 @@ with that PE module. The patch is opt-in through
 Built DLLs, trial logs and images stay outside Git. The original runner and a
 full cold game-prefix backup remain available.
 
-The candidate list was visually small. Live Fcitx Classic UI configuration
-used a 12-point font and had per-screen DPI disabled; this screen reports about
-163 DPI under Xwayland. The tracked and live Classic UI setting now enables
-per-screen DPI, with the prior live config saved beside the private trial
-backup. This affects Fcitx candidate panels on this screen across applications,
-not just Hearthstone. Its visual effect remains to be confirmed. The wallpaper
-theme remains generated user runtime state and was not copied into Git.
+The candidate list was visually small. Its Fcitx Classic UI font is back at the
+original 12 points. A 16-point trial was immediately reverted because Fcitx's
+shared font would also enlarge candidate panels in the terminal and other
+applications. Fcitx states that per-screen DPI is disabled under XWayland, so
+that attempted toggle was ineffective and is set to `False`. Candidate size
+remains unresolved; any future Hearthstone-only sizing change must be scoped to
+the game rather than changing this shared setting. The wallpaper theme remains
+generated user runtime state and was not copied into Git.
 
 Do not repeat the neutral A/B/C checks or failed position-query trials. Do not
 treat the game's zero-height, upper-left `IMR_QUERYCHARPOSITION` result as a

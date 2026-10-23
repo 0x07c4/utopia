@@ -11,11 +11,12 @@ in [`journal/`](journal/).
 - **Hearthstone input:** the maintainer accepted the fixed candidate area's
   location after it moved the panel from upper-left to lower-center. Chinese
   composition candidates were visible in the game; candidate selection/commit
-  was not yet retested. The maintainer noted the panel looked small. Fcitx's
-  tracked and live `PerScreenDPI=True` setting is now loaded; its visual effect
-  awaits confirmation. This affects candidate panels across applications on
-  the Xwayland screen (reported density about 163 DPI), not only Hearthstone.
-  The previous live Fcitx config is retained beside the private trial backup.
+  was not yet retested. The maintainer noted the panel looked small. A 16 pt
+  font trial was reverted because the Fcitx font is shared with terminal and
+  other application candidate panels; the font remains at 12 pt. The
+  per-screen DPI option is ineffective under XWayland and is set to `False`.
+  Candidate size remains unresolved; do not change the shared font again. The
+  game-scoped follow-up is recorded in [`ideas/inbox.md`](../ideas/inbox.md).
 
   The fixed anchor is an opt-in, Hearthstone-only patch to Wine 11.19 IMM32.
   It follows the client size at 50% width / 84% height and refreshes while the
