@@ -51,11 +51,15 @@ the product sequence in [roadmap.md](roadmap.md), and incident history in
   preserve the exact base and continuation steps. The installed shell was not
   replaced. See the [runtime validation lesson](journal/2026-10-23-noctalia-plugin-runtime-validation.md)
   and [minimal reproduction](journal/2026-10-23-noctalia-manifest-reload-report.md).
-- **Immediate continuation:** consolidate the accepted interaction work as one
-  coherent branch submission after final diff/privacy and domain checks.
-  Keep upstream PR follow-up separate from laptop acceptance; do not add more
-  per-tweak branches or unrelated application/hardware work. Final submission
-  state must be recorded here when it changes.
+- **Submission and continuation:** the complete interaction slice is committed
+  as `8cc4ec4` and pushed to `origin/work/desktop-interaction`.
+  [Utopia PR #28](https://github.com/0x07c4/utopia/pull/28) is open, ready for
+  review and mergeable, not merged. Final 133 + 67 tests, both composed Niri
+  configurations, profiles, lint, config and privacy/diff checks pass. No
+  automated PR checks are configured; local evidence and user acceptance are
+  recorded above. Follow review/merge separately from Noctalia #5014. Before
+  desktop deployment, inspect its live gaming/input overlays and compose its
+  own profile; do not replace its bindings with the laptop's live file.
 
 - **Hearthstone input:** the maintainer accepted the fixed candidate area's
   location after it moved the panel from upper-left to lower-center. Chinese
