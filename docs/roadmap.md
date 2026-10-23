@@ -72,6 +72,11 @@ without a concrete consumer, provenance, reload boundary, and rollback plan.
 
 ### Interaction contract
 
+The current `work/desktop-interaction` slice is defined in
+[`design/desktop-interaction.md`](design/desktop-interaction.md): coherent
+operation entries, help/discoverability, confirmed binding changes, and explicit
+acceptance boundaries. A usable shortcuts panel alone does not complete it.
+
 Define and validate the complete daily path:
 
 - terminal, browser, file manager, editor, and application launcher;

@@ -1,0 +1,248 @@
+diff --git a/src/scripting/plugin_manager.cpp b/src/scripting/plugin_manager.cpp
+index c6011e15c..d2d057aa3 100644
+--- a/src/scripting/plugin_manager.cpp
++++ b/src/scripting/plugin_manager.cpp
+@@ -19,6 +19,8 @@
+ 
+ #include <algorithm>
+ #include <chrono>
++#include <fstream>
++#include <iterator>
+ #include <optional>
+ #include <ranges>
+ #include <system_error>
+@@ -34,6 +36,47 @@ namespace scripting {
+ 
+     std::filesystem::path sourceRootFor(const PluginSourceConfig& source) { return plugin_paths::registryRoot(source); }
+ 
++    // Snapshot active, winning manifests, not script files (which have their own
++    // hot-reload watches). Content detects same-size/same-mtime replacements too.
++    auto manifestSnapshot(const PluginsConfig& plugins) {
++      std::map<std::string, std::pair<std::filesystem::path, std::string>> snapshot;
++      std::vector<std::filesystem::path> roots;
++      for (const auto& source : plugins.sources) {
++        if (source.enabled) {
++          if (auto root = sourceRootFor(source); !root.empty()) {
++            roots.push_back(std::move(root));
++          }
++        }
++      }
++      if (auto local = plugin_paths::localSourceRoot(); !local.empty()) {
++        roots.push_back(std::move(local));
++      }
++      for (const auto& root : roots) {
++        std::error_code ec;
++        for (const auto& sub : std::filesystem::directory_iterator(root, ec)) {
++          if (!sub.is_directory(ec)) {
++            continue;
++          }
++          const auto path = sub.path() / "plugin.toml";
++          if (!std::filesystem::is_regular_file(path, ec)) {
++            continue;
++          }
++          std::ifstream file(path, std::ios::binary);
++          if (!file) {
++            continue;
++          }
++          std::string contents{std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
++          const auto manifest = parsePluginManifest(path, nullptr);
++          if (manifest.has_value()
++              && std::ranges::contains(plugins.enabled, manifest->id)
++              && supportsPluginApiVersion(manifest->pluginApiVersion)) {
++            snapshot[manifest->id] = {path, std::move(contents)};
++          }
++        }
++      }
++      return snapshot;
++    }
++
+     void removeManagedGitSourceStorage(const PluginSourceConfig& source) {
+       const std::string sourceBase = FileUtils::pluginSourcesDir();
+       if (!sourceBase.empty()) {
+@@ -422,6 +465,7 @@ namespace scripting {
+         return; // nothing exported; the startup registry scan already reflects disk state
+       }
+       DeferredCall::callLater([this]() {
++        m_lastManifests = manifestSnapshot(m_config.config().plugins);
+         PluginRegistry::instance().scan(); // pick up the freshly exported plugins
+         if (m_onChanged) {
+           m_onChanged(); // rebuild bar + reconcile services
+@@ -432,19 +476,27 @@ namespace scripting {
+ 
+   void PluginManager::refresh() {
+     const PluginsConfig& pc = m_config.config().plugins;
+-    if (m_applied && pc == m_lastApplied) {
+-      return;
+-    }
++    const bool configUnchanged = m_applied && pc == m_lastApplied;
+     // Heal wiped source storage / restored config once at startup. Source storage
+     // does not change on later config reloads, so don't re-touch the network then.
+     if (!m_applied) {
+       ensureEnabledMaterialized(pc);
+     }
++    auto manifests = manifestSnapshot(pc);
++    if (configUnchanged && manifests == m_lastManifests) {
++      return;
++    }
+ 
+     applyPluginSourcesToRegistry(PluginRegistry::instance(), pc);
+ 
+     m_lastApplied = pc;
++    m_lastManifests = std::move(manifests);
+     m_applied = true;
++    // Config changes already drive Application's normal reload callbacks.
++    // Manifest-only edits need the same reconciliation as a source update.
++    if (configUnchanged && m_onChanged) {
++      m_onChanged();
++    }
+   }
+ 
+   EnableResult PluginManager::enable(std::string_view pluginId) {
+@@ -880,6 +932,7 @@ namespace scripting {
+         if (!ok) {
+           kLog.warn("update '{}': set HEAD failed: {}", sourceName, err);
+           if (materialized) {
++            m_lastManifests = manifestSnapshot(m_config.config().plugins);
+             PluginRegistry::instance().scan();
+             if (m_onChanged) {
+               m_onChanged();
+@@ -917,6 +970,7 @@ namespace scripting {
+           kLog.info("source '{}' already up to date", sourceName);
+         }
+         if (sourceRevisionChanged || materialized) {
++          m_lastManifests = manifestSnapshot(m_config.config().plugins);
+           PluginRegistry::instance().scan(); // re-parse manifests; live .luau changes hot-reload via file watch
+           if (m_onChanged) {
+             m_onChanged(); // rebuild bar + reconcile services for the new revision
+diff --git a/src/scripting/plugin_manager.h b/src/scripting/plugin_manager.h
+index a9bd4a8c5..9e9747f80 100644
+--- a/src/scripting/plugin_manager.h
++++ b/src/scripting/plugin_manager.h
+@@ -7,12 +7,14 @@
+ #include <cstdint>
+ #include <filesystem>
+ #include <functional>
++#include <map>
+ #include <mutex>
+ #include <optional>
+ #include <string>
+ #include <string_view>
+ #include <unordered_map>
+ #include <unordered_set>
++#include <utility>
+ #include <vector>
+ 
+ class ConfigService;
+@@ -68,7 +70,7 @@ namespace scripting {
+     explicit PluginManager(ConfigService& config) : m_config(config) {}
+ 
+     // Called after an out-of-band registry change that isn't a config reload — i.e. a
+-    // git `update()` that advanced a source. Lets Application rebuild the bar and
++    // git `update()` or a local manifest edit. Lets Application rebuild the bar and
+     // reconcile services for the new revision. Enable/disable already propagate via the
+     // config-reload path, so they don't use this.
+     void setOnChanged(std::function<void()> onChanged) { m_onChanged = std::move(onChanged); }
+@@ -88,7 +90,8 @@ namespace scripting {
+     void setOnEnabled(std::function<void(std::string_view pluginId)> cb) { m_onEnabled = std::move(cb); }
+ 
+     // Resolve source roots + enabled filter from config and (re)scan the registry.
+-    // No-op when the plugins config is unchanged since the last applied refresh.
++    // Reconcile local manifest edits even when config is unchanged. Unchanged
++    // config and manifests leave the registry and running entries alone.
+     void refresh();
+ 
+     // Enable a plugin by id ("author/plugin"). For a git source the runtime export
+@@ -187,6 +190,9 @@ namespace scripting {
+     // only on the main thread (enable() inserts, the DeferredCall completion erases).
+     std::unordered_set<std::string> m_enabling;
+     PluginsConfig m_lastApplied;
++    // Applied runtime snapshot; only updated on the main thread, including
++    // deferred completions of const source-materialization operations.
++    mutable std::map<std::string, std::pair<std::filesystem::path, std::string>> m_lastManifests;
+     bool m_applied = false;
+ 
+     // Wall-clock of the last browse fetch per git source name; throttles store-open
+diff --git a/tests/plugin_lifecycle_test.cpp b/tests/plugin_lifecycle_test.cpp
+index 67d3a4bff..6237ca511 100644
+--- a/tests/plugin_lifecycle_test.cpp
++++ b/tests/plugin_lifecycle_test.cpp
+@@ -2,17 +2,21 @@
+ #include "core/deferred_call.h"
+ #include "core/toml.h"
+ #include "scripting/plugin_manager.h"
++#include "scripting/plugin_registry.h"
+ #include "scripting/plugin_script_watcher.h"
+ #include "scripting/plugin_service_host.h"
+ #include "scripting/plugin_state_store.h"
+ #include "scripting/script_api_context.h"
+ #include "scripting/script_runtime.h"
++#include "tests/test_check.h"
+ 
+ #include <algorithm>
+ #include <chrono>
+ #include <cstdio>
+ #include <filesystem>
++#include <fstream>
+ #include <functional>
++#include <iterator>
+ #include <memory>
+ #include <print>
+ #include <string>
+@@ -924,6 +928,57 @@ int main() {
+          )
+         && ok;
+ 
++    {
++      const auto path = root / "path-plugins/plugin/plugin.toml";
++      std::ifstream input(path);
++      TEST_CHECK(input.is_open());
++      const std::string original{std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()};
++      const std::string provider = original
++          + "[[launcher_provider]]\nid = \"search\"\n"
++            "entry = \"launcher.luau\"\nprefix = \"one\"\n";
++      int reconciliations = 0;
++      manager.setOnChanged([&]() { ++reconciliations; });
++      config.forceReload();
++      TEST_CHECK(reconciliations == 0);
++
++      TEST_CHECK(writeText(path, provider));
++      config.forceReload();
++      TEST_CHECK(reconciliations == 1);
++      TEST_CHECK(scripting::PluginRegistry::instance().hasEntry("test/plugin:search"));
++      config.forceReload();
++      TEST_CHECK(reconciliations == 1);
++
++      TEST_CHECK(writeText(path.parent_path() / "launcher.luau", "function onQuery() end\n"));
++      config.forceReload();
++      TEST_CHECK(reconciliations == 1);
++
++      // Content changes must not depend on timestamp granularity or file size.
++      const auto timestamp = std::filesystem::last_write_time(path);
++      std::string changed = provider;
++      changed.replace(changed.find("one"), 3, "two");
++      TEST_CHECK(writeText(path, changed));
++      std::filesystem::last_write_time(path, timestamp);
++      config.forceReload();
++      TEST_CHECK(reconciliations == 2);
++      const auto resolved = scripting::PluginRegistry::instance().resolve("test/plugin:search");
++      TEST_CHECK(resolved.has_value() && resolved->entry->launcherPrefix == "two");
++
++      TEST_CHECK(writeText(path, original));
++      config.forceReload();
++      TEST_CHECK(reconciliations == 3);
++      TEST_CHECK(!scripting::PluginRegistry::instance().hasEntry("test/plugin:search"));
++      TEST_CHECK(std::filesystem::remove(path));
++      config.forceReload();
++      TEST_CHECK(reconciliations == 4);
++      TEST_CHECK(scripting::PluginRegistry::instance().findManifest("test/plugin") == nullptr);
++      TEST_CHECK(writeText(path, original));
++      config.forceReload();
++      TEST_CHECK(reconciliations == 5);
++      config.forceReload();
++      TEST_CHECK(reconciliations == 5);
++      manager.setOnChanged({});
++    }
++
+     lifecyclePluginId = "test/plugin";
+     lifecycleRuntime =
+         std::make_unique<scripting::ScriptRuntime>("test/plugin:widget", scripting::ScriptSettings{}, api, root);

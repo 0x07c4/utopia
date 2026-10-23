@@ -274,7 +274,7 @@ class ArtifactResolutionTest(unittest.TestCase):
         with (noctalia_dir / "bar.toml").open("rb") as source:
             bar = tomllib.load(source)
 
-        self.assertEqual(plugins["plugins"]["enabled"], ["utopia/wallpaper"])
+        self.assertEqual(plugins["plugins"]["enabled"], ["utopia/wallpaper", "utopia/shortcuts"])
         wallpaper = plugins["plugin_settings"]["utopia/wallpaper"]
         self.assertEqual(wallpaper["wallpaper_dir"], "~/Pictures/Wallpapers")
         self.assertNotIn("api_key", wallpaper)
@@ -291,7 +291,7 @@ class ArtifactResolutionTest(unittest.TestCase):
             profiles.REPO_ROOT / "desktop/niri/cfg/keybinds.kdl"
         ).read_text()
         self.assertIn(
-            'Mod+Shift+Return                    hotkey-overlay-title="Open Wallpaper Center: local and Wallhaven"',
+            'Mod+Shift+Return                    hotkey-overlay-title="壁纸中心"',
             keybinds,
         )
         self.assertNotRegex(

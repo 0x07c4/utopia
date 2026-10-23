@@ -2,3 +2,5 @@
 LICENSES/Wine-LGPL-2.1-or-later.txt whitespace=-blank-at-eol
 desktop/gaming/diagnostics/imm32-candidate-position.patch whitespace=-blank-at-eol
 desktop/gaming/diagnostics/imm32-hearthstone-fixed-anchor.patch whitespace=-blank-at-eol
+# Unified diff context lines contain a single space even for blank source lines.
+docs/upstream/noctalia/manifest-reload.patch whitespace=-blank-at-eol
