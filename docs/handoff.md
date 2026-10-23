@@ -7,7 +7,8 @@ the product sequence in [roadmap.md](roadmap.md), and incident history in
 
 ## Active pause point — 2026-10-24
 
-- **Current laptop topic:** `work/desktop-interaction`. Read the
+- **Accepted laptop milestone:** desktop interaction, implemented on
+  `work/desktop-interaction`. Read the
   [interaction design](design/desktop-interaction.md) and
   [operation inventory](design/desktop-interaction-inventory.md).
   The shared configuration has 135 bindings / 100 actions; the read-only
@@ -53,8 +54,10 @@ the product sequence in [roadmap.md](roadmap.md), and incident history in
   and [minimal reproduction](journal/2026-10-23-noctalia-manifest-reload-report.md).
 - **Submission and continuation:** the complete interaction slice is committed
   as `8cc4ec4` and pushed to `origin/work/desktop-interaction`.
-  [Utopia PR #28](https://github.com/0x07c4/utopia/pull/28) is open, ready for
-  review and mergeable, not merged. Final 133 + 67 tests, both composed Niri
+  Delivery and merge history are tracked by
+  [Utopia PR #28](https://github.com/0x07c4/utopia/pull/28). The implementation
+  and core laptop acceptance are complete; after merge, continue from `main`
+  rather than adding more work to the completed topic branch. Final 133 + 67 tests, both composed Niri
   configurations, profiles, lint, config and privacy/diff checks pass. No
   automated PR checks are configured; local evidence and user acceptance are
   recorded above. Follow review/merge separately from Noctalia #5014. Before
