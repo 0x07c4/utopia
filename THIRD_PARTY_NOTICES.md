@@ -117,7 +117,7 @@ remain outside Git. Validation status is recorded in the adjacent README.
 ## Neovim configuration submodule
 
 - Gitlink path: `editor/nvim`
-- Repository: <https://github.com/0x07c4/nvim-astro>
+- Repository: <https://github.com/imchikee/nvim-astro>
 - Pinned revision: `428b7f214fc3263c51c6c9d5a5d2a79fdf816b43`
 - Based on: <https://github.com/AstroNvim/template>
 - Template revision reviewed: `49a7161b776f8bc6c23508819ea1ad4e7b359bee`
