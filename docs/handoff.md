@@ -55,7 +55,7 @@ the product sequence in [roadmap.md](roadmap.md), and incident history in
 - **Submission and continuation:** the complete interaction slice is committed
   as `8cc4ec4` and pushed to `origin/work/desktop-interaction`.
   Delivery and merge history are tracked by
-  [Utopia PR #28](https://github.com/0x07c4/utopia/pull/28). The implementation
+  [Utopia PR #28](https://github.com/imchikee/utopia/pull/28). The implementation
   and core laptop acceptance are complete; after merge, continue from `main`
   rather than adding more work to the completed topic branch. Final 133 + 67 tests, both composed Niri
   configurations, profiles, lint, config and privacy/diff checks pass. No
@@ -594,7 +594,7 @@ the product sequence in [roadmap.md](roadmap.md), and incident history in
 
 ## Trusted repository baseline
 
-- The canonical repository is `https://github.com/0x07c4/utopia`.
+- The canonical repository is `https://github.com/imchikee/utopia`.
 - `main` was rebuilt from a reviewed product tree on 2026-09-21. Its sanitized
   root is `dd0fea9` (`Initial Utopia workstation product`).
 - The replaced repository and its reachable history were deleted. Do not merge,
@@ -766,7 +766,7 @@ for inspection and make a fresh clone:
 
 ```sh
 mv "$HOME/utopia" "$HOME/utopia-before-rebuild"
-gh repo clone 0x07c4/utopia "$HOME/utopia"
+gh repo clone imchikee/utopia "$HOME/utopia"
 cd "$HOME/utopia"
 git submodule update --init --recursive
 git rev-list --max-parents=0 HEAD
